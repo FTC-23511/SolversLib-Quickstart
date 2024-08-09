@@ -3,6 +3,8 @@ package org.firstinspires.ftc.teamcode.subsystem;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
+import java.lang.reflect.Array;
+
 public class Deposit {
     public Servo leftWrist;
     public Servo rightWrist;
