@@ -22,8 +22,8 @@ public class armTester extends LinearOpMode {
         double rightWristPos = 0.5;
 
 
-        deposit.leftWrist.setPosition(leftWristPos);
-        deposit.rightWrist.setPosition(rightWristPos);
+        deposit.leftArm.setPosition(leftWristPos);
+        deposit.rightArm.setPosition(rightWristPos);
 
         waitForStart();
         if (isStopRequested()) return;
@@ -46,15 +46,15 @@ public class armTester extends LinearOpMode {
             }
 
             if (gamepad1.square) {
-                deposit.leftWrist.setPosition(leftWristPos);
+                deposit.leftArm.setPosition(leftWristPos);
             }
 
             if (gamepad1.circle) {
-                deposit.rightWrist.setPosition(rightWristPos);
+                deposit.rightArm.setPosition(rightWristPos);
             }
 
-            telemetry.addData("leftWrist getPosition", deposit.leftWrist.getPosition());
-            telemetry.addData("rightWrist getPosition", deposit.rightWrist.getPosition());
+            telemetry.addData("leftWrist getPosition", deposit.leftArm.getPosition());
+            telemetry.addData("rightWrist getPosition", deposit.rightArm.getPosition());
             telemetry.addData("leftWristPos", leftWristPos);
             telemetry.addData("rightWristPos", rightWristPos);
             telemetry.update();

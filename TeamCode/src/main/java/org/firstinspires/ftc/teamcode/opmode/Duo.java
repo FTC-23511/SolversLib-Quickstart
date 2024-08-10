@@ -64,6 +64,8 @@ public class Duo extends LinearOpMode {
             runningActions = newActions;
 
             dash.sendTelemetryPacket(packet);
+            telemetry.addData("wristPos", deposit.wrist.getPosition());
+            telemetry.update();
         }
     }
 }

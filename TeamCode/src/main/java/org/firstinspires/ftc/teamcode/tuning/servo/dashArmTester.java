@@ -22,8 +22,8 @@ public class dashArmTester extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
         Deposit deposit = new Deposit(hardwareMap);
 
-        deposit.leftWrist.setPosition(leftWristPos);
-        deposit.rightWrist.setPosition(rightWristPos);
+        deposit.leftArm.setPosition(leftWristPos);
+        deposit.rightArm.setPosition(rightWristPos);
 
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
@@ -32,26 +32,26 @@ public class dashArmTester extends LinearOpMode {
 
         while (opModeIsActive()) {
             if (moveLeft) {
-                deposit.leftWrist.setPosition(leftWristPos);
+                deposit.leftArm.setPosition(leftWristPos);
 
                 moveLeft = false;
             }
 
             if (moveRight) {
-                deposit.rightWrist.setPosition(rightWristPos);
+                deposit.rightArm.setPosition(rightWristPos);
 
                 moveRight = false;
             }
 
             if (moveBoth) {
-                deposit.leftWrist.setPosition(leftWristPos);
-                deposit.rightWrist.setPosition(rightWristPos);
+                deposit.leftArm.setPosition(leftWristPos);
+                deposit.rightArm.setPosition(rightWristPos);
 
                 moveBoth = false;
             }
 
-            telemetry.addData("leftWrist getPosition", deposit.leftWrist.getPosition());
-            telemetry.addData("rightWrist getPosition", deposit.rightWrist.getPosition());
+            telemetry.addData("leftWrist getPosition", deposit.leftArm.getPosition());
+            telemetry.addData("rightWrist getPosition", deposit.rightArm.getPosition());
 
             telemetry.addData("leftWristPos", leftWristPos);
             telemetry.addData("rightWristPos", rightWristPos);
