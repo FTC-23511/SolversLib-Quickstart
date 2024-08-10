@@ -49,23 +49,19 @@ public class Duo extends LinearOpMode {
                     new InstantAction(deposit::moveWristLeft),
                     new InstantAction(buttonTimer::reset)
                 ));
-            }
-
-            else if (gamepad1.right_bumper && buttonTimer.milliseconds() >= 200) {
+            } else if (gamepad1.right_bumper && buttonTimer.milliseconds() >= 200) {
                 runningActions.add(new ParallelAction(
                     new InstantAction(deposit::moveWristRight),
                     new InstantAction(buttonTimer::reset)
                 ));
             }
 
-            if (gamepad1.left_stick_button && buttonTimer.milliseconds() >= 200) {
+            if (gamepad1.left_stick_button && risingEdge.checkButton(currentGamepad1, "left stick button")) {
                 runningActions.add(new ParallelAction(
                         new InstantAction(deposit::toggleLeftClaw),
                         new InstantAction(buttonTimer::reset)
                 ));
-            }
-
-            if (gamepad1.right_stick_button && buttonTimer.milliseconds() >= 200) {
+            } else if (gamepad1.right_stick_button && risingEdge.checkButton(currentGamepad1, "right stick button")) {
                 runningActions.add(new ParallelAction(
                         new InstantAction(deposit::toggleRightClaw),
                         new InstantAction(buttonTimer::reset)
@@ -87,8 +83,9 @@ public class Duo extends LinearOpMode {
             currentGamepad1.copy(gamepad1);
             currentGamepad2.copy(gamepad2);
 
-
             telemetry.addData("wrist", deposit.getWristPos());
+            telemetry.addData("leftClaw", deposit.getLeftClawPos());
+            telemetry.addData("rightClaw", deposit.getRightClawPos());
             telemetry.update();
         }
     }
