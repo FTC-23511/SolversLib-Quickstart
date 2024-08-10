@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.opmode;
 
+import static android.text.TextUtils.substring;
+
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
@@ -17,6 +19,8 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.subsystem.Deposit;
+import org.firstinspires.ftc.teamcode.subsystem.risingEdge;
+
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,10 +30,12 @@ public class Duo extends LinearOpMode {
     private FtcDashboard dash = FtcDashboard.getInstance();
     private List<Action> runningActions = new ArrayList<>();
 
+    risingEdge risingEdgeDetector;
+
     @Override
     public void runOpMode() throws InterruptedException {
         Gamepad currentGamepad1 = new Gamepad();
-
+        Gamepad currentGamepad2 = new Gamepad();
         Deposit deposit = new Deposit(hardwareMap);
 
         deposit.wrist.setPosition(1.0);
@@ -40,7 +46,7 @@ public class Duo extends LinearOpMode {
         while (opModeIsActive()) {
             TelemetryPacket packet = new TelemetryPacket();
 
-            if (gamepad1.left_bumper && !currentGamepad1.left_bumper) {
+            if (gamepad1.left_bumper && checkButton(gamepad1, "left_bumper")) {
                 runningActions.add(new SequentialAction(
                     new InstantAction(deposit::moveWristLeft)
                 ));
@@ -48,7 +54,7 @@ public class Duo extends LinearOpMode {
                 sleep(200);
             }
 
-            else if (gamepad1.right_bumper && !currentGamepad1.right_bumper) {
+            else if (gamepad2.right_bumper && checkButton(gamepad2, "right_bumper")) {
                 runningActions.add(new SequentialAction(
                     new InstantAction(deposit::moveWristRight)
                 ));
@@ -69,10 +75,20 @@ public class Duo extends LinearOpMode {
             dash.sendTelemetryPacket(packet);
 
             currentGamepad1.copy(gamepad1);
+            currentGamepad2.copy(gamepad2);
+
+            String buttons = String.valueOf(gamepad1).substring(75).substring(1);
 
             telemetry.addData("wristPos", deposit.wrist.getPosition());
-            telemetry.addData("buttons", currentGamepad1);
+            telemetry.addData("gamepad1", checkButton(gamepad1, "triangle"));
+
+            telemetry.addData("gamepad1", buttons.contains("triangle"));
             telemetry.update();
         }
+    }
+
+    public boolean checkButton(Gamepad gamepad, String button) {
+        String buttons = String.valueOf(gamepad).substring(75).substring(1);
+        return buttons.contains(button);
     }
 }
