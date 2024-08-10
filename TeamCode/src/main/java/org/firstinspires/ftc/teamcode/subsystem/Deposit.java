@@ -30,6 +30,7 @@ public class Deposit {
         wrist = hardwareMap.get(Servo.class, "wrist");
 
         rightArm.setDirection(Servo.Direction.REVERSE);
+        rightClaw.setDirection(Servo.Direction.REVERSE);
     }
 
     public double getWristPos() {
@@ -42,11 +43,59 @@ public class Deposit {
         }
         wrist.setPosition(getWristPos());
     }
-
+    // 0.07, 0.18
     public void moveWristRight() {
         if (wristSplice != (wristPositions.length - 1)) {
             wristSplice += 1;
         }
         wrist.setPosition(getWristPos());
+    }
+
+    public void openLeftClaw() {
+        // 1, 0.82, 0.08
+        if (getWristPos() == 1 || getWristPos() == 0.82 || getWristPos() == 0.08) {
+            leftClaw.setPosition(0.59);
+        }
+        // 0.64, 0.46, 0.28
+        else {
+            rightClaw.setPosition(0.07);
+        }
+    }
+
+    public void closeLeftClaw() {
+        // 1, 0.82, 0.08
+        if (getWristPos() == 1 || getWristPos() == 0.82 || getWristPos() == 0.08) {
+            leftClaw.setPosition(0.74);
+        }
+        // 0.64, 0.46, 0.28
+        else {
+            rightClaw.setPosition(0.18);
+        }
+    }
+
+    public void openRightClaw() {
+        // 1, 0.82, 0.08
+        if (getWristPos() == 1 || getWristPos() == 0.82 || getWristPos() == 0.08) {
+            rightClaw.setPosition(0.59);
+        }
+        // 0.64, 0.46, 0.28
+        else {
+            leftClaw.setPosition(0.07);
+        }
+    }
+
+    public void closeRightClaw() {
+        // 1, 0.82, 0.08
+        if (getWristPos() == 1 || getWristPos() == 0.82 || getWristPos() == 0.08) {
+            rightClaw.setPosition(0.74);
+        }
+        // 0.64, 0.46, 0.28
+        else {
+            leftClaw.setPosition(0.18);
+        }
+    }
+
+    public void toggleLeftClaw() {
+
     }
 }

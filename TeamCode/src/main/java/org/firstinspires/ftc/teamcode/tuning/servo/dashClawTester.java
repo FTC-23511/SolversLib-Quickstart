@@ -1,18 +1,19 @@
 package org.firstinspires.ftc.teamcode.tuning.servo;
 
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+
 import org.firstinspires.ftc.teamcode.subsystem.Deposit;
 
 @Config
 @TeleOp
-public class dashArmTester extends LinearOpMode {
+public class dashClawTester extends LinearOpMode {
 
-    public static double leftArmPos = 0.5;
-    public static double rightArmtPos = 0.5;
+    public static double leftClawPos = 0.5;
+    public static double rightClawtPos = 0.5;
 
     public static boolean moveLeft = false;
     public static boolean moveRight = false;
@@ -22,8 +23,8 @@ public class dashArmTester extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
         Deposit deposit = new Deposit(hardwareMap);
 
-        deposit.leftArm.setPosition(leftArmPos);
-        deposit.rightArm.setPosition(rightArmtPos);
+        deposit.leftClaw.setPosition(leftClawPos);
+        deposit.rightClaw.setPosition(rightClawtPos);
 
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
@@ -32,29 +33,29 @@ public class dashArmTester extends LinearOpMode {
 
         while (opModeIsActive()) {
             if (moveLeft) {
-                deposit.leftArm.setPosition(leftArmPos);
+                deposit.leftClaw.setPosition(leftClawPos);
 
                 moveLeft = false;
             }
 
             if (moveRight) {
-                deposit.rightArm.setPosition(rightArmtPos);
+                deposit.rightClaw.setPosition(rightClawtPos);
 
                 moveRight = false;
             }
 
             if (moveBoth) {
-                deposit.leftArm.setPosition(leftArmPos);
-                deposit.rightArm.setPosition(rightArmtPos);
+                deposit.leftClaw.setPosition(leftClawPos);
+                deposit.rightClaw.setPosition(rightClawtPos);
 
                 moveBoth = false;
             }
 
-            telemetry.addData("leftWrist getPosition", deposit.leftArm.getPosition());
-            telemetry.addData("rightWrist getPosition", deposit.rightArm.getPosition());
+            telemetry.addData("leftWrist getPosition", deposit.leftClaw.getPosition());
+            telemetry.addData("rightWrist getPosition", deposit.rightClaw.getPosition());
 
-            telemetry.addData("leftWristPos", leftArmPos);
-            telemetry.addData("rightWristPos", rightArmtPos);
+            telemetry.addData("leftWristPos", leftClawPos);
+            telemetry.addData("rightWristPos", rightClawtPos);
 
             telemetry.addData("moveLeft", moveLeft);
             telemetry.addData("moveRight", moveRight);

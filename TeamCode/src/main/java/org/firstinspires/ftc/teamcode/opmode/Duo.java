@@ -15,6 +15,8 @@ import org.firstinspires.ftc.teamcode.subsystem.Deposit;
 import org.firstinspires.ftc.teamcode.subsystem.risingEdge;
 
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -49,12 +51,18 @@ public class Duo extends LinearOpMode {
                 ));
             }
 
-            if (gamepad1.right_bumper && buttonTimer.milliseconds() >= 200) {
+            else if (gamepad1.right_bumper && buttonTimer.milliseconds() >= 200) {
                 runningActions.add(new ParallelAction(
                     new InstantAction(deposit::moveWristRight),
                     new InstantAction(buttonTimer::reset)
                 ));
+            }
 
+            if (gamepad1.left_stick_button && buttonTimer.milliseconds() >= 200) {
+                runningActions.add(new ParallelAction(
+                        new InstantAction(deposit::moveWristRight),
+                        new InstantAction(buttonTimer::reset)
+                ));
             }
 
             // Updates running actions:
@@ -72,7 +80,9 @@ public class Duo extends LinearOpMode {
             currentGamepad1.copy(gamepad1);
             currentGamepad2.copy(gamepad2);
 
-            telemetry.addData("wristPos", deposit.wrist.getPosition());
+
+            telemetry.addData("leftClaw Pos", new BigDecimal((String.valueOf(deposit.leftClaw.getPosition()))).setScale(2, RoundingMode.HALF_UP));
+            telemetry.addData("rightClaw Pos", new BigDecimal((String.valueOf(deposit.rightClaw.getPosition()))).setScale(2, RoundingMode.HALF_UP));
             telemetry.update();
         }
     }

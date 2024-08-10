@@ -20,8 +20,7 @@ public class armTester extends LinearOpMode {
 
         double leftWristPos = 0.5;
         double rightWristPos = 0.5;
-
-
+        
         deposit.leftArm.setPosition(leftWristPos);
         deposit.rightArm.setPosition(rightWristPos);
 
