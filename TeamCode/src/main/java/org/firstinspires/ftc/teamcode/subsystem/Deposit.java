@@ -116,19 +116,19 @@ public class Deposit {
 
     public void toggleLeftClaw() {
         if (getLeftClawPos() == leftClawClosePos){
-            leftClaw.setPosition(leftClawOpenPos);
+            openLeftClaw();
         }
         else {
-            leftClaw.setPosition(leftClawClosePos);
+            closeLeftClaw();
         }
     }
 
     public void toggleRightClaw() {
         if (getRightClawPos() == rightClawClosePos){
-            rightClaw.setPosition(rightClawOpenPos);
+            openRightClaw();
         }
         else {
-            rightClaw.setPosition(rightClawClosePos);
+            closeRightClaw();
         }
     }
 }

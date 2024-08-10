@@ -88,8 +88,7 @@ public class Duo extends LinearOpMode {
             currentGamepad2.copy(gamepad2);
 
 
-            telemetry.addData("leftClaw Pos", new BigDecimal((String.valueOf(deposit.leftClaw.getPosition()))).setScale(2, RoundingMode.HALF_UP).doubleValue());
-            telemetry.addData("rightClaw Pos", new BigDecimal((String.valueOf(deposit.rightClaw.getPosition()))).setScale(2, RoundingMode.HALF_UP).doubleValue());
+            telemetry.addData("wrist", deposit.getWristPos());
             telemetry.update();
         }
     }
