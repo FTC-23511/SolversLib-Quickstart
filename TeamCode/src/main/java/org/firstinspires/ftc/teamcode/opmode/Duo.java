@@ -60,14 +60,14 @@ public class Duo extends LinearOpMode {
 
             if (gamepad1.left_stick_button && buttonTimer.milliseconds() >= 200) {
                 runningActions.add(new ParallelAction(
-                        new InstantAction(deposit::closeLeftClaw),
+                        new InstantAction(deposit::toggleLeftClaw),
                         new InstantAction(buttonTimer::reset)
                 ));
             }
 
             if (gamepad1.right_stick_button && buttonTimer.milliseconds() >= 200) {
                 runningActions.add(new ParallelAction(
-                        new InstantAction(deposit::openLeftClaw),
+                        new InstantAction(deposit::toggleRightClaw),
                         new InstantAction(buttonTimer::reset)
                 ));
             }
