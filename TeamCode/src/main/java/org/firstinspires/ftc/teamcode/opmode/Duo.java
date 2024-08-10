@@ -4,10 +4,12 @@ import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.InstantAction;
+import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.SequentialAction;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.subsystem.Deposit;
 import org.firstinspires.ftc.teamcode.subsystem.risingEdge;
@@ -18,41 +20,41 @@ import java.util.List;
 
 @TeleOp
 public class Duo extends LinearOpMode {
-    private FtcDashboard dash = FtcDashboard.getInstance();
+    private final FtcDashboard dash = FtcDashboard.getInstance();
     private List<Action> runningActions = new ArrayList<>();
-
-    risingEdge risingEdgeDetector;
-
-    String buttons = "";
 
     @Override
     public void runOpMode() throws InterruptedException {
         Gamepad currentGamepad1 = new Gamepad();
         Gamepad currentGamepad2 = new Gamepad();
+
+        ElapsedTime buttonTimer = new ElapsedTime();
+
         Deposit deposit = new Deposit(hardwareMap);
 
         deposit.wrist.setPosition(1.0);
+
+        buttonTimer.reset();
 
         waitForStart();
         if (isStopRequested()) return;
 
         while (opModeIsActive()) {
             TelemetryPacket packet = new TelemetryPacket();
-            
-            if (gamepad1.left_bumper && checkButton(currentGamepad1, "left_bumper")) {
-                runningActions.add(new SequentialAction(
-                    new InstantAction(deposit::moveWristLeft)
-                ));
 
-                sleep(200);
+            if (gamepad1.left_bumper && buttonTimer.milliseconds() >= 200) {
+                runningActions.add(new ParallelAction(
+                    new InstantAction(deposit::moveWristLeft),
+                    new InstantAction(buttonTimer::reset)
+                ));
             }
 
-            if (gamepad1.right_bumper && checkButton(currentGamepad1, "right_bumper")) {
-                runningActions.add(new SequentialAction(
-                    new InstantAction(deposit::moveWristRight)
+            if (gamepad1.right_bumper && buttonTimer.milliseconds() >= 200) {
+                runningActions.add(new ParallelAction(
+                    new InstantAction(deposit::moveWristRight),
+                    new InstantAction(buttonTimer::reset)
                 ));
 
-                sleep(200);
             }
 
             // Updates running actions:
@@ -72,16 +74,6 @@ public class Duo extends LinearOpMode {
 
             telemetry.addData("wristPos", deposit.wrist.getPosition());
             telemetry.update();
-        }
-    }
-
-    public boolean checkButton(Gamepad gamepad, String button) {
-        try {
-            String buttons = String.valueOf(gamepad).substring(75).substring(1);
-            return !buttons.contains(button);
-        }
-        catch (Exception ignored){
-            return (true);
         }
     }
 }
