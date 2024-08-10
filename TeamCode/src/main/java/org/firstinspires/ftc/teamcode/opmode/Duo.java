@@ -39,16 +39,16 @@ public class Duo extends LinearOpMode {
 
             if (gamepad1.left_bumper) {
                 runningActions.add(new SequentialAction(
-                    new InstantAction(() -> deposit.wrist.setPosition(deposit.wrist.getPosition() + 0.18)
-                )));
+                    new InstantAction(deposit::moveWristLeft)
+                ));
 
                 sleep(200);
             }
 
             else if (gamepad1.right_bumper) {
                 runningActions.add(new SequentialAction(
-                    new InstantAction(() -> deposit.wrist.setPosition(deposit.wrist.getPosition() - 0.18)
-                )));
+                    new InstantAction(deposit::moveWristRight)
+                ));
 
                 sleep(200);
             }
