@@ -6,6 +6,7 @@ import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.InstantAction;
 import com.acmerobotics.roadrunner.SequentialAction;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -27,6 +28,9 @@ public class Duo extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
+        Gamepad currentGamepad1 = new Gamepad();
+        Gamepad previousGamepad1 = new Gamepad();
+
         Deposit deposit = new Deposit(hardwareMap);
 
         deposit.wrist.setPosition(1.0);
@@ -64,7 +68,12 @@ public class Duo extends LinearOpMode {
             runningActions = newActions;
 
             dash.sendTelemetryPacket(packet);
+
+            previousGamepad1.copy(currentGamepad1);
+            currentGamepad1.copy(gamepad1);
+
             telemetry.addData("wristPos", deposit.wrist.getPosition());
+            telemetry.addData("a", currentGamepad1.a && !previousGamepad1.a);
             telemetry.update();
         }
     }
