@@ -73,7 +73,7 @@ public class Duo extends LinearOpMode {
             currentGamepad1.copy(gamepad1);
 
             telemetry.addData("wristPos", deposit.wrist.getPosition());
-            telemetry.addData("a", currentGamepad1.a && !previousGamepad1.a);
+            telemetry.addData("triangle", currentGamepad1.triangle && !previousGamepad1.triangle);
             telemetry.update();
         }
     }
