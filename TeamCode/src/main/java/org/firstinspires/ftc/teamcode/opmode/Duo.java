@@ -60,7 +60,14 @@ public class Duo extends LinearOpMode {
 
             if (gamepad1.left_stick_button && buttonTimer.milliseconds() >= 200) {
                 runningActions.add(new ParallelAction(
-                        new InstantAction(deposit::moveWristRight),
+                        new InstantAction(deposit::closeLeftClaw),
+                        new InstantAction(buttonTimer::reset)
+                ));
+            }
+
+            if (gamepad1.right_stick_button && buttonTimer.milliseconds() >= 200) {
+                runningActions.add(new ParallelAction(
+                        new InstantAction(deposit::openLeftClaw),
                         new InstantAction(buttonTimer::reset)
                 ));
             }
@@ -81,8 +88,8 @@ public class Duo extends LinearOpMode {
             currentGamepad2.copy(gamepad2);
 
 
-            telemetry.addData("leftClaw Pos", new BigDecimal((String.valueOf(deposit.leftClaw.getPosition()))).setScale(2, RoundingMode.HALF_UP));
-            telemetry.addData("rightClaw Pos", new BigDecimal((String.valueOf(deposit.rightClaw.getPosition()))).setScale(2, RoundingMode.HALF_UP));
+            telemetry.addData("leftClaw Pos", new BigDecimal((String.valueOf(deposit.leftClaw.getPosition()))).setScale(2, RoundingMode.HALF_UP).doubleValue());
+            telemetry.addData("rightClaw Pos", new BigDecimal((String.valueOf(deposit.rightClaw.getPosition()))).setScale(2, RoundingMode.HALF_UP).doubleValue());
             telemetry.update();
         }
     }
