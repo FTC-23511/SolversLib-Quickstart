@@ -29,7 +29,6 @@ public class Duo extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         Gamepad currentGamepad1 = new Gamepad();
-        Gamepad previousGamepad1 = new Gamepad();
 
         Deposit deposit = new Deposit(hardwareMap);
 
@@ -41,7 +40,7 @@ public class Duo extends LinearOpMode {
         while (opModeIsActive()) {
             TelemetryPacket packet = new TelemetryPacket();
 
-            if (gamepad1.left_bumper) {
+            if (gamepad1.left_bumper && !currentGamepad1.left_bumper) {
                 runningActions.add(new SequentialAction(
                     new InstantAction(deposit::moveWristLeft)
                 ));
@@ -49,7 +48,7 @@ public class Duo extends LinearOpMode {
                 sleep(200);
             }
 
-            else if (gamepad1.right_bumper) {
+            else if (gamepad1.right_bumper && !currentGamepad1.right_bumper) {
                 runningActions.add(new SequentialAction(
                     new InstantAction(deposit::moveWristRight)
                 ));
@@ -69,11 +68,10 @@ public class Duo extends LinearOpMode {
 
             dash.sendTelemetryPacket(packet);
 
-            previousGamepad1.copy(currentGamepad1);
             currentGamepad1.copy(gamepad1);
 
             telemetry.addData("wristPos", deposit.wrist.getPosition());
-            telemetry.addData("triangle", currentGamepad1.triangle && !previousGamepad1.triangle);
+            telemetry.addData("buttons", currentGamepad1);
             telemetry.update();
         }
     }
