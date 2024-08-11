@@ -11,9 +11,7 @@ import org.firstinspires.ftc.teamcode.subsystem.Deposit;
 @Config
 @TeleOp
 public class dashWristTester extends LinearOpMode {
-
     public static double wristPos = 0.5;
-
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -27,7 +25,6 @@ public class dashWristTester extends LinearOpMode {
         if (isStopRequested()) return;
 
         while (opModeIsActive()) {
-
             deposit.wrist.setPosition(wristPos);
 
             telemetry.addData("wrist getPosition", deposit.wrist.getPosition());
