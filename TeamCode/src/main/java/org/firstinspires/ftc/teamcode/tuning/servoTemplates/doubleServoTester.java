@@ -53,6 +53,12 @@ public class doubleServoTester extends LinearOpMode {
                 subsystem.rightServo.setPosition(rightServoPos);
             }
 
+            leftServoPos = Math.max(leftServoPos, 0);
+            leftServoPos = Math.min(leftServoPos, 1);
+
+            rightServoPos = Math.max(rightServoPos, 0);
+            rightServoPos = Math.min(rightServoPos, 1);
+
             currentGamepad1.copy(gamepad1);
 
             telemetry.addData("leftServo getPosition", new BigDecimal((String.valueOf(subsystem.leftServo.getPosition()))).setScale(2, RoundingMode.HALF_UP).doubleValue());

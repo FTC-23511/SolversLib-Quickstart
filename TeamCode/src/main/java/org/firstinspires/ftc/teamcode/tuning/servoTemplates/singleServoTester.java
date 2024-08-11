@@ -45,6 +45,9 @@ public class singleServoTester extends LinearOpMode {
                 subsystem.servo.setPosition(servoPos);
             }
 
+            servoPos = Math.max(servoPos, 0);
+            servoPos = Math.min(servoPos, 1);
+
             currentGamepad1.copy(gamepad1);
 
             telemetry.addData("servo getPosition", new BigDecimal((String.valueOf(subsystem.servo.getPosition()))).setScale(2, RoundingMode.HALF_UP).doubleValue());
