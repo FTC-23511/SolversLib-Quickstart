@@ -14,10 +14,10 @@ public class Subsystem {
     private DcMotorEx arm;
 
     public Subsystem(HardwareMap hardwareMap) {
-//          servo = hardwareMap.get(Servo.class, "servo");
+          servo = hardwareMap.get(Servo.class, "servo");
 
-        leftServo = hardwareMap.get(Servo.class, "leftClaw");
-        rightServo = hardwareMap.get(Servo.class, "rightClaw");
+//        leftServo = hardwareMap.get(Servo.class, "leftServo");
+//        rightServo = hardwareMap.get(Servo.class, "rightServo");
 
 //        rightServo.setDirection(Servo.Direction.REVERSE);
 
