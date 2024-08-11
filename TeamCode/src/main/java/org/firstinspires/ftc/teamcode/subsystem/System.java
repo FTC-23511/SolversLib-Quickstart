@@ -2,7 +2,10 @@ package org.firstinspires.ftc.teamcode.subsystem;
 
 import com.qualcomm.robotcore.hardware.Gamepad;
 
-public class risingEdge {
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+
+public class System {
     // Example Usage for gamepad1 right bumper: risingEdge.checkButton(currentGamepad1, "right_bumper")
     public static boolean checkButton(Gamepad gamepad, String button) {
         try {
@@ -12,5 +15,9 @@ public class risingEdge {
         catch (Exception ignored) {
             return (true);
         }
+    }
+
+    public static double round(double number, int places) {
+        return new BigDecimal((String.valueOf(number))).setScale(places, RoundingMode.HALF_UP).doubleValue();
     }
 }

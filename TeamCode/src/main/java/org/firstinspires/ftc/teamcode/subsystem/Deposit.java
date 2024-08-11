@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.subsystem;
 
+import static org.firstinspires.ftc.teamcode.subsystem.System.round;
+
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
@@ -25,7 +27,6 @@ public class Deposit {
     private int wristSplice = 0;
 
     public Deposit(HardwareMap hardwareMap) {
-
         leftArm = hardwareMap.get(Servo.class, "leftArm");
         rightArm = hardwareMap.get(Servo.class, "rightArm");
 
@@ -39,18 +40,6 @@ public class Deposit {
 
         leftClaw.setPosition(leftClawOpenPos);
         rightClaw.setPosition(rightClawOpenPos);
-    }
-
-    public double getWristPos() {
-        return new BigDecimal((String.valueOf(wrist.getPosition()))).setScale(2, RoundingMode.HALF_UP).doubleValue();
-    }
-
-    public double getLeftClawPos() {
-        return new BigDecimal((String.valueOf(leftClaw.getPosition()))).setScale(2, RoundingMode.HALF_UP).doubleValue();
-    }
-
-    public double getRightClawPos() {
-        return new BigDecimal((String.valueOf(rightClaw.getPosition()))).setScale(2, RoundingMode.HALF_UP).doubleValue();
     }
 
     public void moveWristLeft() {
@@ -68,14 +57,14 @@ public class Deposit {
     }
 
     public void toggleLeftClaw() {
-        if (getWristPos() == 0.64 || getWristPos() == 0.46 || getWristPos() == 0.28) {
-            if (getRightClawPos() == rightClawClosePos){
+        if (round(wrist.getPosition(), 2) == 0.64 || (round(wrist.getPosition(), 2) == 0.46 || (round(wrist.getPosition(), 2) == 0.28))) {
+            if (round(rightClaw.getPosition(), 2) == rightClawClosePos) {
                 rightClaw.setPosition(rightClawOpenPos);
             } else {
                 rightClaw.setPosition(rightClawClosePos);
             }
         } else {
-            if (getLeftClawPos() == leftClawClosePos) {
+            if (round(leftClaw.getPosition(), 2) == leftClawClosePos) {
                 leftClaw.setPosition(leftClawOpenPos);
             } else {
                 leftClaw.setPosition(leftClawClosePos);
@@ -84,14 +73,14 @@ public class Deposit {
     }
 
     public void toggleRightClaw() {
-        if (getWristPos() == 0.64 || getWristPos() == 0.46 || getWristPos() == 0.28) {
-            if (getLeftClawPos() == leftClawClosePos) {
+        if (round(wrist.getPosition(), 2) == 0.64 || round(wrist.getPosition(), 2) == 0.46 || round(wrist.getPosition(), 2) == 0.28) {
+            if (round(leftClaw.getPosition(), 2) == leftClawClosePos) {
                 leftClaw.setPosition(leftClawOpenPos);
             } else {
                 leftClaw.setPosition(leftClawClosePos);
             }
         } else {
-            if (getRightClawPos() == rightClawClosePos) {
+            if (round(rightClaw.getPosition(), 2) == rightClawClosePos) {
                 rightClaw.setPosition(rightClawOpenPos);
             } else {
                 rightClaw.setPosition(rightClawClosePos);

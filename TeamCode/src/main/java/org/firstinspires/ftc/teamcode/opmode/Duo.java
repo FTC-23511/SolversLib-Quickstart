@@ -1,22 +1,21 @@
 package org.firstinspires.ftc.teamcode.opmode;
 
+import static org.firstinspires.ftc.teamcode.subsystem.System.checkButton;
+import static org.firstinspires.ftc.teamcode.subsystem.System.round;
+
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.InstantAction;
 import com.acmerobotics.roadrunner.ParallelAction;
-import com.acmerobotics.roadrunner.SequentialAction;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.subsystem.Deposit;
-import org.firstinspires.ftc.teamcode.subsystem.risingEdge;
 
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -56,12 +55,12 @@ public class Duo extends LinearOpMode {
                 ));
             }
 
-            if (gamepad1.left_stick_button && risingEdge.checkButton(currentGamepad1, "left stick button")) {
+            if (gamepad1.left_stick_button && checkButton(currentGamepad1, "left stick button")) {
                 runningActions.add(new ParallelAction(
                         new InstantAction(deposit::toggleLeftClaw),
                         new InstantAction(buttonTimer::reset)
                 ));
-            } else if (gamepad1.right_stick_button && risingEdge.checkButton(currentGamepad1, "right stick button")) {
+            } else if (gamepad1.right_stick_button && checkButton(currentGamepad1, "right stick button")) {
                 runningActions.add(new ParallelAction(
                         new InstantAction(deposit::toggleRightClaw),
                         new InstantAction(buttonTimer::reset)
@@ -83,9 +82,9 @@ public class Duo extends LinearOpMode {
             currentGamepad1.copy(gamepad1);
             currentGamepad2.copy(gamepad2);
 
-            telemetry.addData("wrist", deposit.getWristPos());
-            telemetry.addData("leftClaw", deposit.getLeftClawPos());
-            telemetry.addData("rightClaw", deposit.getRightClawPos());
+            telemetry.addData("wrist", round(deposit.wrist.getPosition(), 2));
+            telemetry.addData("leftClaw", round(deposit.leftClaw.getPosition(), 2));
+            telemetry.addData("rightClaw", round(deposit.rightClaw.getPosition(), 2));
             telemetry.update();
         }
     }

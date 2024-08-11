@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.tuning.servoTemplates;
+package org.firstinspires.ftc.teamcode.tuning.servo;
 
 import static org.firstinspires.ftc.teamcode.subsystem.System.checkButton;
 import static org.firstinspires.ftc.teamcode.subsystem.System.round;
@@ -10,19 +10,21 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.Gamepad;
 
-//@Config
-//@TeleOp
-public class singleServoTester extends LinearOpMode {
-    public static double servoPos = 0.5;
+import org.firstinspires.ftc.teamcode.subsystem.Deposit;
+
+@Config
+@TeleOp
+public class wristTester extends LinearOpMode {
+    public static double wristPos = 0.5;
     public static boolean USE_DASHBOARD = false;
 
     @Override
     public void runOpMode() throws InterruptedException {
-        Subsystem subsystem = new Subsystem(hardwareMap);
+        Deposit deposit = new Deposit(hardwareMap);
 
         Gamepad currentGamepad1 = new Gamepad();
 
-        subsystem.servo.setPosition(servoPos);
+        deposit.wrist.setPosition(wristPos);
 
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
@@ -31,23 +33,23 @@ public class singleServoTester extends LinearOpMode {
 
         while (opModeIsActive()) {
             if (USE_DASHBOARD){
-                subsystem.servo.setPosition(servoPos);
+                deposit.wrist.setPosition(wristPos);
             } else if (gamepad1.dpad_up  && checkButton(currentGamepad1, "dpad_up")) {
-                servoPos += 0.01;
+                wristPos += 0.01;
             } else if (gamepad1.dpad_down && checkButton(currentGamepad1, "dpad_down")) {
-                servoPos -= 0.01;
+                wristPos -= 0.01;
             }
 
             if (gamepad1.square || gamepad1.triangle || gamepad1.circle || gamepad1.cross) {
-                subsystem.servo.setPosition(servoPos);
+                deposit.wrist.setPosition(wristPos);
             }
 
-            servoPos = Math.max(Math.min(servoPos, 1), 0);
+            wristPos = Math.max(Math.min(wristPos, 1), 0);
 
             currentGamepad1.copy(gamepad1);
 
-            telemetry.addData("servo getPosition", round(subsystem.servo.getPosition(), 2));
-            telemetry.addData("servoPos",round(servoPos, 2));
+            telemetry.addData("wrist getPosition", round(deposit.wrist.getPosition(), 2));
+            telemetry.addData("wristPos", round(wristPos, 2));
             telemetry.update();
         }
     }

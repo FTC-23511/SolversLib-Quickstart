@@ -14,9 +14,9 @@ import org.firstinspires.ftc.teamcode.subsystem.Deposit;
 
 @Config
 @TeleOp
-public class armTester extends LinearOpMode {
-    public static double leftArmPos = 0.5;
-    public static double rightArmPos = 0.5;
+public class clawTester extends LinearOpMode {
+    public static double leftClawPos = 0.5;
+    public static double rightClawPos = 0.5;
     public static boolean USE_DASHBOARD = false;
 
     @Override
@@ -25,8 +25,8 @@ public class armTester extends LinearOpMode {
 
         Gamepad currentGamepad1 = new Gamepad();
 
-        deposit.leftArm.setPosition(leftArmPos);
-        deposit.rightArm.setPosition(rightArmPos);
+        deposit.leftClaw.setPosition(leftClawPos);
+        deposit.rightClaw.setPosition(rightClawPos);
 
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
@@ -35,34 +35,34 @@ public class armTester extends LinearOpMode {
 
         while (opModeIsActive()) {
             if (USE_DASHBOARD){
-                deposit.leftArm.setPosition(leftArmPos);
-                deposit.rightArm.setPosition(rightArmPos);
+                deposit.leftClaw.setPosition(leftClawPos);
+                deposit.rightClaw.setPosition(rightClawPos);
             } else if (gamepad1.dpad_up  && checkButton(currentGamepad1, "dpad_up")) {
-                leftArmPos += 0.01;
+                leftClawPos += 0.01;
             } else if (gamepad1.dpad_down && checkButton(currentGamepad1, "dpad_down")) {
-                leftArmPos -= 0.01;
+                leftClawPos -= 0.01;
             } else if (gamepad1.dpad_right  && checkButton(currentGamepad1, "dpad_right")) {
-                rightArmPos += 0.01;
+                rightClawPos += 0.01;
             } else if (gamepad1.dpad_left && checkButton(currentGamepad1, "dpad_left")) {
-                rightArmPos -= 0.01;
+                rightClawPos -= 0.01;
             }
 
             if (gamepad1.square || gamepad1.cross) {
-                deposit.leftArm.setPosition(leftArmPos);
+                deposit.leftClaw.setPosition(leftClawPos);
             } else if (gamepad1.triangle || gamepad1.circle) {
-                deposit.rightArm.setPosition(rightArmPos);
+                deposit.rightClaw.setPosition(rightClawPos);
             }
 
-            leftArmPos = Math.max(Math.min(leftArmPos, 1), 0);
+            leftClawPos = Math.max(Math.min(leftClawPos, 1), 0);
 
-            rightArmPos = Math.max(Math.min(rightArmPos, 1), 0);
+            rightClawPos = Math.max(Math.min(rightClawPos, 1), 0);
 
             currentGamepad1.copy(gamepad1);
 
-            telemetry.addData("leftArm getPosition", round(deposit.leftArm.getPosition(), 2));
-            telemetry.addData("rightArm getPosition", round(deposit.rightArm.getPosition(), 2));
-            telemetry.addData("leftArmPos", round(leftArmPos, 2));
-            telemetry.addData("rightArmPos", round(rightArmPos, 2));
+            telemetry.addData("leftClaw getPosition", round(deposit.leftClaw.getPosition(), 2));
+            telemetry.addData("rightClaw getPosition", round(deposit.rightClaw.getPosition(), 2));
+            telemetry.addData("leftClawPos", round(leftClawPos, 2));
+            telemetry.addData("rightClawPos", round(rightClawPos, 2));
             telemetry.update();
         }
     }
