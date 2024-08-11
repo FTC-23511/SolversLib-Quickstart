@@ -45,8 +45,7 @@ public class singleServoTester extends LinearOpMode {
                 subsystem.servo.setPosition(servoPos);
             }
 
-            servoPos = Math.max(servoPos, 0);
-            servoPos = Math.min(servoPos, 1);
+            servoPos = Math.max(Math.min(servoPos, 1), 0);
 
             currentGamepad1.copy(gamepad1);
 

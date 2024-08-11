@@ -53,11 +53,9 @@ public class doubleServoTester extends LinearOpMode {
                 subsystem.rightServo.setPosition(rightServoPos);
             }
 
-            leftServoPos = Math.max(leftServoPos, 0);
-            leftServoPos = Math.min(leftServoPos, 1);
+            leftServoPos = Math.max(Math.min(leftServoPos, 1), 0);
 
-            rightServoPos = Math.max(rightServoPos, 0);
-            rightServoPos = Math.min(rightServoPos, 1);
+            rightServoPos = Math.max(Math.min(rightServoPos, 1), 0);
 
             currentGamepad1.copy(gamepad1);
 
