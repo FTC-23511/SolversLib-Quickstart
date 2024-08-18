@@ -8,13 +8,13 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 
 public class Subsystem {
-    public Servo servo;
+    public Servo centerServo;
     public Servo leftServo;
     public Servo rightServo;
     private DcMotorEx arm;
 
     public Subsystem(HardwareMap hardwareMap) {
-          servo = hardwareMap.get(Servo.class, "servo");
+        centerServo = hardwareMap.get(Servo.class, "centerServo");
 
 //        leftServo = hardwareMap.get(Servo.class, "leftServo");
 //        rightServo = hardwareMap.get(Servo.class, "rightServo");

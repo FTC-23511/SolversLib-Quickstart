@@ -1,7 +1,12 @@
 package org.firstinspires.ftc.teamcode.tuning.caching;
+
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorController;
 import com.qualcomm.robotcore.hardware.configuration.typecontainers.MotorConfigurationType;
+
+// EXAMPLE:
+// public CachingDcMotor motorName;
+// motorName = new CachingDcMotor(hardwareMap.get(DcMotor.class, "motorName"));
 
 public class  CachingDcMotor extends CachingDcMotorSimple implements DcMotor {
     public final DcMotor dcMotor;

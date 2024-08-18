@@ -1,6 +1,5 @@
 package org.firstinspires.ftc.teamcode.tuning.caching;
 
-
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.MotorControlAlgorithm;
@@ -9,7 +8,10 @@ import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
-import org.firstinspires.ftc.teamcode.tuning.caching.CachingDcMotor;
+
+// EXAMPLE:
+// public CachingDcMotorEX motorName
+// motorName = new CachingDcMotorEX(hardwareMap.get(DcMotorEx.class, "motorName"));
 
 public class CachingDcMotorEX extends CachingDcMotor implements DcMotorEx{
     public final DcMotorEx motorEx;
