@@ -21,11 +21,11 @@ public class CachingExamples extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
-        motor1 = new CachingDcMotor(hardwareMap.get(DcMotor.class, "motorFrontLeft"));
-        motor2 = new CachingDcMotorEX(hardwareMap.get(DcMotorEx.class, "motorBackLeft"));
+        motor1 = new CachingDcMotor(hardwareMap.get(DcMotor.class, "motor1"));
+        motor2 = new CachingDcMotorEX(hardwareMap.get(DcMotorEx.class, "motor2"));
 
-        servo1 = new CachingServo(hardwareMap.get(CachingServo.class, "leftArm"));
-        servo2 = new CachingCRServo(hardwareMap.get(CachingCRServo.class, "leftArm"));
+        servo1 = new CachingServo(hardwareMap.get(CachingServo.class, "servo1"));
+        servo2 = new CachingCRServo(hardwareMap.get(CachingCRServo.class, "servo2"));
 
         if (isStopRequested()) return;
         while (opModeIsActive()) {
