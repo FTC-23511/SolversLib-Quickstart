@@ -3,13 +3,11 @@ package org.firstinspires.ftc.teamcode.subsystem;
 import static org.firstinspires.ftc.teamcode.hardware.Constants.*;
 import static org.firstinspires.ftc.teamcode.subsystem.System.round;
 
-import com.acmerobotics.dashboard.config.Config;
 import com.arcrobotics.ftclib.command.SubsystemBase;
 import com.arcrobotics.ftclib.controller.PIDFController;
 
 import org.firstinspires.ftc.teamcode.hardware.RobotHardware;
 
-@Config
 public class Deposit extends SubsystemBase {
     private final RobotHardware robot = RobotHardware.getInstance();
     private static final PIDFController slidePIDF = new PIDFController(0,0,0, 0);

@@ -2,13 +2,11 @@ package org.firstinspires.ftc.teamcode.subsystem;
 
 import static org.firstinspires.ftc.teamcode.hardware.Constants.*;
 
-import com.acmerobotics.dashboard.config.Config;
 import com.arcrobotics.ftclib.command.SubsystemBase;
 import com.arcrobotics.ftclib.controller.PIDFController;
 
 import org.firstinspires.ftc.teamcode.hardware.RobotHardware;
 
-@Config
 public class Intake extends SubsystemBase {
     private final RobotHardware robot = RobotHardware.getInstance();
     // 0 is fully retracted, 1-5 is how many pixels
