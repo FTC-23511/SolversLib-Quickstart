@@ -29,20 +29,10 @@ android {
     }
 }
 
-<<<<<<< Updated upstream
-=======
-<<<<<<< Updated upstream
-dependencies {
-    implementation project(':FtcRobotController')
-    annotationProcessor files('lib/OpModeAnnotationProcessor.jar')
-}
-=======
->>>>>>> Stashed changes
 repositories {
     maven {
         url = 'https://maven.brott.dev/'
     }
-<<<<<<< Updated upstream
 
     /* For Photon:
     maven {
@@ -50,11 +40,6 @@ repositories {
     }
 
     */
-=======
-    maven {
-        url = 'https://jitpack.io'
-    }
->>>>>>> Stashed changes
 }
 
 dependencies {
@@ -79,19 +64,7 @@ dependencies {
     implementation 'org.tensorflow:tensorflow-lite-task-vision:0.4.3'
     runtimeOnly 'org.tensorflow:tensorflow-lite:2.12.0'
 
-<<<<<<< Updated upstream
-    // implementation 'com.github.Eeshwar-Krishnan:PhotonFTC:v3.0.1-ALPHA'
-
     implementation 'org.ftclib.ftclib:vision:2.1.0'
     implementation 'org.ftclib.ftclib:core:2.1.1'
-
 }
-=======
-    implementation 'org.ftclib.ftclib:vision:2.1.0'
-    implementation 'org.ftclib.ftclib:core:2.1.1'
 
-    implementation 'com.github.Eeshwar-Krishnan:PhotonFTC:v3.0.0-ALPHA'
-
-}
->>>>>>> Stashed changes
->>>>>>> Stashed changes

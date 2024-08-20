@@ -1,7 +1,5 @@
 package org.firstinspires.ftc.teamcode.subsystem.vision;
 
-
-import com.acmerobotics.roadrunner.Vector2d;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;

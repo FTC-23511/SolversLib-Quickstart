@@ -21,6 +21,7 @@ apply plugin: 'com.android.application'
 
 android {
 
+    //noinspection GradleDependency
     compileSdkVersion 29
 
     signingConfigs {

@@ -1,5 +1,6 @@
-package org.firstinspires.ftc.teamcode.tuning.servoTemplates;
+package org.firstinspires.ftc.teamcode.tuning.servo.sample;
 
+import static org.firstinspires.ftc.teamcode.tuning.example.ExampleConstants.*;
 import static org.firstinspires.ftc.teamcode.subsystem.System.checkButton;
 import static org.firstinspires.ftc.teamcode.subsystem.System.round;
 
@@ -10,44 +11,44 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.Gamepad;
 
-import org.firstinspires.ftc.teamcode.tuning.servoTemplates.Subsystem;
+import org.firstinspires.ftc.teamcode.tuning.example.ExampleHardware;
 
 //@Config
 //@TeleOp
 public class singleServoTester extends OpMode {
-    public static double servoPos = 0.5;
     public static boolean USE_DASHBOARD = false;
-
-    Subsystem subsystem = new Subsystem(hardwareMap);
+    ExampleHardware exampleHardware = new ExampleHardware();
     Gamepad currentGamepad1 = new Gamepad();
-
     @Override
+
     public void init() {
+        exampleHardware.init(hardwareMap);
+
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
-        subsystem.centerServo.setPosition(servoPos);
+        exampleHardware.centerServo.setPosition(CENTER_SERVO_POS);
     }
 
     @Override
     public void loop() {
         if (USE_DASHBOARD){
-            subsystem.centerServo.setPosition(servoPos);
+            exampleHardware.centerServo.setPosition(CENTER_SERVO_POS);
         } else if (gamepad1.dpad_up  && checkButton(currentGamepad1, "dpad_up")) {
-            servoPos += 0.01;
+            CENTER_SERVO_POS += 0.01;
         } else if (gamepad1.dpad_down && checkButton(currentGamepad1, "dpad_down")) {
-            servoPos -= 0.01;
+            CENTER_SERVO_POS -= 0.01;
         }
 
         if (gamepad1.square || gamepad1.triangle || gamepad1.circle || gamepad1.cross) {
-            subsystem.centerServo.setPosition(servoPos);
+            exampleHardware.centerServo.setPosition(CENTER_SERVO_POS);
         }
 
-        servoPos = Math.max(Math.min(servoPos, 1), 0);
+        CENTER_SERVO_POS = Math.max(Math.min(CENTER_SERVO_POS, 1), 0);
 
         currentGamepad1.copy(gamepad1);
 
-        telemetry.addData("centerServo getPosition", round(subsystem.centerServo.getPosition(), 2));
-        telemetry.addData("centerServoPos",round(servoPos, 2));
+        telemetry.addData("centerServo getPosition", round(exampleHardware.centerServo.getPosition(), 2));
+        telemetry.addData("centerServoPos",round(CENTER_SERVO_POS, 2));
         telemetry.update();
     }
 }

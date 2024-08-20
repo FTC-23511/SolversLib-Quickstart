@@ -1,11 +1,6 @@
 package org.firstinspires.ftc.teamcode.subsystem;
 
-import static org.firstinspires.ftc.teamcode.hardware.Constants.INTAKE_POWER;
-import static org.firstinspires.ftc.teamcode.hardware.Constants.INTAKE_REVERSE_POWER;
-import static org.firstinspires.ftc.teamcode.hardware.Constants.MAX_EXTENDO_EXTENSION;
-import static org.firstinspires.ftc.teamcode.hardware.Constants.STACK_HEIGHTS;
-import static org.firstinspires.ftc.teamcode.hardware.Constants.TRAY_INTAKE;
-import static org.firstinspires.ftc.teamcode.hardware.Constants.TRAY_TRANSFER;
+import static org.firstinspires.ftc.teamcode.hardware.Constants.*;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.arcrobotics.ftclib.command.SubsystemBase;
