@@ -19,8 +19,8 @@ public class doubleServoTester extends OpMode {
     public static boolean USE_DASHBOARD = false;
     ExampleHardware exampleHardware = new ExampleHardware();
     Gamepad currentGamepad1 = new Gamepad();
-    @Override
 
+    @Override
     public void init() {
         exampleHardware.init(hardwareMap);
 

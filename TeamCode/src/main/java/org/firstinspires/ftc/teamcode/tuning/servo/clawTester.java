@@ -19,8 +19,8 @@ public class clawTester extends OpMode {
     public static boolean USE_DASHBOARD = false;
     RobotHardware robotHardware = new RobotHardware();
     Gamepad currentGamepad1 = new Gamepad();
-    @Override
 
+    @Override
     public void init() {
         robotHardware.init(hardwareMap);
 
