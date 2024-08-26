@@ -17,14 +17,8 @@ apply from: '../build.dependencies.gradle'
 
 android {
     namespace = 'org.firstinspires.ftc.teamcode'
-    androidResources {
-        noCompress 'tflite'
-    }
 
     packagingOptions {
-        jniLibs {
-            pickFirsts += ['**/*.so']
-        }
         jniLibs.useLegacyPackaging true
     }
 }
@@ -33,13 +27,9 @@ repositories {
     maven {
         url = 'https://maven.brott.dev/'
     }
-
-    /* For Photon:
     maven {
         url = 'https://jitpack.io'
     }
-
-    */
 }
 
 dependencies {
@@ -66,5 +56,5 @@ dependencies {
 
     implementation 'org.ftclib.ftclib:vision:2.1.0'
     implementation 'org.ftclib.ftclib:core:2.1.1'
+    implementation 'com.github.Eeshwar-Krishnan:PhotonFTC:v3.0.1-ALPHA'
 }
-

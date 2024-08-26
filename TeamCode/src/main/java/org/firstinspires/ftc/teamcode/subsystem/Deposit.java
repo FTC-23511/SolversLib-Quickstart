@@ -1,22 +1,30 @@
 package org.firstinspires.ftc.teamcode.subsystem;
 
-import static org.firstinspires.ftc.teamcode.hardware.Constants.*;
-import static org.firstinspires.ftc.teamcode.subsystem.System.round;
+import static org.firstinspires.ftc.teamcode.hardware.Globals.ARM_BACKDROP_POS;
+import static org.firstinspires.ftc.teamcode.hardware.Globals.ARM_TRANSFER_POS;
+import static org.firstinspires.ftc.teamcode.hardware.Globals.LEFT_CLAW_CLOSE_POS;
+import static org.firstinspires.ftc.teamcode.hardware.Globals.LEFT_CLAW_OPEN_POS;
+import static org.firstinspires.ftc.teamcode.hardware.Globals.MAX_SLIDES_EXTENSION;
+import static org.firstinspires.ftc.teamcode.hardware.Globals.RIGHT_CLAW_CLOSE_POS;
+import static org.firstinspires.ftc.teamcode.hardware.Globals.RIGHT_CLAW_OPEN_POS;
+import static org.firstinspires.ftc.teamcode.hardware.Globals.WRIST_BACKDROP_POSITIONS;
+import static org.firstinspires.ftc.teamcode.hardware.Globals.WRIST_TRANSFER_POS;
 
 import com.arcrobotics.ftclib.command.SubsystemBase;
 import com.arcrobotics.ftclib.controller.PIDFController;
 
-import org.firstinspires.ftc.teamcode.hardware.RobotHardware;
+import org.firstinspires.ftc.teamcode.hardware.Robot;
 
 public class Deposit extends SubsystemBase {
-    private final RobotHardware robot = RobotHardware.getInstance();
+    private final Robot robot = Robot.getInstance();
     private static final PIDFController slidePIDF = new PIDFController(0,0,0, 0);
     public int pixelHeight = 1;
     public int wristIndex = 4;
+    public boolean wristTransfer;
     private double target;
 
     // Between transfer and backdrop position
-    public boolean armTransfer = true;
+    public boolean armTransfer;
 
     // Between retracted and extended
     public boolean slidesRetracted;
@@ -28,9 +36,22 @@ public class Deposit extends SubsystemBase {
     // Default will reset deposit to transfer position (unpowered claw servos depending on auto vs tele-op)
     public void init() {
         slidePIDF.setTolerance(10, 10);
+
         setArmTransfer(true);
+        armTransfer = true;
+
         setWristTransfer();
+        wristTransfer = true;
+
         setSlideTarget(0);
+    }
+
+    public void initAuto() {
+        setClaw(false, false);
+    }
+
+    public void initTeleOp() {
+        setClaw(true, true);
     }
 
     public void setSlideTarget(double target) {
@@ -53,47 +74,37 @@ public class Deposit extends SubsystemBase {
     }
 
     public void setArmTransfer(boolean armTransfer) {
-        if (armTransfer != this.armTransfer) {
-            robot.rightArm.setPosition(armTransfer ? ARM_TRANSFER_POS : ARM_BACKDROP_POS);
-            robot.leftArm.setPosition(armTransfer ? -ARM_TRANSFER_POS + 1 : -ARM_BACKDROP_POS + 1);
-            this.armTransfer = armTransfer;
-        }
+        robot.rightArm.setPosition(armTransfer ? ARM_TRANSFER_POS : ARM_BACKDROP_POS);
+        robot.leftArm.setPosition(armTransfer ? -ARM_TRANSFER_POS + 1 : -ARM_BACKDROP_POS + 1);
+        this.armTransfer = armTransfer;
     }
 
     // Be careful with these 2 methods to make sure armState is at the relevant state/position
     public void updateWrist(int position) {
-        if (position != wristIndex) {
-            wristIndex = position;
-            robot.wrist.setPosition(WRIST_BACKDROP_POSITIONS[wristIndex]);
-        }
+        wristIndex = position;
+        robot.wrist.setPosition(WRIST_BACKDROP_POSITIONS[wristIndex]);
+        wristTransfer = false;
     }
 
     public void setWristTransfer() {
-        if (robot.wrist.getPosition() != round(WRIST_TRANSFER_POS, 2)) {
-            robot.wrist.setPosition(WRIST_TRANSFER_POS);
-        }
+        robot.wrist.setPosition(WRIST_TRANSFER_POS);
+        wristTransfer = true;
     }
 
     public void setClaw(boolean leftClawOpen, boolean rightClawOpen) {
-        if (leftClawOpen != this.leftClawOpen) {
-            if (leftClawOpen) {
-                robot.leftClaw.setPosition(LEFT_CLAW_OPEN_POS);
-            } else {
-                robot.leftClaw.setPosition(LEFT_CLAW_CLOSE_POS);
-            }
-
-            this.leftClawOpen = leftClawOpen;
+        if (leftClawOpen) {
+            robot.leftClaw.setPosition(LEFT_CLAW_OPEN_POS);
+        } else {
+            robot.leftClaw.setPosition(LEFT_CLAW_CLOSE_POS);
         }
+        this.leftClawOpen = leftClawOpen;
 
-        if (rightClawOpen != this.rightClawOpen) {
-            if (leftClawOpen) {
-                robot.rightClaw.setPosition(RIGHT_CLAW_OPEN_POS);
-            } else {
-                robot.rightClaw.setPosition(RIGHT_CLAW_CLOSE_POS);
-            }
-
-            this.rightClawOpen = rightClawOpen;
+        if (rightClawOpen) {
+            robot.rightClaw.setPosition(RIGHT_CLAW_OPEN_POS);
+        } else {
+            robot.rightClaw.setPosition(RIGHT_CLAW_CLOSE_POS);
         }
+        this.rightClawOpen = rightClawOpen;
     }
 
     @Override

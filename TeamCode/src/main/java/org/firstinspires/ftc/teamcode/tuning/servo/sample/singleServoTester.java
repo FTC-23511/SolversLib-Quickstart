@@ -1,14 +1,12 @@
 package org.firstinspires.ftc.teamcode.tuning.servo.sample;
 
-import static org.firstinspires.ftc.teamcode.tuning.example.ExampleConstants.*;
 import static org.firstinspires.ftc.teamcode.subsystem.System.checkButton;
 import static org.firstinspires.ftc.teamcode.subsystem.System.round;
+import static org.firstinspires.ftc.teamcode.tuning.example.ExampleConstants.CENTER_SERVO_POS;
 
 import com.acmerobotics.dashboard.FtcDashboard;
-import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.Gamepad;
 
 import org.firstinspires.ftc.teamcode.tuning.example.ExampleHardware;

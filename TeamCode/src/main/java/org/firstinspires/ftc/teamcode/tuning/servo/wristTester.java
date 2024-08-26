@@ -1,8 +1,9 @@
 package org.firstinspires.ftc.teamcode.tuning.servo;
 
-import static org.firstinspires.ftc.teamcode.tuning.example.ExampleConstants.*;
 import static org.firstinspires.ftc.teamcode.subsystem.System.checkButton;
 import static org.firstinspires.ftc.teamcode.subsystem.System.round;
+import static org.firstinspires.ftc.teamcode.tuning.example.ExampleConstants.LEFT_SERVO_POS;
+import static org.firstinspires.ftc.teamcode.tuning.example.ExampleConstants.RIGHT_SERVO_POS;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;

@@ -1,10 +1,8 @@
 package org.firstinspires.ftc.teamcode.tuning.caching;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.Servo;
 
 /* IMPORTANT:
    - This file is purely for reference on how to implement Caching in motors and servos

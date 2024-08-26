@@ -11,5 +11,6 @@ public class transferReady extends ParallelCommandGroup {
                 new depositTransferReady(deposit),
                 new intakeTransferReady(intake)
         );
+        addRequirements(deposit, intake);
     }
 }

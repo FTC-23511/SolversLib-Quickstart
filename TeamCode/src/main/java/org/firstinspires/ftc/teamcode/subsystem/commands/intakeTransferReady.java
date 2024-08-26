@@ -16,6 +16,8 @@ public class intakeTransferReady extends CommandBase {
     public void initialize() {
         intake.setExtendoTarget(0);
         intake.setIntake(Intake.IntakeState.OFF);
+        intake.setTray(false);
+        intake.setPitchingIntake(0);
     }
 
     @Override
