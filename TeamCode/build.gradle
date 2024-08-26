@@ -36,7 +36,7 @@ dependencies {
     implementation project(':FtcRobotController')
     annotationProcessor files('lib/OpModeAnnotationProcessor.jar')
 
-// FIRST Stuff (Updated by official FTCRobotController)
+    // FIRST Stuff (Updated by official FTCRobotController)
     implementation 'org.firstinspires.ftc:Inspection:9.2.0'
     implementation 'org.firstinspires.ftc:Blocks:9.2.0'
     implementation 'org.firstinspires.ftc:Tfod:9.2.0'
