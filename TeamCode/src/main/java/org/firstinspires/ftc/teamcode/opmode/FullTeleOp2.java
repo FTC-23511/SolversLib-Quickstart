@@ -1,9 +1,6 @@
 package org.firstinspires.ftc.teamcode.opmode;
 
-import static org.firstinspires.ftc.teamcode.hardware.Globals.STRAFE_MULTIPLIER;
-import static org.firstinspires.ftc.teamcode.hardware.Globals.TURN_MULTIPLIER;
-import static org.firstinspires.ftc.teamcode.hardware.Globals.driveMode;
-import static org.firstinspires.ftc.teamcode.hardware.Globals.opModeType;
+import static org.firstinspires.ftc.teamcode.hardware.Globals.*;
 
 import com.arcrobotics.ftclib.command.CommandOpMode;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
@@ -75,7 +72,9 @@ public class FullTeleOp2 extends CommandOpMode {
         robot.swerveDrivetrain.update(chassisSpeeds);
 
         // Driver buttons
-        
+        if (driver.gamepad.dpad_left){
+
+        }
 
         // Operator buttons
 

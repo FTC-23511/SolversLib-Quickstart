@@ -1,6 +1,6 @@
 package org.firstinspires.ftc.teamcode.subsystem.commands;
 
-import static org.firstinspires.ftc.teamcode.hardware.Globals.BACKDROP_INCREMENTAL_HEIGHT;
+import static org.firstinspires.ftc.teamcode.hardware.Globals.*;
 
 import com.arcrobotics.ftclib.command.CommandBase;
 

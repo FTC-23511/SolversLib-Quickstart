@@ -1,14 +1,6 @@
 package org.firstinspires.ftc.teamcode.subsystem;
 
-import static org.firstinspires.ftc.teamcode.hardware.Globals.ARM_BACKDROP_POS;
-import static org.firstinspires.ftc.teamcode.hardware.Globals.ARM_TRANSFER_POS;
-import static org.firstinspires.ftc.teamcode.hardware.Globals.LEFT_CLAW_CLOSE_POS;
-import static org.firstinspires.ftc.teamcode.hardware.Globals.LEFT_CLAW_OPEN_POS;
-import static org.firstinspires.ftc.teamcode.hardware.Globals.MAX_SLIDES_EXTENSION;
-import static org.firstinspires.ftc.teamcode.hardware.Globals.RIGHT_CLAW_CLOSE_POS;
-import static org.firstinspires.ftc.teamcode.hardware.Globals.RIGHT_CLAW_OPEN_POS;
-import static org.firstinspires.ftc.teamcode.hardware.Globals.WRIST_BACKDROP_POSITIONS;
-import static org.firstinspires.ftc.teamcode.hardware.Globals.WRIST_TRANSFER_POS;
+import static org.firstinspires.ftc.teamcode.hardware.Globals.*;
 
 import com.arcrobotics.ftclib.command.SubsystemBase;
 import com.arcrobotics.ftclib.controller.PIDFController;
