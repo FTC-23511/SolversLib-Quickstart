@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.hardware;
 
 import com.arcrobotics.ftclib.hardware.motors.Motor;
 import com.arcrobotics.ftclib.hardware.motors.MotorEx;
+import com.outoftheboxrobotics.photoncore.Photon;
 import com.outoftheboxrobotics.photoncore.hardware.motor.PhotonDcMotor;
 import com.outoftheboxrobotics.photoncore.hardware.servo.PhotonCRServo;
 import com.outoftheboxrobotics.photoncore.hardware.servo.PhotonServo;
@@ -31,6 +32,7 @@ import java.util.List;
 
 import javax.annotation.concurrent.GuardedBy;
 
+@Photon
 public class Robot {
     public SolversMotor liftLeft;
     public SolversMotor liftRight;
@@ -77,11 +79,11 @@ public class Robot {
 
     public LynxModule ControlHub;
 
-    public Deposit deposit = new Deposit();
-    public Intake intake = new Intake();
+    public Deposit deposit;
+    public Intake intake;
     public CoaxialSwerveDrivetrain swerveDrivetrain;
 
-    private static Robot instance = null;
+    private static Robot instance = new Robot();
     public boolean enabled;
 
     public static Robot getInstance() {
@@ -94,7 +96,7 @@ public class Robot {
 
     // Make sure to run this after instance has been enabled/made
     public void init(HardwareMap hardwareMap) {
-        liftLeft = new SolversMotor(hardwareMap.get(PhotonDcMotor.class, "liftLeft"), 0.01);
+        liftLeft = new SolversMotor((hardwareMap.get(PhotonDcMotor.class, "liftLeft")), 0.01);
         liftLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         liftRight = new SolversMotor(hardwareMap.get(PhotonDcMotor.class, "liftRight"), 0.01);
         liftRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -145,8 +147,7 @@ public class Robot {
         backLeftEncoder = hardwareMap.get(AnalogInput.class, "backLeftEncoder");
         backRightEncoder = hardwareMap.get(AnalogInput.class, "backRightEncoder");
 
-        liftEncoder = new MotorEx(hardwareMap, "leftLift").encoder;
-        liftEncoder.setDirection(Motor.Direction.REVERSE);
+        liftEncoder = new MotorEx(hardwareMap, "liftRight").encoder;
         extensionEncoder = new MotorEx(hardwareMap, "extension").encoder;
 
         parallelPod = new MotorEx(hardwareMap, "backRightMotor").encoder;
@@ -177,9 +178,6 @@ public class Robot {
 
         imuOffset = Globals.STARTING_HEADING;
 
-        deposit.init();
-        intake.init();
-
         swerveDrivetrain = new CoaxialSwerveDrivetrain(
             new CoaxialSwerveModule[] {
                 new CoaxialSwerveModule(frontLeftMotor, frontLeftServo, frontLeftEncoder, 0),
@@ -188,6 +186,12 @@ public class Robot {
                 new CoaxialSwerveModule(backRightMotor, backRightServo, backRightEncoder, 0)
             }
         );
+
+        intake = new Intake();
+        deposit = new Deposit();
+
+        deposit.init();
+        intake.init();
 
         // Add any OpMode specific initializations here
         if (Globals.opModeType == Globals.OpModeType.AUTO) {

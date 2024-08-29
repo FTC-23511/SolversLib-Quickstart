@@ -35,8 +35,8 @@ public class ExampleHardware {
 //
 //        leftServo.setDirection(Servo.Direction.REVERSE);
 //        centerServo = hardwareMap.get(Servo.class, "centerServo");
-//        intakeMotor = (PhotonDcMotor) hardwareMap.dcMotor.get("intake");
-//        intakeMotor = new SolversMotor(hardwareMap.get(PhotonDcMotor.class, "intake"), 0.01);
+        intakeMotor = (SolversMotor) hardwareMap.dcMotor.get("intake");
+        intakeMotor = new SolversMotor((PhotonDcMotor) hardwareMap.get(DcMotor.class, "intake"), 0.01);
 //        intakeMotor.setDirection(DcMotorSimple.Direction.REVERSE);
 
     }

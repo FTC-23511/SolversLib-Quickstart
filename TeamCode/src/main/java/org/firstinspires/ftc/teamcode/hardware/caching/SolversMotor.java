@@ -32,6 +32,10 @@ public class SolversMotor {
         }
     }
 
+    public int getPosition() {
+        return(motor.getCurrentPosition());
+    }
+
     public void setDirection(DcMotorSimple.Direction direction) {
         this.motor.setDirection(direction);
     }
