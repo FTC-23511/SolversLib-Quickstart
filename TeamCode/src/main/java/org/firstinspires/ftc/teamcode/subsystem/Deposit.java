@@ -55,7 +55,7 @@ public class Deposit extends SubsystemBase {
     public void autoSetSlidePower() {
         double power = slidePIDF.calculate(robot.liftEncoder.getPosition(), target);
         robot.liftRight.setPower(power);
-        robot.liftLeft.setPower(-power);
+        robot.liftLeft.setPower(power);
 
         // Slides are only retracted once stopped and at a target of 0
         slidesRetracted = ((target <= 0)) && (this.reached());

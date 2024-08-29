@@ -1,48 +1,53 @@
 package org.firstinspires.ftc.teamcode.tuning.PIDF;
 
 import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.arcrobotics.ftclib.controller.PIDFController;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Gamepad;
 
-//@Config
-//@TeleOp
+import org.firstinspires.ftc.teamcode.hardware.Robot;
+
+@Config
+@TeleOp
 public class PID_test extends OpMode {
-    DcMotorEx pivot;
+
+    public static int target = 0;
 
     public static double p = 0.0, i = 0, d = 0.000;
     public static double f = 0.00;
-    public static int target = 0;
 
-    Gamepad lastGamepad1 = new Gamepad();
-    PIDFController controller;
+    private static final PIDFController slidePIDF = new PIDFController(p,i,d, f);
+
+    private final Robot robot = Robot.getInstance();
 
     @Override
     public void init() {
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
-        controller = new PIDFController(p, i, d, f);
-
-        pivot = hardwareMap.get(DcMotorEx.class, "pivot");
+        robot.init(hardwareMap);
+        slidePIDF.setTolerance(10, 10);
     }
 
     @Override
     public void loop() {
-        int armPos = pivot.getCurrentPosition();
+        slidePIDF.setP(p);
+        slidePIDF.setI(i);
+        slidePIDF.setD(d);
+        slidePIDF.setD(f);
 
-        if (gamepad1.a && !lastGamepad1.a) {
-            target = 500;
-        } else if (gamepad1.b && !lastGamepad1.b) {
-            target = 700;
-        } else if (gamepad1.x && !lastGamepad1.x) {
-            target = 1500;
-        }
+        slidePIDF.setSetPoint(target);
 
-        pivot.setPower(controller.calculate(armPos, target));
+        double power = slidePIDF.calculate(robot.liftEncoder.getPosition(), target);
+        robot.liftRight.setPower(power);
+        robot.liftLeft.setPower(power);
 
-        telemetry.addData("position", armPos);
+        telemetry.addData("position", robot.liftEncoder.getPosition());
         telemetry.addData("target", target);
         telemetry.update();
+
+        robot.ControlHub.clearBulkCache();
     }
 }

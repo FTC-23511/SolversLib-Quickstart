@@ -126,18 +126,30 @@ public class FullTeleOp extends CommandOpMode {
             robot.deposit.setSlideTarget(0);
         }
 
-        if ((driver.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) > 0) && buttonTimer.milliseconds() >= 200) {
+        if ((operator.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) > 0) && buttonTimer.milliseconds() >= 200) {
             robot.deposit.wristIndex -= 1;
             robot.deposit.moveWrist();
             buttonTimer.reset();
-        } else if ((driver.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) > 0) && buttonTimer.milliseconds() >= 200) {
+        } else if ((operator.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) > 0) && buttonTimer.milliseconds() >= 200) {
             robot.deposit.wristIndex += 1;
             robot.deposit.moveWrist();
             buttonTimer.reset();
         }
 
         if (operator.wasJustPressed(GamepadKeys.Button.LEFT_BUMPER)) {
-            //robot.deposit.teleOpSetClaw();
+            robot.deposit.teleOpSetClaw(!robot.deposit.leftClawOpen, robot.deposit.leftClawOpen);
+        } else if (operator.wasJustPressed(GamepadKeys.Button.LEFT_BUMPER)) {
+            robot.deposit.teleOpSetClaw(!robot.deposit.leftClawOpen, robot.deposit.leftClawOpen);
+        }
+
+        if (operator.wasJustPressed(GamepadKeys.Button.LEFT_STICK_BUTTON)) {
+            robot.deposit.teleOpSetClaw(true, true  );
+        } else if (operator.wasJustPressed(GamepadKeys.Button.RIGHT_STICK_BUTTON)) {
+            robot.deposit.teleOpSetClaw(false, false);
+        }
+
+        if (operator.wasJustPressed(GamepadKeys.Button.DPAD_UP) && robot.deposit.pixelHeight < 10) {
+            robot.deposit.pixelHeight += 1;
         }
 
         // DO NOT REMOVE! Removing this will return stale data since bulk caching is on Manual mode

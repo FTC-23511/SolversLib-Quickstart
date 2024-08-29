@@ -117,6 +117,7 @@ public class Robot {
         backRightMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         backRightMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
+        liftLeft.setDirection(DcMotorSimple.Direction.REVERSE);
         intakeMotor.setDirection(DcMotorSimple.Direction.REVERSE);
 
         leftClaw = new SolversServo(hardwareMap.get(PhotonServo.class, "leftClaw"), 0.0);
