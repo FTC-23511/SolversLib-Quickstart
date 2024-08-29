@@ -47,13 +47,15 @@ public class Globals {
     public static double ARM_TRANSFER_POS = 0.05;
     public static double ARM_BACKDROP_POS = 0.82;
 
-    public static double WRIST_TRANSFER_POS = 0;
+    public static double WRIST_TRANSFER_POS = 0.30;
+
     // 4th item or 3rd with 0-index is always the default (middle horizontal)
-    public static double[] WRIST_BACKDROP_POSITIONS = {1, 0.82, 0.64, 0.46, 0.28, 0.08};
-    public static double LEFT_CLAW_OPEN_POS = 0.07;
-    public static double LEFT_CLAW_CLOSE_POS = 0.18;
-    public static double RIGHT_CLAW_OPEN_POS = 0.59;
-    public static double RIGHT_CLAW_CLOSE_POS = 0.74;
+    // Increments of 60 degrees (0.12 = 60 degrees), 0.02 IS BASELINE (flipped normal)
+    public static double[] WRIST_BACKDROP_POSITIONS = {0.02, 0.20, 0.39, 0.575, 0.76, 0.945};
+    public static double LEFT_CLAW_OPEN_POS = 0.41;
+    public static double LEFT_CLAW_CLOSE_POS = 0.62;
+    public static double RIGHT_CLAW_OPEN_POS = 0.62;
+    public static double RIGHT_CLAW_CLOSE_POS = 0.41;
 
     // Slides
     // Encoder ticks for max extension for extendo

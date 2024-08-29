@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.hardware.caching;
 
+import static org.firstinspires.ftc.teamcode.subsystem.System.round;
+
 import com.outoftheboxrobotics.photoncore.hardware.servo.PhotonServo;
 import com.qualcomm.robotcore.hardware.Servo;
 
@@ -35,6 +37,6 @@ public class SolversServo {
     }
 
     public double getPosition() {
-        return lastPos;
+        return round(lastPos, 2);
     }
 }

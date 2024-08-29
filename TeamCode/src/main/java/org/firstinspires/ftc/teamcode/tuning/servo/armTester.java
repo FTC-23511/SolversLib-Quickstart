@@ -35,7 +35,7 @@ public class armTester extends OpMode {
     public void loop() {
         if (USE_DASHBOARD){
             exampleHardware.leftServo.setPosition(LEFT_SERVO_POS);
-            exampleHardware.rightServo.setPosition(LEFT_SERVO_POS);
+            exampleHardware.rightServo.setPosition(RIGHT_SERVO_POS);
         } else if (gamepad1.dpad_up  && checkButton(currentGamepad1, "dpad_up")) {
             LEFT_SERVO_POS += 0.01;
         } else if (gamepad1.dpad_down && checkButton(currentGamepad1, "dpad_down")) {

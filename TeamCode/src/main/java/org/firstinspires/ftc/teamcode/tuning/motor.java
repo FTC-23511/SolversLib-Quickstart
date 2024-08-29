@@ -20,7 +20,7 @@ public class motor extends OpMode {
     public static boolean USE_DASHBOARD = false;
     ExampleHardware exampleHardware = new ExampleHardware();
     Gamepad currentGamepad1 = new Gamepad();
-
+    double CENTER_MOTOR_POWER = 0;
     @Override
     public void init() {
         exampleHardware.init(hardwareMap);

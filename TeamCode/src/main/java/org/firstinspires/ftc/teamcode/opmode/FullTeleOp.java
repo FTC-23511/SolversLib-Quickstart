@@ -21,7 +21,9 @@ import org.firstinspires.ftc.teamcode.subsystem.commands.*;
 public class FullTeleOp extends CommandOpMode {
     public GamepadEx driver;
     public GamepadEx operator;
+
     public ElapsedTime timer = null;
+    public ElapsedTime buttonTimer = null;
 
     private final Robot robot = Robot.getInstance();
 
@@ -51,8 +53,10 @@ public class FullTeleOp extends CommandOpMode {
         // TO-DO: Need to check if this is needed or if it is safe to put in initialize()
         if (timer == null) {
             timer = new ElapsedTime();
+            buttonTimer = new ElapsedTime();
             // DO NOT REMOVE! Gets the IMU readings on separate thread
             robot.startIMUThread(this);
+
         }
         // Endgame/hang rumble after 110 seconds to notify driver to hang
         else if ((timer.seconds() > 110) && (!endgame)) {
@@ -85,11 +89,11 @@ public class FullTeleOp extends CommandOpMode {
             robot.intake.setExtendoTarget(0);
         }
 
-        if ((driver.wasJustPressed(GamepadKeys.Button.X))) {
+        if (driver.wasJustPressed(GamepadKeys.Button.X)) {
             new transfer(robot.deposit, robot.intake);
         }
 
-        if ((driver.isDown(GamepadKeys.Button.Y))) {
+        if (driver.isDown(GamepadKeys.Button.Y)) {
             robot.intake.setIntake(Intake.IntakeState.REVERSED_ON);
         } else if (driver.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) > 0) {
             robot.intake.setIntake(Intake.IntakeState.ON);
@@ -97,25 +101,44 @@ public class FullTeleOp extends CommandOpMode {
             robot.intake.setIntake(Intake.IntakeState.OFF);
         }
 
-        if ((driver.wasJustPressed(GamepadKeys.Button.RIGHT_BUMPER)) && robot.intake.stackHeight < 5) {
+        if (driver.wasJustPressed(GamepadKeys.Button.RIGHT_BUMPER) && robot.intake.stackHeight < 5) {
             robot.intake.stackHeight += 1;
-        } else if ((driver.wasJustPressed(GamepadKeys.Button.LEFT_BUMPER))  && robot.intake.stackHeight > 0) {
+        } else if (driver.wasJustPressed(GamepadKeys.Button.LEFT_BUMPER)  && robot.intake.stackHeight > 0) {
             robot.intake.stackHeight -= 1;
         }
 
-        if ((driver.wasJustPressed(GamepadKeys.Button.RIGHT_STICK_BUTTON))) {
+        if (driver.wasJustPressed(GamepadKeys.Button.RIGHT_STICK_BUTTON)) {
             robot.imu.resetYaw();
         }
 
-        if ((driver.isDown(GamepadKeys.Button.DPAD_UP))) {
+        if (driver.isDown(GamepadKeys.Button.DPAD_UP)) {
             robot.intake.setExtendoTarget(robot.extensionEncoder.getPosition() + 10); // Needs to be tested
-        } else if ((driver.isDown(GamepadKeys.Button.DPAD_DOWN))) {
+        } else if (driver.isDown(GamepadKeys.Button.DPAD_DOWN)) {
             robot.intake.setExtendoTarget(robot.extensionEncoder.getPosition() - 10); // Needs to be tested
         }
 
         robot.intake.setPitchingIntake(robot.intake.stackHeight);
 
         // Operator buttons
+        if (operator.wasJustPressed(GamepadKeys.Button.A)) {
+            new depositBackdrop(robot.deposit);
+        } else if (operator.wasJustPressed(GamepadKeys.Button.B)) {
+            robot.deposit.setSlideTarget(0);
+        }
+
+        if ((driver.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) > 0) && buttonTimer.milliseconds() >= 200) {
+            robot.deposit.wristIndex -= 1;
+            robot.deposit.moveWrist();
+            buttonTimer.reset();
+        } else if ((driver.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) > 0) && buttonTimer.milliseconds() >= 200) {
+            robot.deposit.wristIndex += 1;
+            robot.deposit.moveWrist();
+            buttonTimer.reset();
+        }
+
+        if (operator.wasJustPressed(GamepadKeys.Button.LEFT_BUMPER)) {
+            //robot.deposit.teleOpSetClaw();
+        }
 
         // DO NOT REMOVE! Removing this will return stale data since bulk caching is on Manual mode
         // Also only clearing the control hub to decrease loop times

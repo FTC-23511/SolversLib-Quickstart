@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.subsystem;
 
 import static org.firstinspires.ftc.teamcode.hardware.Globals.*;
+import static org.firstinspires.ftc.teamcode.tuning.example.ExampleConstants.CENTER_SERVO_POS;
 
 import com.arcrobotics.ftclib.command.SubsystemBase;
 import com.arcrobotics.ftclib.controller.PIDFController;
@@ -11,7 +12,7 @@ public class Deposit extends SubsystemBase {
     private final Robot robot = Robot.getInstance();
     private static final PIDFController slidePIDF = new PIDFController(0,0,0, 0);
     public int pixelHeight = 1;
-    public int wristIndex = 4;
+    public int wristIndex = 3;
     public boolean wristTransfer;
     private double target;
 
@@ -72,10 +73,17 @@ public class Deposit extends SubsystemBase {
     }
 
     // Be careful with these 2 methods to make sure armState is at the relevant state/position
-    public void updateWrist(int position) {
-        wristIndex = position;
-        robot.wrist.setPosition(WRIST_BACKDROP_POSITIONS[wristIndex]);
+    public void moveWrist() {
+        robot.wrist.setPosition(WRIST_BACKDROP_POSITIONS[Math.max(Math.min(wristIndex, 5), 0)]);
         wristTransfer = false;
+    }
+
+    public void teleOpSetClaw(boolean leftClawOpen, boolean rightClawOpen) {
+        if (wristIndex == 0 || wristIndex == 1 || wristIndex == 5) { // Right Claw is now Left Claw
+            setClaw(rightClawOpen, leftClawOpen);
+        } else {
+            setClaw(leftClawOpen, rightClawOpen);
+        }
     }
 
     public void setWristTransfer() {

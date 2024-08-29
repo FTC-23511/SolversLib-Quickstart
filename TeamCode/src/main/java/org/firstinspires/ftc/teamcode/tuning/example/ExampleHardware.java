@@ -30,8 +30,8 @@ public class ExampleHardware {
 
     // Make sure to run this after instance has been enabled/made
     public void init(HardwareMap hardwareMap) {
-//        leftServo = hardwareMap.get(Servo.class, "leftServo");
-//        rightServo = hardwareMap.get(Servo.class, "rightServo");
+        leftServo = hardwareMap.get(Servo.class, "leftServo");
+        rightServo = hardwareMap.get(Servo.class, "rightServo");
 //
 //        leftServo.setDirection(Servo.Direction.REVERSE);
 //        centerServo = hardwareMap.get(Servo.class, "centerServo");
