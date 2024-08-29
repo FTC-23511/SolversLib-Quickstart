@@ -13,6 +13,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.hardware.Globals;
 import org.firstinspires.ftc.teamcode.hardware.Robot;
+import org.firstinspires.ftc.teamcode.subsystem.Intake;
 import org.firstinspires.ftc.teamcode.subsystem.commands.*;
 
 @Photon
@@ -80,8 +81,7 @@ public class FullTeleOp extends CommandOpMode {
         // Driver buttons
         if (driver.wasJustPressed(GamepadKeys.Button.A)) {
             robot.intake.setExtendoTarget(MAX_EXTENDO_EXTENSION);
-        }
-        else if ((driver.wasJustPressed(GamepadKeys.Button.B))) {
+        } else if ((driver.wasJustPressed(GamepadKeys.Button.B))) {
             robot.intake.setExtendoTarget(0);
         }
 
@@ -89,11 +89,31 @@ public class FullTeleOp extends CommandOpMode {
             new transfer(robot.deposit, robot.intake);
         }
 
-        if ((driver.wasJustPressed(GamepadKeys.Button.Y))) {
-            new transfer(robot.deposit, robot.intake);
+        if ((driver.isDown(GamepadKeys.Button.Y))) {
+            robot.intake.setIntake(Intake.IntakeState.REVERSED_ON);
+        } else if (driver.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) > 0) {
+            robot.intake.setIntake(Intake.IntakeState.ON);
+        } else {
+            robot.intake.setIntake(Intake.IntakeState.OFF);
         }
 
+        if ((driver.wasJustPressed(GamepadKeys.Button.RIGHT_BUMPER)) && robot.intake.stackHeight < 5) {
+            robot.intake.stackHeight += 1;
+        } else if ((driver.wasJustPressed(GamepadKeys.Button.LEFT_BUMPER))  && robot.intake.stackHeight > 0) {
+            robot.intake.stackHeight -= 1;
+        }
 
+        if ((driver.wasJustPressed(GamepadKeys.Button.RIGHT_STICK_BUTTON))) {
+            robot.imu.resetYaw();
+        }
+
+        if ((driver.isDown(GamepadKeys.Button.DPAD_UP))) {
+            robot.intake.setExtendoTarget(robot.extensionEncoder.getPosition() + 10); // Needs to be tested
+        } else if ((driver.isDown(GamepadKeys.Button.DPAD_DOWN))) {
+            robot.intake.setExtendoTarget(robot.extensionEncoder.getPosition() - 10); // Needs to be tested
+        }
+
+        robot.intake.setPitchingIntake(robot.intake.stackHeight);
 
         // Operator buttons
 
