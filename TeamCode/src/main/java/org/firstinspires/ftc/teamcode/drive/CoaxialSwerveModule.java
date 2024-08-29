@@ -4,12 +4,14 @@ import static org.firstinspires.ftc.robotcore.external.navigation.AngleUnit.norm
 
 import com.acmerobotics.dashboard.config.Config;
 import com.arcrobotics.ftclib.controller.PIDFController;
+import com.outoftheboxrobotics.photoncore.Photon;
 import com.qualcomm.robotcore.hardware.AnalogInput;
 import com.qualcomm.robotcore.hardware.PwmControl;
 
 import org.firstinspires.ftc.teamcode.hardware.caching.SolversCRServo;
 import org.firstinspires.ftc.teamcode.hardware.caching.SolversMotor;
 
+@Photon
 @Config
 public class CoaxialSwerveModule {
     private final SolversMotor motor;

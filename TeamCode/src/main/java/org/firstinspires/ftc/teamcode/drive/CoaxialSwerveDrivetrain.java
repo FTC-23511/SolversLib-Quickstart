@@ -8,7 +8,9 @@ import com.arcrobotics.ftclib.geometry.Translation2d;
 import com.arcrobotics.ftclib.kinematics.wpilibkinematics.ChassisSpeeds;
 import com.arcrobotics.ftclib.kinematics.wpilibkinematics.SwerveDriveKinematics;
 import com.arcrobotics.ftclib.kinematics.wpilibkinematics.SwerveModuleState;
+import com.outoftheboxrobotics.photoncore.Photon;
 
+@Photon
 public class CoaxialSwerveDrivetrain extends SubsystemBase {
     private final CoaxialSwerveModule fL;
     private final CoaxialSwerveModule fR;

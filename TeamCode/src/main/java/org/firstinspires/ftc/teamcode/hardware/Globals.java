@@ -66,8 +66,8 @@ public class Globals {
     public static double BACKDROP_INCREMENTAL_HEIGHT = 0; // Encoder ticks
 
     // Intake
-    public static double INTAKE_POWER = 0.5; // Motor power
-    public static double INTAKE_REVERSE_POWER = 0.5; // Motor power
+    public static double INTAKE_POWER = 0.4; // Motor power
+    public static double INTAKE_REVERSE_POWER = -0.25; // Motor power
     // Highest to lowest (lowest being normal intake flat on ground) servo positions for pitching intake
     // 0th index is fully retracted/all the way up
     public static double[] STACK_HEIGHTS = {0.5, 0.17, 0.13, 0.09, 0.05, 0.02};

@@ -117,6 +117,8 @@ public class Robot {
         backRightMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         backRightMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
+        intakeMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+
         leftClaw = new SolversServo(hardwareMap.get(PhotonServo.class, "leftClaw"), 0.0);
         rightClaw = new SolversServo(hardwareMap.get(PhotonServo.class, "rightClaw"), 0.0);
         leftArm = new SolversServo(hardwareMap.get(PhotonServo.class, "leftArm"), 0.0);
@@ -146,7 +148,7 @@ public class Robot {
         liftEncoder.setDirection(Motor.Direction.REVERSE);
         extensionEncoder = new MotorEx(hardwareMap, "extension").encoder;
 
-        parallelPod = new MotorEx(hardwareMap, "frontLeftMotor").encoder;
+        parallelPod = new MotorEx(hardwareMap, "backRightMotor").encoder;
         parallelPod.setDirection(Motor.Direction.REVERSE);
         perpendicularPod = new MotorEx(hardwareMap, "backLeftMotor").encoder;
         perpendicularPod.setDirection(Motor.Direction.REVERSE);
