@@ -1,5 +1,8 @@
 package org.firstinspires.ftc.teamcode.tuning.example;
 
+import com.acmerobotics.dashboard.config.Config;
+
+@Config
 public class ExampleConstants {
 
     public static double LEFT_SERVO_POS = 0.50;

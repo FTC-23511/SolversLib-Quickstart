@@ -1,6 +1,10 @@
 package org.firstinspires.ftc.teamcode.hardware.caching;
 
 import com.outoftheboxrobotics.photoncore.hardware.servo.PhotonServo;
+import com.qualcomm.robotcore.hardware.Servo;
+
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 
 /**
  * A wrapper servo class that provides caching to avoid unnecessary setPosition() calls.
@@ -17,6 +21,10 @@ public class SolversServo {
     public SolversServo(PhotonServo servo, double posThreshold) {
         this.servo = servo;
         this.posThreshold = posThreshold;
+    }
+
+    public void setDirection(Servo.Direction direction) {
+        servo.setDirection(direction);
     }
 
     public void setPosition(double pos) {

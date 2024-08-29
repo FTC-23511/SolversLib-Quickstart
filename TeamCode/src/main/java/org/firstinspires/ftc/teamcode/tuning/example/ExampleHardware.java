@@ -23,7 +23,9 @@ public class ExampleHardware {
     public void init(HardwareMap hardwareMap) {
         leftServo = hardwareMap.get(Servo.class, "leftServo");
         rightServo = hardwareMap.get(Servo.class, "rightServo");
-        centerServo = hardwareMap.get(Servo.class, "centerServo");
+
+        leftServo.setDirection(Servo.Direction.REVERSE);
+//        centerServo = hardwareMap.get(Servo.class, "centerServo");
 
     }
 }

@@ -3,7 +3,6 @@ package org.firstinspires.ftc.teamcode.hardware;
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
-@Autonomous
 @Config
 public class Globals {
     public enum OpModeType {
@@ -45,8 +44,8 @@ public class Globals {
     // e.g. for ARM_TRANSFER_POS, it should correspond with the real position of the rightArm servo at the transfer
 
     // Deposit
-    public static double ARM_TRANSFER_POS = 0;
-    public static double ARM_BACKDROP_POS = 0;
+    public static double ARM_TRANSFER_POS = 0.05;
+    public static double ARM_BACKDROP_POS = 0.82;
 
     public static double WRIST_TRANSFER_POS = 0;
     // 4th item or 3rd with 0-index is always the default (middle horizontal)
@@ -70,10 +69,10 @@ public class Globals {
     public static double INTAKE_POWER = 0.5; // Motor power
     public static double INTAKE_REVERSE_POWER = 0.5; // Motor power
     // Highest to lowest (lowest being normal intake flat on ground) servo positions for pitching intake
-    // 0th index is fully retracted
-    public static double[] STACK_HEIGHTS = {};
-    public static double TRAY_INTAKE = 0;
-    public static double TRAY_TRANSFER = 0.55;
+    // 0th index is fully retracted/all the way up
+    public static double[] STACK_HEIGHTS = {0.5, 0.17, 0.13, 0.09, 0.05, 0.02};
+    public static double TRAY_INTAKE = 0.44;
+    public static double TRAY_TRANSFER = 1.0;
     // Time for distance sensor to detect a pixel until it knows it has 2 pixels in milliseconds
     public static double TWO_PIXEL_TIME = 1000;
     // Distance for distance sensor to return as lower than for a pixel to be detected in tray in centimeters

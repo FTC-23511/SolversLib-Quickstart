@@ -15,6 +15,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.configuration.LynxConstants;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
@@ -133,6 +134,8 @@ public class Robot {
         frontRightServo.setDirection(DcMotorSimple.Direction.REVERSE);
         backLeftServo.setDirection(DcMotorSimple.Direction.REVERSE);
         backRightServo.setDirection(DcMotorSimple.Direction.REVERSE);
+
+        leftArm.setDirection(Servo.Direction.REVERSE);
 
         frontLeftEncoder = hardwareMap.get(AnalogInput.class, "frontLeftEncoder");
         frontRightEncoder = hardwareMap.get(AnalogInput.class, "frontRightEncoder");

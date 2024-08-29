@@ -7,12 +7,14 @@ import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.arcrobotics.ftclib.geometry.Rotation2d;
 import com.arcrobotics.ftclib.kinematics.wpilibkinematics.ChassisSpeeds;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.hardware.Globals;
 import org.firstinspires.ftc.teamcode.hardware.Robot;
+import org.firstinspires.ftc.teamcode.subsystem.commands.*;
 
-
+@TeleOp
 public class FullTeleOp2 extends CommandOpMode {
     public GamepadEx driver;
     public GamepadEx operator;
@@ -32,7 +34,9 @@ public class FullTeleOp2 extends CommandOpMode {
 
         robot.init(hardwareMap);
 
+        // Initialize subsystems
         register(robot.deposit, robot.intake, robot.swerveDrivetrain);
+        robot.deposit.initTeleOp();
 
         driver = new GamepadEx(gamepad1);
         operator = new GamepadEx(gamepad2);
@@ -72,19 +76,28 @@ public class FullTeleOp2 extends CommandOpMode {
         robot.swerveDrivetrain.update(chassisSpeeds);
 
         // Driver buttons
-        if (driver.gamepad.dpad_left){
-
+        if (driver.wasJustPressed(GamepadKeys.Button.A)) {
+            robot.intake.setExtendoTarget(MAX_EXTENDO_EXTENSION);
+        }
+        else if ((driver.wasJustPressed(GamepadKeys.Button.B))) {
+            robot.intake.setExtendoTarget(0);
         }
 
-        // Operator buttons
+        if ((driver.wasJustPressed(GamepadKeys.Button.X))) {
+            new transfer(robot.deposit, robot.intake);
+        }
 
+        if ((driver.wasJustPressed(GamepadKeys.Button.Y))) {
+            new transfer(robot.deposit, robot.intake);
+        }
+
+
+
+        // Operator buttons
 
         // DO NOT REMOVE! Removing this will return stale data since bulk caching is on Manual mode
         // Also only clearing the control hub to decrease loop times
         // This means if we start reading both hubs (which we aren't) we need to clear both
         robot.ControlHub.clearBulkCache();
     }
-
-
-
 }
