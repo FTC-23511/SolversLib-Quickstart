@@ -7,6 +7,8 @@ import com.arcrobotics.ftclib.controller.PIDFController;
 import com.outoftheboxrobotics.photoncore.Photon;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.util.ElapsedTime;
+import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.teamcode.hardware.Robot;
 
@@ -16,25 +18,26 @@ import org.firstinspires.ftc.teamcode.hardware.Robot;
 public class PID_test extends OpMode {
     public static int setPoint = 0;
 
-    // 1. F, 0.0005
-    // 2. P, 0.0065
-    // 2. D, 0.0003
+    // D, 0.0004
+    // F, 0.0005
+    // I, 0
+    // maxPowerConstant, 0.6
+    // P, 0.01
     /*
+
     1. Make sure all values are 0!
     2.
-
-
-
-
-
      */
 
     public static double p = 0.00, i = 0, d = 0.000;
     public static double f = 0.000;
+    public static double maxPowerConstant = 1;
 
     private static final PIDFController slidePIDF = new PIDFController(p,i,d, f);
 
     private final Robot robot = Robot.getInstance();
+
+    public ElapsedTime timer = new ElapsedTime();
 
     @Override
     public void init() {
@@ -50,6 +53,8 @@ public class PID_test extends OpMode {
 
     @Override
     public void loop() {
+        timer.reset();
+
         int liftPos = robot.liftEncoder.getPosition();
 
         slidePIDF.setP(p);
@@ -58,15 +63,20 @@ public class PID_test extends OpMode {
         slidePIDF.setF(f);
 
         slidePIDF.setSetPoint(setPoint);
+        double maxPower = slidePIDF.getF() + maxPowerConstant;
 
-        double power = slidePIDF.calculate(liftPos, setPoint);
+        double power = Range.clip(slidePIDF.calculate(liftPos, setPoint), -maxPower, maxPower);
         robot.liftRight.setPower(power);
         robot.liftLeft.setPower(power);
 
+        robot.ControlHub.clearBulkCache();
+
         telemetry.addData("encoder position", liftPos);
         telemetry.addData("setPoint", setPoint);
-        telemetry.update();
+        telemetry.addData("motorPower", power);
+        telemetry.addData("max power", maxPower);
+        telemetry.addData("loop time (ms)", timer.milliseconds());
 
-        robot.ControlHub.clearBulkCache();
+        telemetry.update();
     }
 }
