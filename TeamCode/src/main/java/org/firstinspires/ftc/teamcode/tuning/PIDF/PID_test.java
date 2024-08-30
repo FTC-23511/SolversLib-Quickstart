@@ -18,22 +18,20 @@ import org.firstinspires.ftc.teamcode.hardware.Robot;
 public class PID_test extends OpMode {
     public static int setPoint = 0;
 
-    // 1. F, 0.0005
-    // 2. P, 0.0065
-    // 2. D, 0.0003
+    // D, 0.0004
+    // F, 0.0005
+    // I, 0
+    // maxPowerConstant, 0.6
+    // P, 0.01
     /*
+
     1. Make sure all values are 0!
     2.
-
-
-
-
-
      */
 
     public static double p = 0.00, i = 0, d = 0.000;
     public static double f = 0.000;
-    public static double maxPower = 1;
+    public static double maxPowerConstant = 1;
 
     private static final PIDFController slidePIDF = new PIDFController(p,i,d, f);
 
@@ -65,6 +63,7 @@ public class PID_test extends OpMode {
         slidePIDF.setF(f);
 
         slidePIDF.setSetPoint(setPoint);
+        double maxPower = slidePIDF.getF() + maxPowerConstant;
 
         double power = Range.clip(slidePIDF.calculate(liftPos, setPoint), -maxPower, maxPower);
         robot.liftRight.setPower(power);
@@ -75,6 +74,7 @@ public class PID_test extends OpMode {
         telemetry.addData("encoder position", liftPos);
         telemetry.addData("setPoint", setPoint);
         telemetry.addData("motorPower", power);
+        telemetry.addData("max power", maxPower);
         telemetry.addData("loop time (ms)", timer.milliseconds());
 
         telemetry.update();
