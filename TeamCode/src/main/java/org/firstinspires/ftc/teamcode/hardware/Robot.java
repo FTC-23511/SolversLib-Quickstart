@@ -96,19 +96,19 @@ public class Robot {
 
     // Make sure to run this after instance has been enabled/made
     public void init(HardwareMap hardwareMap) {
-        liftLeft = new SolversMotor((hardwareMap.get(PhotonDcMotor.class, "liftLeft")), 0.01);
+        liftLeft = new SolversMotor("liftLeft", 0.01);
         liftLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        liftRight = new SolversMotor(hardwareMap.get(PhotonDcMotor.class, "liftRight"), 0.01);
+        liftRight = new SolversMotor("liftRight", 0.01);
         liftRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        extension = new SolversMotor(hardwareMap.get(PhotonDcMotor.class, "extension"), 0.01);
+        extension = new SolversMotor("extension", 0.01);
         extension.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         extension.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        intakeMotor = new SolversMotor(hardwareMap.get(PhotonDcMotor.class, "intakeMotor"), 0.01);
+        intakeMotor = new SolversMotor("intakeMotor", 0.01);
 
-        frontLeftMotor = new SolversMotor(hardwareMap.get(PhotonDcMotor.class, "frontLeftMotor"), 0.01);
-        frontRightMotor = new SolversMotor(hardwareMap.get(PhotonDcMotor.class, "frontRightMotor"), 0.01);
-        backLeftMotor = new SolversMotor(hardwareMap.get(PhotonDcMotor.class, "backLeftMotor"), 0.01);
-        backRightMotor = new SolversMotor(hardwareMap.get(PhotonDcMotor.class, "backRightMotor"), 0.01);
+        frontLeftMotor = new SolversMotor("frontLeftMotor", 0.01);
+        frontRightMotor = new SolversMotor("frontRightMotor", 0.01);
+        backLeftMotor = new SolversMotor("backLeftMotor", 0.01);
+        backRightMotor = new SolversMotor("backRightMotor", 0.01);
 
         frontLeftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         frontLeftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -122,18 +122,18 @@ public class Robot {
         liftLeft.setDirection(DcMotorSimple.Direction.REVERSE);
         intakeMotor.setDirection(DcMotorSimple.Direction.REVERSE);
 
-        leftClaw = new SolversServo(hardwareMap.get(PhotonServo.class, "leftClaw"), 0.0);
-        rightClaw = new SolversServo(hardwareMap.get(PhotonServo.class, "rightClaw"), 0.0);
-        leftArm = new SolversServo(hardwareMap.get(PhotonServo.class, "leftArm"), 0.0);
-        rightArm = new SolversServo(hardwareMap.get(PhotonServo.class, "rightArm"), 0.0);
-        wrist = new SolversServo(hardwareMap.get(PhotonServo.class, "wrist"), 0.0);
-        tray = new SolversServo(hardwareMap.get(PhotonServo.class, "tray"), 0.0);
-        pitchingIntake = new SolversServo(hardwareMap.get(PhotonServo.class, "pitchingIntake"), 0.0);
+        leftClaw = new SolversServo("leftClaw", 0.0);
+        rightClaw = new SolversServo("rightClaw", 0.0);
+        leftArm = new SolversServo("leftArm", 0.0);
+        rightArm = new SolversServo("rightArm", 0.0);
+        wrist = new SolversServo("wrist", 0.0);
+        tray = new SolversServo("tray", 0.0);
+        pitchingIntake = new SolversServo("pitchingIntake", 0.0);
 
-        frontLeftServo = new SolversCRServo(hardwareMap.get(PhotonCRServo.class, "frontLeftServo"), 0.01);
-        frontRightServo = new SolversCRServo(hardwareMap.get(PhotonCRServo.class, "frontRightServo"), 0.01);
-        backLeftServo = new SolversCRServo(hardwareMap.get(PhotonCRServo.class, "backLeftServo"), 0.01);
-        backRightServo = new SolversCRServo(hardwareMap.get(PhotonCRServo.class, "backRightServo"), 0.01);
+        frontLeftServo = new SolversCRServo("frontLeftServo", 0.01);
+        frontRightServo = new SolversCRServo("frontRightServo", 0.01);
+        backLeftServo = new SolversCRServo("backLeftServo", 0.01);
+        backRightServo = new SolversCRServo("backRightServo", 0.01);
 
         frontLeftServo.setDirection(DcMotorSimple.Direction.REVERSE);
         frontRightServo.setDirection(DcMotorSimple.Direction.REVERSE);
