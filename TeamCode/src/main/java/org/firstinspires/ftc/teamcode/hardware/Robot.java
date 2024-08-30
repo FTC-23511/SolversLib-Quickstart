@@ -11,6 +11,7 @@ import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.AnalogInput;
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
@@ -22,6 +23,7 @@ import com.qualcomm.robotcore.hardware.configuration.LynxConstants;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.drive.CoaxialSwerveDrivetrain;
 import org.firstinspires.ftc.teamcode.drive.CoaxialSwerveModule;
+import org.firstinspires.ftc.teamcode.hardware.caching.SolversAxonServo;
 import org.firstinspires.ftc.teamcode.hardware.caching.SolversCRServo;
 import org.firstinspires.ftc.teamcode.hardware.caching.SolversMotor;
 import org.firstinspires.ftc.teamcode.hardware.caching.SolversServo;
@@ -52,10 +54,10 @@ public class Robot {
     public SolversServo tray;
     public SolversServo pitchingIntake;
 
-    public SolversCRServo frontLeftServo;
-    public SolversCRServo frontRightServo;
-    public SolversCRServo backLeftServo;
-    public SolversCRServo backRightServo;
+    public SolversAxonServo frontLeftServo;
+    public SolversAxonServo frontRightServo;
+    public SolversAxonServo backLeftServo;
+    public SolversAxonServo backRightServo;
 
     public AnalogInput frontLeftEncoder;
     public AnalogInput frontRightEncoder;
@@ -130,10 +132,10 @@ public class Robot {
         tray = new SolversServo("tray", 0.0);
         pitchingIntake = new SolversServo("pitchingIntake", 0.0);
 
-        frontLeftServo = new SolversCRServo("frontLeftServo", 0.01);
-        frontRightServo = new SolversCRServo("frontRightServo", 0.01);
-        backLeftServo = new SolversCRServo("backLeftServo", 0.01);
-        backRightServo = new SolversCRServo("backRightServo", 0.01);
+        frontLeftServo = new SolversAxonServo("frontLeftServo", 0.01);
+        frontRightServo = new SolversAxonServo("frontRightServo", 0.01);
+        backLeftServo = new SolversAxonServo("backLeftServo", 0.01);
+        backRightServo = new SolversAxonServo("backRightServo", 0.01);
 
         frontLeftServo.setDirection(DcMotorSimple.Direction.REVERSE);
         frontRightServo.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -142,10 +144,11 @@ public class Robot {
 
         leftArm.setDirection(Servo.Direction.REVERSE);
 
-        frontLeftEncoder = hardwareMap.get(AnalogInput.class, "frontLeftEncoder");
-        frontRightEncoder = hardwareMap.get(AnalogInput.class, "frontRightEncoder");
-        backLeftEncoder = hardwareMap.get(AnalogInput.class, "backLeftEncoder");
-        backRightEncoder = hardwareMap.get(AnalogInput.class, "backRightEncoder");
+        frontLeftServo.setServoEncoder( "frontLeftEncoder");
+        frontLeftServo.setServoEncoder( "frontRightEncoder");
+        frontLeftServo.setServoEncoder( "backLeftEncoder");
+        frontLeftServo.setServoEncoder( "backRightEncoder");
+
 
         liftEncoder = new MotorEx(hardwareMap, "liftRight").encoder;
         extensionEncoder = new MotorEx(hardwareMap, "extension").encoder;

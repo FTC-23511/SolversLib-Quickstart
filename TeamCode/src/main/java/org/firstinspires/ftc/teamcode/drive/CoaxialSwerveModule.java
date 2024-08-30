@@ -8,6 +8,7 @@ import com.outoftheboxrobotics.photoncore.Photon;
 import com.qualcomm.robotcore.hardware.AnalogInput;
 import com.qualcomm.robotcore.hardware.PwmControl;
 
+import org.firstinspires.ftc.teamcode.hardware.caching.SolversAxonServo;
 import org.firstinspires.ftc.teamcode.hardware.caching.SolversCRServo;
 import org.firstinspires.ftc.teamcode.hardware.caching.SolversMotor;
 
@@ -15,7 +16,7 @@ import org.firstinspires.ftc.teamcode.hardware.caching.SolversMotor;
 @Config
 public class CoaxialSwerveModule {
     private final SolversMotor motor;
-    private final SolversCRServo servo;
+    private final SolversAxonServo servo;
     private final AnalogInput absoluteEncoder;
 
     // Pod rotation PIDF
@@ -35,7 +36,7 @@ public class CoaxialSwerveModule {
 
     private final PIDFController podPIDF;
 
-    public CoaxialSwerveModule(SolversMotor motor, SolversCRServo servo, AnalogInput absoluteEncoder, double encoderOffset) {
+    public CoaxialSwerveModule(SolversMotor motor, SolversAxonServo servo, AnalogInput absoluteEncoder, double encoderOffset) {
         this.motor = motor;
         this.servo = servo;
         this.absoluteEncoder = absoluteEncoder;
