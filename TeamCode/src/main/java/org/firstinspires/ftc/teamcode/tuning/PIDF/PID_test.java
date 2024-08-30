@@ -14,11 +14,11 @@ import org.firstinspires.ftc.teamcode.hardware.Robot;
 @Config
 @TeleOp
 public class PID_test extends OpMode {
-    public static int target = 0;
+    public static int setPoint = 0;
 
     // 1. F, 0.0005
-    // 2. P, 0.0045
-    // 2. P, 0.0001
+    // 2. P, 0.0065
+    // 2. D, 0.0003
     /*
     1. Make sure all values are 0!
     2.
@@ -28,6 +28,7 @@ public class PID_test extends OpMode {
 
 
      */
+
     public static double p = 0.00, i = 0, d = 0.000;
     public static double f = 0.000;
 
@@ -41,6 +42,9 @@ public class PID_test extends OpMode {
         robot.init(hardwareMap);
         slidePIDF.setTolerance(10, 10);
 
+        telemetry.addData("encoder position", robot.liftEncoder.getPosition());
+        telemetry.addData("setPoint", setPoint);
+
         robot.liftEncoder.reset();
     }
 
@@ -53,14 +57,14 @@ public class PID_test extends OpMode {
         slidePIDF.setD(d);
         slidePIDF.setF(f);
 
-        slidePIDF.setSetPoint(target);
+        slidePIDF.setSetPoint(setPoint);
 
-        double power = slidePIDF.calculate(liftPos, target);
+        double power = slidePIDF.calculate(liftPos, setPoint);
         robot.liftRight.setPower(power);
         robot.liftLeft.setPower(power);
 
         telemetry.addData("encoder position", liftPos);
-        telemetry.addData("target", target);
+        telemetry.addData("setPoint", setPoint);
         telemetry.update();
 
         robot.ControlHub.clearBulkCache();
