@@ -19,10 +19,10 @@ public class PID_test extends OpMode {
     public static int setPoint = 0;
 
     // D, 0.0004
-    // F, 0.0005
+    // F, 0.0006
     // I, 0
-    // maxPowerConstant, 0.6
-    // P, 0.01
+    // maxPowerConstant, 0.5
+    // P, 0.011
     /*
 
     1. Make sure all values are 0!
@@ -63,7 +63,7 @@ public class PID_test extends OpMode {
         slidePIDF.setF(f);
 
         slidePIDF.setSetPoint(setPoint);
-        double maxPower = slidePIDF.getF() + maxPowerConstant;
+        double maxPower = (f * liftPos) + maxPowerConstant;
 
         double power = Range.clip(slidePIDF.calculate(liftPos, setPoint), -maxPower, maxPower);
         robot.liftRight.setPower(power);
