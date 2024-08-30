@@ -6,7 +6,6 @@ import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.AnalogInput;
-import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
@@ -19,7 +18,6 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.drive.CoaxialSwerveDrivetrain;
 import org.firstinspires.ftc.teamcode.drive.CoaxialSwerveModule;
 import org.firstinspires.ftc.teamcode.hardware.caching.SolversAxonServo;
-import org.firstinspires.ftc.teamcode.hardware.caching.SolversCRServo;
 import org.firstinspires.ftc.teamcode.hardware.caching.SolversMotor;
 import org.firstinspires.ftc.teamcode.hardware.caching.SolversMotorEncoder;
 import org.firstinspires.ftc.teamcode.hardware.caching.SolversServo;
@@ -179,10 +177,10 @@ public class Robot {
 
         swerveDrivetrain = new CoaxialSwerveDrivetrain(
             new CoaxialSwerveModule[] {
-                new CoaxialSwerveModule(frontLeftMotor, frontLeftServo, frontLeftEncoder, 0),
-                new CoaxialSwerveModule(frontRightMotor, frontRightServo, frontRightEncoder, 0),
-                new CoaxialSwerveModule(backLeftMotor, backLeftServo, backLeftEncoder, 0),
-                new CoaxialSwerveModule(backRightMotor, backRightServo, backRightEncoder, 0)
+                new CoaxialSwerveModule(frontLeftMotor, frontLeftServo, 0),
+                new CoaxialSwerveModule(frontRightMotor, frontRightServo, 0),
+                new CoaxialSwerveModule(backLeftMotor, backLeftServo, 0),
+                new CoaxialSwerveModule(backRightMotor, backRightServo, 0)
             }
         );
 
