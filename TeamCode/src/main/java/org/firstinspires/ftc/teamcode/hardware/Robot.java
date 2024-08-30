@@ -144,10 +144,10 @@ public class Robot {
 
         leftArm.setDirection(Servo.Direction.REVERSE);
 
-        frontLeftServo.setServoEncoder( "frontLeftEncoder");
-        frontLeftServo.setServoEncoder( "frontRightEncoder");
-        frontLeftServo.setServoEncoder( "backLeftEncoder");
-        frontLeftServo.setServoEncoder( "backRightEncoder");
+        frontLeftServo.setServoEncoder("frontLeftEncoder");
+        frontLeftServo.setServoEncoder("frontRightEncoder");
+        frontLeftServo.setServoEncoder("backLeftEncoder");
+        frontLeftServo.setServoEncoder("backRightEncoder");
 
 
         liftEncoder = new MotorEx(hardwareMap, "liftRight").encoder;
