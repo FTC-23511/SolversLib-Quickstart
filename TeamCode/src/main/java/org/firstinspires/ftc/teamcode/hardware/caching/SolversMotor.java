@@ -1,9 +1,10 @@
 package org.firstinspires.ftc.teamcode.hardware.caching;
 
-import com.outoftheboxrobotics.photoncore.Photon;
 import com.outoftheboxrobotics.photoncore.hardware.motor.PhotonDcMotor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+
+import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 
 /**
  * A wrapper motor class that provides caching to avoid unnecessary setPower() calls.
@@ -54,5 +55,9 @@ public class SolversMotor {
 
     public void setZeroPowerBehavior(DcMotor.ZeroPowerBehavior zeroPowerBehavior) {
         this.motor.setZeroPowerBehavior(zeroPowerBehavior);
+    }
+
+    public double getCurrent(CurrentUnit currentUnit) {
+        return this.motor.getCorrectedCurrent(currentUnit);
     }
 }

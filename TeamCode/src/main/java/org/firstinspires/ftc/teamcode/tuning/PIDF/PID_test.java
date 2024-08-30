@@ -7,6 +7,8 @@ import com.arcrobotics.ftclib.controller.PIDFController;
 import com.outoftheboxrobotics.photoncore.Photon;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.util.ElapsedTime;
+import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.teamcode.hardware.Robot;
 
@@ -31,10 +33,13 @@ public class PID_test extends OpMode {
 
     public static double p = 0.00, i = 0, d = 0.000;
     public static double f = 0.000;
+    public static double maxPower = 1;
 
     private static final PIDFController slidePIDF = new PIDFController(p,i,d, f);
 
     private final Robot robot = Robot.getInstance();
+
+    public ElapsedTime timer = new ElapsedTime();
 
     @Override
     public void init() {
@@ -50,6 +55,8 @@ public class PID_test extends OpMode {
 
     @Override
     public void loop() {
+        timer.reset();
+
         int liftPos = robot.liftEncoder.getPosition();
 
         slidePIDF.setP(p);
@@ -59,14 +66,17 @@ public class PID_test extends OpMode {
 
         slidePIDF.setSetPoint(setPoint);
 
-        double power = slidePIDF.calculate(liftPos, setPoint);
+        double power = Range.clip(slidePIDF.calculate(liftPos, setPoint), -maxPower, maxPower);
         robot.liftRight.setPower(power);
         robot.liftLeft.setPower(power);
 
+        robot.ControlHub.clearBulkCache();
+
         telemetry.addData("encoder position", liftPos);
         telemetry.addData("setPoint", setPoint);
-        telemetry.update();
+        telemetry.addData("motorPower", power);
+        telemetry.addData("loop time (ms)", timer.milliseconds());
 
-        robot.ControlHub.clearBulkCache();
+        telemetry.update();
     }
 }
