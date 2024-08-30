@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.hardware.caching;
 
+import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.hardwareMap;
 import static org.firstinspires.ftc.teamcode.subsystem.System.round;
 
 import com.outoftheboxrobotics.photoncore.hardware.servo.PhotonServo;
@@ -20,8 +21,8 @@ public class SolversServo {
 
     private double posThreshold = 0.0;
 
-    public SolversServo(PhotonServo servo, double posThreshold) {
-        this.servo = servo;
+    public SolversServo(String servoName, double posThreshold) {
+        this.servo = hardwareMap.get(PhotonServo.class, servoName);
         this.posThreshold = posThreshold;
     }
 

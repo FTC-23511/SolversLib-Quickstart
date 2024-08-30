@@ -1,5 +1,10 @@
 package org.firstinspires.ftc.teamcode.hardware.caching;
 
+
+import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.hardwareMap;
+
+import com.outoftheboxrobotics.photoncore.Photon;
+
 import com.outoftheboxrobotics.photoncore.hardware.motor.PhotonDcMotor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -17,13 +22,9 @@ public class SolversMotor {
 
     private double powerThreshold = 0.0;
 
-    public SolversMotor(PhotonDcMotor motor, double powerThreshold) {
-        this.motor = motor;
+    public SolversMotor(String motorName, double powerThreshold) {
+        this.motor = (hardwareMap.get(PhotonDcMotor.class, motorName));
         this.powerThreshold = powerThreshold;
-    }
-
-    public SolversMotor(PhotonDcMotor motor) {
-        this.motor = motor;
     }
 
     public void setPower(double power) {

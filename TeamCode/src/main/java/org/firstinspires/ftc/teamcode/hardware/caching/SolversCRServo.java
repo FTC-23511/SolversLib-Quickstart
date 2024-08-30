@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.hardware.caching;
 
+import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.hardwareMap;
+
 import com.outoftheboxrobotics.photoncore.hardware.servo.PhotonCRServo;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.PwmControl;
@@ -16,8 +18,8 @@ public class SolversCRServo {
 
     private double powerThreshold = 0.0;
 
-    public SolversCRServo(PhotonCRServo crservo, double powerThreshold) {
-        this.crservo = crservo;
+    public SolversCRServo(String crServoName, double powerThreshold) {
+        this.crservo = hardwareMap.get(PhotonCRServo.class, crServoName);
         this.powerThreshold = powerThreshold;
     }
 
