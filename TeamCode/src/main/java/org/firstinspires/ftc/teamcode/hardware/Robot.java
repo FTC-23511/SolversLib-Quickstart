@@ -26,6 +26,7 @@ import org.firstinspires.ftc.teamcode.drive.CoaxialSwerveModule;
 import org.firstinspires.ftc.teamcode.hardware.caching.SolversAxonServo;
 import org.firstinspires.ftc.teamcode.hardware.caching.SolversCRServo;
 import org.firstinspires.ftc.teamcode.hardware.caching.SolversMotor;
+import org.firstinspires.ftc.teamcode.hardware.caching.SolversMotorEncoder;
 import org.firstinspires.ftc.teamcode.hardware.caching.SolversServo;
 import org.firstinspires.ftc.teamcode.subsystem.Deposit;
 import org.firstinspires.ftc.teamcode.subsystem.Intake;
@@ -64,10 +65,10 @@ public class Robot {
     public AnalogInput backLeftEncoder;
     public AnalogInput backRightEncoder;
 
-    public Motor.Encoder liftEncoder;
-    public Motor.Encoder extensionEncoder;
-    public Motor.Encoder parallelPod;
-    public Motor.Encoder perpendicularPod;
+    public SolversMotorEncoder liftEncoder;
+    public SolversMotorEncoder extensionEncoder;
+    public SolversMotorEncoder parallelPod;
+    public SolversMotorEncoder perpendicularPod;
 
     public DistanceSensor intakeDistanceSensor;
 
@@ -149,14 +150,14 @@ public class Robot {
         frontLeftServo.setServoEncoder("backLeftEncoder");
         frontLeftServo.setServoEncoder("backRightEncoder");
 
+        liftEncoder = new SolversMotorEncoder(liftRight);
+        extensionEncoder = new SolversMotorEncoder(extension);
 
-        liftEncoder = new MotorEx(hardwareMap, "liftRight").encoder;
-        extensionEncoder = new MotorEx(hardwareMap, "extension").encoder;
+        parallelPod = new SolversMotorEncoder(backRightMotor);
+        parallelPod.setDirection(SolversMotorEncoder.Direction.REVERSE);
 
-        parallelPod = new MotorEx(hardwareMap, "backRightMotor").encoder;
-        parallelPod.setDirection(Motor.Direction.REVERSE);
-        perpendicularPod = new MotorEx(hardwareMap, "backLeftMotor").encoder;
-        perpendicularPod.setDirection(Motor.Direction.REVERSE);
+        perpendicularPod = new SolversMotorEncoder(backLeftMotor);
+        perpendicularPod.setDirection(SolversMotorEncoder.Direction.REVERSE);
 
         intakeDistanceSensor = hardwareMap.get(DistanceSensor.class, "intakeDistanceSensor");
 

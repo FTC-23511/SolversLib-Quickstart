@@ -42,6 +42,11 @@ public class SolversMotor {
         this.motor.setDirection(direction);
     }
 
+
+    public DcMotorSimple.Direction getDirection(){
+        return(motor.getDirection());
+    }
+
     public void setCachingThreshold(double powerThreshold) {
         this.powerThreshold = powerThreshold;
     }
@@ -54,8 +59,16 @@ public class SolversMotor {
         this.motor.setMode(runMode);
     }
 
+    public DcMotor.RunMode getMode() {
+        return this.motor.getMode();
+    }
+
     public void setZeroPowerBehavior(DcMotor.ZeroPowerBehavior zeroPowerBehavior) {
         this.motor.setZeroPowerBehavior(zeroPowerBehavior);
+    }
+
+    public double getVelocity() {
+        return this.motor.getVelocity();
     }
 
     public double getCurrent(CurrentUnit currentUnit) {
