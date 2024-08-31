@@ -1,8 +1,3 @@
-
-
-
-
-
 # PIDF Tuning Guide
 
 ---
@@ -19,7 +14,7 @@
 ### Tuning Process
 
 1. Make sure `P`, `I`, `D`, & `F` are all `0`!
-2. Connct to robot, deploy, and open FTC Dashboard. Initialize and run the program. Select `motorPos` and `setPoint` and graph them.
+2. Connect to robot, deploy, and open FTC Dashboard. Initialize and run the program. Select `motorPos` and `setPoint` and graph them.
 3. Move mechanism up/down, and make sure encoder increases in positive direction.
     - If it does not, reverse either the motor direction or encoder.
 4. Set `setPoint` to a small number, like `200` (depending on max range of mechanism)

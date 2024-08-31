@@ -13,9 +13,9 @@ import com.qualcomm.robotcore.util.Range;
 import org.firstinspires.ftc.teamcode.tuning.example.ExampleRobot;
 import org.firstinspires.ftc.teamcode.hardware.Robot;
 
-@Photon
-@Config
-@TeleOp
+//@Photon
+//@Config
+//@TeleOp
 public class doubleMotorPIDF extends OpMode {
 
     // D, 0.000_

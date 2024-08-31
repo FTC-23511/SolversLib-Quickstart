@@ -1,22 +1,22 @@
-# Servo Tuning Guide
+# PIDF Tuning Guide
 
 ---
 
 ### File Setup
 
-1. In `../TeamCode/tuning/servo/sample`, copy either `singleServoTester` or `doubleServoTester` based off whether your mechanism has either 1 or 2 servos.
-   - If you are using `doubleServoTester`, make sure to reverse one of the servos if they are facing each other.
-2. Paste the file in `../TeamCode/tuning/servo`, and rename the file, ideally to something that has the mechanism/motor name in it.
-3. Rename the class name in the code, fix the package name, and change `ExampleRobot` to `Robot`. Then, rename servos as needed to fit your configuration. Finally, uncomment `@Photon`, `@Config`, and ``@TeleOp`
+1. In `../TeamCode/tuning/PIDF/sample`, copy either `singleMotorPIDF` or `doubleMotorPIDF` based off whether your `PIDF` mechanism has either 1 or 2 motors.
+    - If you are using `doubleMotorPIDF`, make sure to reverse one of the motors (not encoder) if they are facing each other.
+2. Paste the file in `../TeamCode/tuning/PIDF`, and rename the file, ideally to something that has the mechanism/motor name in it.
+3. Rename the class name in the code, fix the package name, and change `ExampleRobot` to `Robot`. Then, rename motors and/or encoders as needed to fit your configuration. Finally, uncomment `@Photon`, `@Config`, and ``@TeleOp` 
 
 ---
 
 ### Tuning Process
 
 1. Make sure `P`, `I`, `D`, & `F` are all `0`!
-2. Connct to robot, deploy, and open FTC Dashboard. Initialize and run the program. Select `motorPos` and `setPoint` and graph them.
+2. Connect to robot, deploy, and open FTC Dashboard. Initialize and run the program. Select `motorPos` and `setPoint` and graph them.
 3. Move mechanism up/down, and make sure encoder increases in positive direction.
-   - If it does not, reverse either the motor direction or encoder.
+    - If it does not, reverse either the motor direction or encoder.
 4. Set `setPoint` to a small number, like `200` (depending on max range of mechanism)
 5. Set `F` to `0.0001`, and move the mechanism up so that gravity affects it.
 6. Increase `F` by increments of `0.0001`, until the mechanism is no longer affected by gravity.
