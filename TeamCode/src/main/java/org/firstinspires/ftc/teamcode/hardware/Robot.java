@@ -30,7 +30,7 @@ import java.util.List;
 
 import javax.annotation.concurrent.GuardedBy;
 
-@Photon
+    @Photon
 public class Robot {
     public SolversMotor liftLeft;
     public SolversMotor liftRight;
