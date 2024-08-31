@@ -5,11 +5,9 @@ import static org.firstinspires.ftc.robotcore.external.navigation.AngleUnit.norm
 import com.acmerobotics.dashboard.config.Config;
 import com.arcrobotics.ftclib.controller.PIDFController;
 import com.outoftheboxrobotics.photoncore.Photon;
-import com.qualcomm.robotcore.hardware.AnalogInput;
 import com.qualcomm.robotcore.hardware.PwmControl;
 
 import org.firstinspires.ftc.teamcode.hardware.caching.SolversAxonServo;
-import org.firstinspires.ftc.teamcode.hardware.caching.SolversCRServo;
 import org.firstinspires.ftc.teamcode.hardware.caching.SolversMotor;
 
 @Photon
@@ -17,7 +15,6 @@ import org.firstinspires.ftc.teamcode.hardware.caching.SolversMotor;
 public class CoaxialSwerveModule {
     private final SolversMotor motor;
     private final SolversAxonServo servo;
-    private final AnalogInput absoluteEncoder;
 
     // Pod rotation PIDF
     public static double P = 0;
@@ -28,25 +25,22 @@ public class CoaxialSwerveModule {
     private double podTargetHeading = 0;
     private double podHeading = 0;
 
-    // Value of encoder when pod faces straight and when the motor runs forward the wheel also runs forward
-    private final double encoderOffset;
-
     private boolean motorFlipped;
     private double motorTargetPower = 0;
 
     private final PIDFController podPIDF;
 
-    public CoaxialSwerveModule(SolversMotor motor, SolversAxonServo servo, AnalogInput absoluteEncoder, double encoderOffset) {
+    // Encoder offset is value of encoder when pod faces straight and when the motor runs forward the wheel also runs forward
+    public CoaxialSwerveModule(SolversMotor motor, SolversAxonServo servo, double encoderOffset) {
         this.motor = motor;
         this.servo = servo;
-        this.absoluteEncoder = absoluteEncoder;
-        this.encoderOffset = encoderOffset;
+        servo.setOffset(encoderOffset);
         podPIDF = new PIDFController(P, I, D, F);
         servo.setPwm(new PwmControl.PwmRange(500, 2500, 5000));
     }
 
     public void read() {
-        podHeading = normalizeRadians((absoluteEncoder.getVoltage() / 3.3 * Math.PI*2) - encoderOffset);
+        podHeading = servo.getPosition();
     }
 
     public void update(double podTargetHeading, double motorTargetPower) {
