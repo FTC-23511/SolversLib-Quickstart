@@ -35,15 +35,18 @@ public class motorTester extends OpMode {
 
         robot.init(hardwareMap);
 
-        telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
+        robot.centerMotor.setPower(CENTER_MOTOR_POWER);
+        robot.centerMotorEncoder.reset();
 
-        robot.motor.setPower(CENTER_MOTOR_POWER);
+        telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
+        telemetry.addData("centerMotor Power", robot.centerMotor.getPower());
+        telemetry.addData("centerMotor Encoder", robot.centerMotorEncoder.getPosition());
     }
 
     @Override
     public void loop() {
         if (USE_DASHBOARD){
-            robot.motor.setPower(CENTER_MOTOR_POWER);
+            robot.centerMotor.setPower(CENTER_MOTOR_POWER);
         } else if (gamepad1.dpad_up  && checkButton(currentGamepad1, "dpad_up")) {
             CENTER_MOTOR_POWER += 0.01;
         } else if (gamepad1.dpad_down && checkButton(currentGamepad1, "dpad_down")) {
@@ -51,17 +54,16 @@ public class motorTester extends OpMode {
         }
 
         if (gamepad1.square || gamepad1.triangle || gamepad1.circle || gamepad1.cross) {
-            robot.motor.setPower(CENTER_MOTOR_POWER);
+            robot.centerMotor.setPower(CENTER_MOTOR_POWER);
         }
         else{
-            robot.motor.setPower(0);
+            robot.centerMotor.setPower(0);
         }
 
         currentGamepad1.copy(gamepad1);
 
-        telemetry.addData("centerMotor Power", robot.motor.getPower());
+        telemetry.addData("centerMotor Power", robot.centerMotor.getPower());
+        telemetry.addData("centerMotor Encoder", robot.centerMotorEncoder.getPosition());
         telemetry.update();
-
-
     }
 }

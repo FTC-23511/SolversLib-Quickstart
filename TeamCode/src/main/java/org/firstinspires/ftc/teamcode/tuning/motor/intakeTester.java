@@ -35,9 +35,12 @@ public class intakeTester extends OpMode {
 
         robot.init(hardwareMap);
 
-        telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
-
         robot.intakeMotor.setPower(CENTER_MOTOR_POWER);
+//        robot.intakeMotorEncoder.reset();
+
+        telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
+        telemetry.addData("centerMotor Power", robot.intakeMotor.getPower());
+//        telemetry.addData("centerMotor Encoder", robot.intakeMotorEncoder.getPosition());
     }
 
     @Override
@@ -59,7 +62,8 @@ public class intakeTester extends OpMode {
 
         currentGamepad1.copy(gamepad1);
 
-        telemetry.addData("intakeMotor Power", robot.intakeMotor.getPower());
+        telemetry.addData("centerMotor Power", robot.intakeMotor.getPower());
+//        telemetry.addData("centerMotor Encoder", robot.intakeMotorEncoder.getPosition());
         telemetry.update();
     }
 }

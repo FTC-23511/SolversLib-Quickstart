@@ -1,28 +1,20 @@
-# PIDF Tuning Guide
+# Servo Tuning Guide
 
 ---
 
 ### File Setup
 
-1. In `../TeamCode/tuning/PIDF/sample`, copy either `singleMotorPIDF` or `doubleMotorPIDF` based off whether your `PIDF` mechanism has either 1 motor or 2 motors.
-    - If you are using `doubleMotorPIDF`, make sure to reverse one of the motors (not encoder) if they are facing each other.
-2. Paste the file in `../TeamCode/tuning/PIDF`, and rename the file, ideally to something that has the mechanism/motor name in it.
-3. Rename the class name in the code, fix the package name, and change `ExampleRobot` to `Robot`. Then, rename motors and/or encoders as needed to fit your configuration.
+1. In `../TeamCode/tuning/servo/sample`, copy either `singleServoTester` or `doubleServoTester` based off whether your mechanism has either 1 or 2 servos.
+   - If you are using `doubleServoTester`, make sure to reverse one of the servos if they are facing each other.
+2. Paste the file in `../TeamCode/tuning/servo`, and rename the file, ideally to something that has the mechanism/motor name in it.
+3. Rename the class name in the code, fix the package name, and change `ExampleRobot` to `Robot`. Then, rename servos as needed to fit your configuration. Finally, uncomment `@Photon`, `@Config`, and ``@TeleOp`
 
 ---
 
 ### Tuning Process
 
-1. Make sure `P`, `I`, `D`, & `F` are all `0`!
-2. Connect to robot, deploy, and open FTC Dashboard. Initialize and run the program. Select `motorPos` and `setPoint` and graph them.
-3. Move mechanism up/down, and make sure encoder increases in positive direction.
-    - If it does not, reverse either the motor direction or encoder.
-4. Set `setPoint` to a small number, like `200` (depending on max range of mechanism)
-5. Set `F` to `0.0001`, and move the mechanism up so that gravity affects it.
-6. Increase `F` by increments of `0.0001`, until the mechanism is no longer affected by gravity.
-7. Set `P` to `0.001`, and change `setPoint` by increments of roughly `50` to `250` (depending on max range of mechanism).
-8. If the mechanism undershoots (most likely scenario), increase `P` by increments of `0.001` until it no longer undershoots. Make sure to change `setPoint` as well after each increase.
-9. If the mechanism overshoots (unlikely but still possible), decrease `P` by increments of `0.0001` until it no longer overshoots. Make sure to change `setPoint` as well after each increase.
-10. Set `D` to `0.0003`, and change `setPoint` by increments of roughly `50` to `250` (depending on max range of mechanism).
-11. Increase `D` by increments of `0.0001` or as needed until the mechanism is smoothly moving. Make sure to change  `setPoint` by increments of roughly `50` to `250` (depending on max range of mechanism) while tuning `D`.
-12. Once done, make sure to WRITE THE COEFFICIENTS SOMEWHERE! They will _not_ be saved on FTC Dashboard. I recommend putting them into Android Studio directly, either by changing the `PIDF` parameters from 0 to their tuned values (`I` should still be 0), or by writing them in a comment.
+1. Connect to robot, deploy, and open FTC Dashboard if you are choosing to tune with it (HIGHLY RECOMMENDED!!!) instead of gamepad. Initialize and run the program.
+2. If you are using FTC Dashboard, select `USE_DASHBOARD`.
+3. Change `CENTER_SERVO_POS` if you are using 1 servo to adjust its position, or `LEFT_SERVO_POS`/`RIGHT_SERVO_POS` if you are using 2 servos.
+4. If you are using 2 servos, and want to move both at the same time, unselect `MOVE_ONE`, and enter your servo values as needed. To move them both, select `MOVE_BOTH`, which will move both servos to their positions. This will also automatically unselect `MOVE_BOTH`
+5. Once done, make sure to WRITE THE COEFFICIENTS SOMEWHERE! They will _not_ be saved on FTC Dashboard. I recommend putting them into Android Studio directly, ideally in variables in somewhere like `Globals.java`.
