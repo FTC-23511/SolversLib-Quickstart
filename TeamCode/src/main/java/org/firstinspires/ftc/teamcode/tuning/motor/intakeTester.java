@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.tuning.servo;
+package org.firstinspires.ftc.teamcode.tuning.motor;
 
 import static org.firstinspires.ftc.teamcode.hardware.Globals.*;
 import static org.firstinspires.ftc.teamcode.subsystem.System.*;
@@ -22,7 +22,7 @@ import org.firstinspires.ftc.teamcode.tuning.example.ExampleRobot;
 @Photon
 @Config
 @TeleOp
-public class wristTester extends OpMode {
+public class intakeTester extends OpMode {
     public static boolean USE_DASHBOARD = false;
     private final Robot robot = Robot.getInstance();
 
@@ -30,45 +30,36 @@ public class wristTester extends OpMode {
 
     @Override
     public void init() {
-        opModeType = Globals.OpModeType.TELEOP;
-        driveMode = Globals.DriveMode.FIELD_CENTRIC;
+        opModeType = OpModeType.TELEOP;
+        driveMode = DriveMode.FIELD_CENTRIC;
 
         robot.init(hardwareMap);
 
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
-        robot.wrist.setPosition(CENTER_SERVO_POS);
+        robot.intakeMotor.setPower(CENTER_MOTOR_POWER);
     }
 
     @Override
     public void loop() {
-        if (USE_DASHBOARD) {
-            robot.wrist.setPosition(CENTER_SERVO_POS);
+        if (USE_DASHBOARD){
+            robot.intakeMotor.setPower(CENTER_MOTOR_POWER);
         } else if (gamepad1.dpad_up  && checkButton(currentGamepad1, "dpad_up")) {
-            CENTER_SERVO_POS += 0.01;
+            CENTER_MOTOR_POWER += 0.01;
         } else if (gamepad1.dpad_down && checkButton(currentGamepad1, "dpad_down")) {
-            CENTER_SERVO_POS -= 0.01;
-        } else if (gamepad1.dpad_right  && checkButton(currentGamepad1, "dpad_right")) {
-            CENTER_SERVO_POS += 0.01;
-        } else if (gamepad1.dpad_left && checkButton(currentGamepad1, "dpad_left")) {
-            CENTER_SERVO_POS -= 0.01;
+            CENTER_MOTOR_POWER -= 0.01;
         }
 
-        if (gamepad1.square || gamepad1.cross || gamepad1.triangle || gamepad1.circle) {
-            robot.wrist.setPosition(CENTER_SERVO_POS);
+        if (gamepad1.square || gamepad1.triangle || gamepad1.circle || gamepad1.cross) {
+            robot.intakeMotor.setPower(CENTER_MOTOR_POWER);
         }
-
-        CENTER_SERVO_POS = Math.max(Math.min(CENTER_SERVO_POS, 1), 0);
+        else{
+            robot.intakeMotor.setPower(0);
+        }
 
         currentGamepad1.copy(gamepad1);
 
-        telemetry.addData("centerServo getPosition", robot.wrist.getPosition());
-        telemetry.addData("centerServoPos", round(CENTER_SERVO_POS, 2));
+        telemetry.addData("intakeMotor Power", robot.intakeMotor.getPower());
         telemetry.update();
-
-        // DO NOT REMOVE! Removing this will return stale data since bulk caching is on Manual mode
-        // Also only clearing the control hub to decrease loop times
-        // This means if we start reading both hubs (which we aren't) we need to clear both
-        robot.ControlHub.clearBulkCache();
     }
 }

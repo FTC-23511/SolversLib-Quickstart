@@ -5,7 +5,6 @@ import com.qualcomm.hardware.bosch.BHI260IMU;
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.hardware.AnalogInput;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
@@ -52,11 +51,6 @@ public class Robot {
     public SolversAxonServo frontRightServo;
     public SolversAxonServo backLeftServo;
     public SolversAxonServo backRightServo;
-
-    public AnalogInput frontLeftEncoder;
-    public AnalogInput frontRightEncoder;
-    public AnalogInput backLeftEncoder;
-    public AnalogInput backRightEncoder;
 
     public SolversMotorEncoder liftEncoder;
     public SolversMotorEncoder extensionEncoder;

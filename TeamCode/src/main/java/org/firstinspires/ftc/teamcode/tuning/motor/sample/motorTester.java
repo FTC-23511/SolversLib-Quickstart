@@ -1,38 +1,49 @@
-package org.firstinspires.ftc.teamcode.tuning.servo.sample;
+package org.firstinspires.ftc.teamcode.tuning.motor.sample;
 
-import static org.firstinspires.ftc.teamcode.subsystem.System.checkButton;
+import static org.firstinspires.ftc.teamcode.hardware.Globals.*;
+import static org.firstinspires.ftc.teamcode.subsystem.System.*;
+import static org.firstinspires.ftc.teamcode.tuning.example.ExampleConstants.*;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
+
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.outoftheboxrobotics.photoncore.Photon;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+
 import com.qualcomm.robotcore.hardware.Gamepad;
 
+import org.firstinspires.ftc.teamcode.hardware.Globals;
+import org.firstinspires.ftc.teamcode.hardware.Robot;
+import org.firstinspires.ftc.teamcode.tuning.example.ExampleConstants;
 import org.firstinspires.ftc.teamcode.tuning.example.ExampleRobot;
 
-@Photon
-@Config
-@TeleOp
+//@Photon
+//@Config
+//@TeleOp
 public class motorTester extends OpMode {
     public static boolean USE_DASHBOARD = false;
-    ExampleRobot exampleHardware = new ExampleRobot();
+    private final ExampleRobot robot = ExampleRobot.getInstance();
+
     Gamepad currentGamepad1 = new Gamepad();
-    double CENTER_MOTOR_POWER = 0;
+
     @Override
     public void init() {
-        exampleHardware.init(hardwareMap);
+        opModeType = OpModeType.TELEOP;
+        driveMode = DriveMode.FIELD_CENTRIC;
+
+        robot.init(hardwareMap);
 
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
-        exampleHardware.motor.setPower(0);
+        robot.motor.setPower(CENTER_MOTOR_POWER);
     }
 
     @Override
     public void loop() {
         if (USE_DASHBOARD){
-            exampleHardware.motor.setPower(CENTER_MOTOR_POWER);
+            robot.motor.setPower(CENTER_MOTOR_POWER);
         } else if (gamepad1.dpad_up  && checkButton(currentGamepad1, "dpad_up")) {
             CENTER_MOTOR_POWER += 0.01;
         } else if (gamepad1.dpad_down && checkButton(currentGamepad1, "dpad_down")) {
@@ -40,15 +51,15 @@ public class motorTester extends OpMode {
         }
 
         if (gamepad1.square || gamepad1.triangle || gamepad1.circle || gamepad1.cross) {
-            exampleHardware.motor.setPower(CENTER_MOTOR_POWER);
+            robot.motor.setPower(CENTER_MOTOR_POWER);
         }
         else{
-            exampleHardware.motor.setPower(0);
+            robot.motor.setPower(0);
         }
 
         currentGamepad1.copy(gamepad1);
 
-        telemetry.addData("centerMotor Power", exampleHardware.motor.getPower());
+        telemetry.addData("centerMotor Power", robot.motor.getPower());
         telemetry.update();
 
 
