@@ -17,19 +17,19 @@ import org.firstinspires.ftc.teamcode.hardware.Robot;
 @Config
 @TeleOp
 public class doubleMotorPIDF extends OpMode {
-    public static int setPoint = 0;
 
-    /*
-    1. Make sure all values are 0!
-    2. Move slide/arm up/down, and make sure encoder increases in positive direction.
-        - If it does not, reverse either the motor direction or encoder.
-     */
+    // D, 0.000_
+    // F, 0.000_
+    // I, 0
+    // maxPowerConstant, 1.0
+    // P, 0.00_
 
     public static double p = 0.00;
     public static double i = 0;
     public static double d = 0.000;
     public static double f = 0.000;
 
+    public static int setPoint = 0;
     public static double maxPowerConstant = 1.0;
 
     private static final PIDFController doublePIDF = new PIDFController(p,i,d, f);

@@ -17,7 +17,6 @@ import org.firstinspires.ftc.teamcode.hardware.Robot;
 @Config
 @TeleOp
 public class depositPIDF extends OpMode {
-    public static int setPoint = 0;
 
     // D, 0.0004
     // F, 0.0006
@@ -25,17 +24,12 @@ public class depositPIDF extends OpMode {
     // maxPowerConstant, 0.5
     // P, 0.011
 
-    /*
-    1. Make sure all values are 0!
-    2. Move slide/arm up/down, and make sure encoder increases in positive direction.
-        - If it does not, reverse either the motor direction or encoder.
-     */
-
     public static double p = 0.00;
     public static double i = 0;
     public static double d = 0.000;
     public static double f = 0.000;
 
+    public static int setPoint = 0;
     public static double maxPowerConstant = 1.0;
 
     private static final PIDFController slidePIDF = new PIDFController(p,i,d, f);
