@@ -57,6 +57,8 @@ public class Robot {
     public SolversMotorEncoder parallelPod;
     public SolversMotorEncoder perpendicularPod;
 
+//    public SolversMotorEncoder[] encodersName;
+
     public DistanceSensor intakeDistanceSensor;
 
     public CoaxialSwerveModule fL;

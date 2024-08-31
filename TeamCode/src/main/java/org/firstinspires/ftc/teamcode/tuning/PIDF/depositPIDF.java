@@ -37,7 +37,7 @@ public class depositPIDF extends OpMode {
 
     public ElapsedTime timer = new ElapsedTime();
 
-    int motorPos = robot.liftEncoder.getPosition();
+    int motorPos = 0;
 
     @Override
     public void init() {
