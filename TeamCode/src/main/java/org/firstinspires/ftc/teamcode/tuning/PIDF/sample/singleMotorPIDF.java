@@ -16,7 +16,7 @@ import org.firstinspires.ftc.teamcode.hardware.Robot;
 @Photon
 @Config
 @TeleOp
-public class doubleMotorPIDF extends OpMode {
+public class singleMotorPIDF extends OpMode {
     public static int setPoint = 0;
 
     /*
@@ -32,20 +32,20 @@ public class doubleMotorPIDF extends OpMode {
 
     public static double maxPowerConstant = 1.0;
 
-    private static final PIDFController doublePIDF = new PIDFController(p,i,d, f);
+    private static final PIDFController singlePIDF = new PIDFController(p,i,d, f);
     private final ExampleRobot robot = ExampleRobot.getInstance();
 
     public ElapsedTime timer = new ElapsedTime();
 
-    int motorPos = robot.rightMotorEncoder.getPosition();
+    int motorPos = robot.centerMotorEncoder.getPosition();
 
     @Override
     public void init() {
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
         robot.init(hardwareMap);
-        doublePIDF.setTolerance(5, 10);
+        singlePIDF.setTolerance(5, 10);
 
-        robot.rightMotorEncoder.reset();
+        robot.centerMotorEncoder.reset();
 
         telemetry.addData("encoder position", motorPos);
         telemetry.addData("setPoint", setPoint);
@@ -56,20 +56,19 @@ public class doubleMotorPIDF extends OpMode {
     public void loop() {
         timer.reset();
 
-        motorPos = robot.rightMotorEncoder.getPosition();
+        motorPos = robot.centerMotorEncoder.getPosition();
 
-        doublePIDF.setP(p);
-        doublePIDF.setI(i);
-        doublePIDF.setD(d);
-        doublePIDF.setF(f);
+        singlePIDF.setP(p);
+        singlePIDF.setI(i);
+        singlePIDF.setD(d);
+        singlePIDF.setF(f);
 
-        doublePIDF.setSetPoint(setPoint);
+        singlePIDF.setSetPoint(setPoint);
 
         double maxPower = (f * motorPos) + maxPowerConstant;
-        double power = Range.clip(doublePIDF.calculate(motorPos, setPoint), -maxPower, maxPower);
+        double power = Range.clip(singlePIDF.calculate(motorPos, setPoint), -maxPower, maxPower);
 
-        robot.leftMotor.setPower(power);
-        robot.rightMotor.setPower(power);
+        robot.centerMotor.setPower(power);
 
         robot.ControlHub.clearBulkCache();
 
