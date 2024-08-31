@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.tuning.PIDF;
+package org.firstinspires.ftc.teamcode.tuning.PIDF.sample;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
@@ -10,24 +10,19 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
-import org.firstinspires.ftc.teamcode.hardware.Robot;
+import org.firstinspires.ftc.teamcode.tuning.example.ExampleRobot;
 
 @Photon
 @Config
 @TeleOp
-public class PID_test extends OpMode {
+public class doubleMotorPIDF extends OpMode {
     public static int setPoint = 0;
 
-    // D, 0.0004
-    // F, 0.0006
-    // I, 0
-    // maxPowerConstant, 0.5
-    // P, 0.011
     /*
 
     1. Make sure all values are 0!
     2. Move slide/arm up/down, and make sure encoder increases in positive direction.
-        - If it does not, reverse either the motor direction or encoder.m
+        - If it does not, reverse either the motor direction or encoder.
      */
 
     public static double p = 0.00;
@@ -36,20 +31,20 @@ public class PID_test extends OpMode {
     public static double f = 0.000;
     public static double maxPowerConstant = 1.0;
 
-    private static final PIDFController slidePIDF = new PIDFController(p,i,d, f);
-    private final Robot robot = Robot.getInstance();
+    private static final PIDFController doublePIDF = new PIDFController(p,i,d, f);
+    private final ExampleRobot robot = ExampleRobot.getInstance();
 
     public ElapsedTime timer = new ElapsedTime();
 
-    int liftPos = robot.liftEncoder.getPosition();
+    int liftPos = robot.leftMotorEncoder.getPosition();
 
     @Override
     public void init() {
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
         robot.init(hardwareMap);
-        slidePIDF.setTolerance(10, 10);
+        doublePIDF.setTolerance(5, 10);
 
-        robot.liftEncoder.reset();
+        robot.leftMotorEncoder.reset();
 
         telemetry.addData("encoder position", liftPos);
         telemetry.addData("setPoint", setPoint);
@@ -60,19 +55,19 @@ public class PID_test extends OpMode {
     public void loop() {
         timer.reset();
 
-        liftPos = robot.liftEncoder.getPosition();
+        liftPos = robot.leftMotorEncoder.getPosition();
 
-        slidePIDF.setP(p);
-        slidePIDF.setI(i);
-        slidePIDF.setD(d);
-        slidePIDF.setF(f);
+        doublePIDF.setP(p);
+        doublePIDF.setI(i);
+        doublePIDF.setD(d);
+        doublePIDF.setF(f);
 
-        slidePIDF.setSetPoint(setPoint);
+        doublePIDF.setSetPoint(setPoint);
         double maxPower = (f * liftPos) + maxPowerConstant;
 
-        double power = Range.clip(slidePIDF.calculate(liftPos, setPoint), -maxPower, maxPower);
-        robot.liftRight.setPower(power);
-        robot.liftLeft.setPower(power);
+        double power = Range.clip(doublePIDF.calculate(liftPos, setPoint), -maxPower, maxPower);
+        robot.leftMotor.setPower(power);
+        robot.rightMotor.setPower(power);
 
         robot.ControlHub.clearBulkCache();
 
