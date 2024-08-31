@@ -19,11 +19,11 @@ import com.qualcomm.robotcore.hardware.ServoControllerEx;
  */
 public class SolversAxonServo {
     private double offset = 0;
-    private double lastPower;
+    private double lastPower = 0;
     private AnalogInput servoEncoder = null;
     private final PhotonCRServo crservo;
 
-    private double powerThreshold = 0.0001;
+    private double powerThreshold = 0;
 
     public SolversAxonServo(@NonNull String axonServoName, double powerThreshold) {
         this.crservo = (PhotonCRServo) hardwareMap.get(CRServo.class, axonServoName);
@@ -81,5 +81,9 @@ public class SolversAxonServo {
      */
     public void setOffset(double offset) {
         this.offset = offset;
+    }
+
+    public double getPower() {
+        return lastPower;
     }
 }

@@ -36,6 +36,9 @@ public class CoaxialSwerveModule {
         this.servo = servo;
         servo.setOffset(encoderOffset);
         podPIDF = new PIDFController(P, I, D, F);
+    }
+
+    public void init() {
         servo.setPwm(new PwmControl.PwmRange(500, 2500, 5000));
     }
 

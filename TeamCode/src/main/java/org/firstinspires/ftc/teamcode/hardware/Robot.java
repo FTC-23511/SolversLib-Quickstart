@@ -59,6 +59,11 @@ public class Robot {
 
     public DistanceSensor intakeDistanceSensor;
 
+    public CoaxialSwerveModule fL;
+    public CoaxialSwerveModule fR;
+    public CoaxialSwerveModule bL;
+    public CoaxialSwerveModule bR;
+
     private final Object imuLock = new Object();
     @GuardedBy("imuLock")
     public BHI260IMU imu;
@@ -169,13 +174,18 @@ public class Robot {
 
         imuOffset = Globals.STARTING_HEADING;
 
-        swerveDrivetrain = new CoaxialSwerveDrivetrain(
-            new CoaxialSwerveModule[] {
-                new CoaxialSwerveModule(frontLeftMotor, frontLeftServo, 0),
-                new CoaxialSwerveModule(frontRightMotor, frontRightServo, 0),
-                new CoaxialSwerveModule(backLeftMotor, backLeftServo, 0),
-                new CoaxialSwerveModule(backRightMotor, backRightServo, 0)
-            }
+        fL = new CoaxialSwerveModule(frontLeftMotor, frontLeftServo, 0);
+        fR = new CoaxialSwerveModule(frontRightMotor, frontRightServo, 0);
+        bL = new CoaxialSwerveModule(backLeftMotor, backLeftServo, 0);
+        bR = new CoaxialSwerveModule(backRightMotor, backRightServo, 0);
+
+        fL.init();
+        fR.init();
+        bL.init();
+        bR.init();
+
+        swerveDrivetrain = new CoaxialSwerveDrivetrain (
+            new CoaxialSwerveModule[] { fL, fR, bL, bR }
         );
 
         intake = new Intake();
