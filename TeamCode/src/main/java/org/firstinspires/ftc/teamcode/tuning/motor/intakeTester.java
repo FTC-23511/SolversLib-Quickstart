@@ -1,23 +1,21 @@
 package org.firstinspires.ftc.teamcode.tuning.motor;
 
-import static org.firstinspires.ftc.teamcode.hardware.Globals.*;
-import static org.firstinspires.ftc.teamcode.subsystem.System.*;
-import static org.firstinspires.ftc.teamcode.tuning.example.ExampleConstants.*;
+import static org.firstinspires.ftc.teamcode.hardware.Globals.DriveMode;
+import static org.firstinspires.ftc.teamcode.hardware.Globals.OpModeType;
+import static org.firstinspires.ftc.teamcode.hardware.Globals.driveMode;
+import static org.firstinspires.ftc.teamcode.hardware.Globals.opModeType;
+import static org.firstinspires.ftc.teamcode.subsystem.System.checkButton;
+import static org.firstinspires.ftc.teamcode.tuning.example.ExampleConstants.CENTER_MOTOR_POWER;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
-
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.outoftheboxrobotics.photoncore.Photon;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-
 import com.qualcomm.robotcore.hardware.Gamepad;
 
-import org.firstinspires.ftc.teamcode.hardware.Globals;
 import org.firstinspires.ftc.teamcode.hardware.Robot;
-import org.firstinspires.ftc.teamcode.tuning.example.ExampleConstants;
-import org.firstinspires.ftc.teamcode.tuning.example.ExampleRobot;
 
 @Photon
 @Config

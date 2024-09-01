@@ -1,7 +1,9 @@
 package org.firstinspires.ftc.teamcode.drive;
 
 import static com.arcrobotics.ftclib.kinematics.wpilibkinematics.SwerveDriveKinematics.normalizeWheelSpeeds;
-import static org.firstinspires.ftc.teamcode.hardware.Globals.*;
+import static org.firstinspires.ftc.teamcode.hardware.Globals.LENGTH;
+import static org.firstinspires.ftc.teamcode.hardware.Globals.MAXIMUM_MODULE_SPEED;
+import static org.firstinspires.ftc.teamcode.hardware.Globals.WIDTH;
 
 import com.arcrobotics.ftclib.command.SubsystemBase;
 import com.arcrobotics.ftclib.geometry.Translation2d;
@@ -28,10 +30,10 @@ public class CoaxialSwerveDrivetrain extends SubsystemBase {
         bR = modules[3];
 
         swerveDriveKinematics = new SwerveDriveKinematics(
-            new Translation2d(WIDTH/2, LENGTH/2),
-            new Translation2d(-WIDTH/2, LENGTH/2),
-            new Translation2d(WIDTH/2, -LENGTH/2),
-            new Translation2d(-WIDTH/2, -LENGTH/2)
+                new Translation2d(WIDTH/2, LENGTH/2),
+                new Translation2d(-WIDTH/2, LENGTH/2),
+                new Translation2d(WIDTH/2, -LENGTH/2),
+                new Translation2d(-WIDTH/2, -LENGTH/2)
         );
     }
 

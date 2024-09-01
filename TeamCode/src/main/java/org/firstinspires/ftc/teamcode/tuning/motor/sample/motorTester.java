@@ -1,22 +1,18 @@
 package org.firstinspires.ftc.teamcode.tuning.motor.sample;
 
-import static org.firstinspires.ftc.teamcode.hardware.Globals.*;
-import static org.firstinspires.ftc.teamcode.subsystem.System.*;
-import static org.firstinspires.ftc.teamcode.tuning.example.ExampleConstants.*;
+import static org.firstinspires.ftc.teamcode.hardware.Globals.DriveMode;
+import static org.firstinspires.ftc.teamcode.hardware.Globals.OpModeType;
+import static org.firstinspires.ftc.teamcode.hardware.Globals.driveMode;
+import static org.firstinspires.ftc.teamcode.hardware.Globals.opModeType;
+import static org.firstinspires.ftc.teamcode.subsystem.System.checkButton;
+import static org.firstinspires.ftc.teamcode.tuning.example.ExampleConstants.CENTER_MOTOR_POWER;
 
 import com.acmerobotics.dashboard.FtcDashboard;
-import com.acmerobotics.dashboard.config.Config;
-
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
-import com.outoftheboxrobotics.photoncore.Photon;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Gamepad;
 
-import org.firstinspires.ftc.teamcode.hardware.Globals;
-import org.firstinspires.ftc.teamcode.hardware.Robot;
-import org.firstinspires.ftc.teamcode.tuning.example.ExampleConstants;
 import org.firstinspires.ftc.teamcode.tuning.example.ExampleRobot;
 
 //@Photon
@@ -36,11 +32,11 @@ public class motorTester extends OpMode {
         robot.init(hardwareMap);
 
         robot.centerMotor.setPower(CENTER_MOTOR_POWER);
-        robot.centerMotorEncoder.reset();
+        robot.centerMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
         telemetry.addData("centerMotor Power", robot.centerMotor.getPower());
-        telemetry.addData("centerMotor Encoder", robot.centerMotorEncoder.getPosition());
+        telemetry.addData("centerMotor Encoder", robot.centerMotor.getPosition());
     }
 
     @Override
@@ -63,7 +59,7 @@ public class motorTester extends OpMode {
         currentGamepad1.copy(gamepad1);
 
         telemetry.addData("centerMotor Power", robot.centerMotor.getPower());
-        telemetry.addData("centerMotor Encoder", robot.centerMotorEncoder.getPosition());
+        telemetry.addData("centerMotor Encoder", robot.centerMotor.getPosition());
         telemetry.update();
     }
 }

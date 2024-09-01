@@ -1,13 +1,9 @@
 package org.firstinspires.ftc.teamcode.hardware.caching;
 
-import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.hardwareMap;
 import static org.firstinspires.ftc.teamcode.subsystem.System.round;
 
 import com.outoftheboxrobotics.photoncore.hardware.servo.PhotonServo;
 import com.qualcomm.robotcore.hardware.Servo;
-
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 
 /**
  * A wrapper servo class that provides caching to avoid unnecessary setPosition() calls.
@@ -21,8 +17,8 @@ public class SolversServo {
 
     private double posThreshold = 0.0;
 
-    public SolversServo(String servoName, double posThreshold) {
-        this.servo = hardwareMap.get(PhotonServo.class, servoName);
+    public SolversServo(PhotonServo servo, double posThreshold) {
+        this.servo = servo;
         this.posThreshold = posThreshold;
     }
 

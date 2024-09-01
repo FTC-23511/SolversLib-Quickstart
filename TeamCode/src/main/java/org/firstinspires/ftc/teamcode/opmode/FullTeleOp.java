@@ -1,6 +1,12 @@
 package org.firstinspires.ftc.teamcode.opmode;
 
-import static org.firstinspires.ftc.teamcode.hardware.Globals.*;
+import static org.firstinspires.ftc.teamcode.hardware.Globals.DriveMode;
+import static org.firstinspires.ftc.teamcode.hardware.Globals.MAX_EXTENDO_EXTENSION;
+import static org.firstinspires.ftc.teamcode.hardware.Globals.OpModeType;
+import static org.firstinspires.ftc.teamcode.hardware.Globals.STRAFE_MULTIPLIER;
+import static org.firstinspires.ftc.teamcode.hardware.Globals.TURN_MULTIPLIER;
+import static org.firstinspires.ftc.teamcode.hardware.Globals.driveMode;
+import static org.firstinspires.ftc.teamcode.hardware.Globals.opModeType;
 
 import com.arcrobotics.ftclib.command.CommandOpMode;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
@@ -11,10 +17,10 @@ import com.outoftheboxrobotics.photoncore.Photon;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.teamcode.hardware.Globals;
 import org.firstinspires.ftc.teamcode.hardware.Robot;
 import org.firstinspires.ftc.teamcode.subsystem.Intake;
-import org.firstinspires.ftc.teamcode.subsystem.commands.*;
+import org.firstinspires.ftc.teamcode.subsystem.commands.depositBackdrop;
+import org.firstinspires.ftc.teamcode.subsystem.commands.transfer;
 
 @Photon
 @TeleOp
@@ -31,8 +37,8 @@ public class FullTeleOp extends CommandOpMode {
 
     @Override
     public void initialize() {
-        opModeType = Globals.OpModeType.TELEOP;
-        driveMode = Globals.DriveMode.FIELD_CENTRIC;
+        opModeType = OpModeType.TELEOP;
+        driveMode = DriveMode.FIELD_CENTRIC;
 
         // Resets command scheduler
         super.reset();

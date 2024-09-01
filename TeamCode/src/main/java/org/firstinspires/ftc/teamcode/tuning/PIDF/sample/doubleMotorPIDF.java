@@ -1,17 +1,14 @@
 package org.firstinspires.ftc.teamcode.tuning.PIDF.sample;
 
 import com.acmerobotics.dashboard.FtcDashboard;
-import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.arcrobotics.ftclib.controller.PIDFController;
-import com.outoftheboxrobotics.photoncore.Photon;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.teamcode.tuning.example.ExampleRobot;
-import org.firstinspires.ftc.teamcode.hardware.Robot;
 
 //@Photon
 //@Config
@@ -37,7 +34,7 @@ public class doubleMotorPIDF extends OpMode {
 
     public ElapsedTime timer = new ElapsedTime();
 
-    int motorPos = robot.rightMotorEncoder.getPosition();
+    int motorPos = robot.rightMotor.getPosition();
 
     @Override
     public void init() {
@@ -45,7 +42,7 @@ public class doubleMotorPIDF extends OpMode {
         robot.init(hardwareMap);
         doublePIDF.setTolerance(5, 10);
 
-        robot.rightMotorEncoder.reset();
+        robot.rightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         telemetry.addData("encoder position", motorPos);
         telemetry.addData("setPoint", setPoint);
@@ -56,7 +53,7 @@ public class doubleMotorPIDF extends OpMode {
     public void loop() {
         timer.reset();
 
-        motorPos = robot.rightMotorEncoder.getPosition();
+        motorPos = robot.rightMotor.getPosition();
 
         doublePIDF.setP(p);
         doublePIDF.setI(i);

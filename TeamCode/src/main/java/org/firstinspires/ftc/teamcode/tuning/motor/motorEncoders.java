@@ -1,11 +1,8 @@
 package org.firstinspires.ftc.teamcode.tuning.motor;
 
-import static org.firstinspires.ftc.ftccommon.internal.manualcontrol.ManualControlOpMode.register;
-
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
-import com.arcrobotics.ftclib.controller.PIDFController;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.outoftheboxrobotics.photoncore.Photon;

@@ -5,9 +5,9 @@ import static org.firstinspires.ftc.robotcore.external.navigation.AngleUnit.norm
 
 import androidx.annotation.NonNull;
 
+import com.outoftheboxrobotics.photoncore.Photon;
 import com.outoftheboxrobotics.photoncore.hardware.servo.PhotonCRServo;
 import com.qualcomm.robotcore.hardware.AnalogInput;
-import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.PwmControl;
 import com.qualcomm.robotcore.hardware.ServoControllerEx;
@@ -17,6 +17,8 @@ import com.qualcomm.robotcore.hardware.ServoControllerEx;
  * 1) Provide caching to avoid unnecessary setPower() lynxcommands.
  * 2) Allow for easy usage of the Axon servos.
  */
+
+@Photon
 public class SolversAxonServo {
     private double offset = 0;
     private double lastPower = 0;
@@ -25,8 +27,8 @@ public class SolversAxonServo {
 
     private double powerThreshold = 0;
 
-    public SolversAxonServo(@NonNull String axonServoName, double powerThreshold) {
-        this.crservo = (PhotonCRServo) hardwareMap.get(CRServo.class, axonServoName);
+    public SolversAxonServo(@NonNull PhotonCRServo crservo, double powerThreshold) {
+        this.crservo = crservo;
         this.powerThreshold = powerThreshold;
         this.lastPower = crservo.getPower();
     }

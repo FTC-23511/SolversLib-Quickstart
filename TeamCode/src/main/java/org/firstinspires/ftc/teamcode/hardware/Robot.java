@@ -1,10 +1,16 @@
 package org.firstinspires.ftc.teamcode.hardware;
 
+import com.arcrobotics.ftclib.hardware.motors.Motor;
+import com.arcrobotics.ftclib.hardware.motors.MotorEx;
 import com.outoftheboxrobotics.photoncore.Photon;
+import com.outoftheboxrobotics.photoncore.hardware.motor.PhotonDcMotor;
+import com.outoftheboxrobotics.photoncore.hardware.servo.PhotonCRServo;
+import com.outoftheboxrobotics.photoncore.hardware.servo.PhotonServo;
 import com.qualcomm.hardware.bosch.BHI260IMU;
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.AnalogInput;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
@@ -18,7 +24,6 @@ import org.firstinspires.ftc.teamcode.drive.CoaxialSwerveDrivetrain;
 import org.firstinspires.ftc.teamcode.drive.CoaxialSwerveModule;
 import org.firstinspires.ftc.teamcode.hardware.caching.SolversAxonServo;
 import org.firstinspires.ftc.teamcode.hardware.caching.SolversMotor;
-import org.firstinspires.ftc.teamcode.hardware.caching.SolversMotorEncoder;
 import org.firstinspires.ftc.teamcode.hardware.caching.SolversServo;
 import org.firstinspires.ftc.teamcode.subsystem.Deposit;
 import org.firstinspires.ftc.teamcode.subsystem.Intake;
@@ -27,7 +32,7 @@ import java.util.List;
 
 import javax.annotation.concurrent.GuardedBy;
 
-    @Photon
+@Photon
 public class Robot {
     public SolversMotor liftLeft;
     public SolversMotor liftRight;
@@ -52,19 +57,22 @@ public class Robot {
     public SolversAxonServo backLeftServo;
     public SolversAxonServo backRightServo;
 
-    public SolversMotorEncoder liftEncoder;
-    public SolversMotorEncoder extensionEncoder;
-    public SolversMotorEncoder parallelPod;
-    public SolversMotorEncoder perpendicularPod;
+    public AnalogInput frontLeftEncoder;
+    public AnalogInput frontRightEncoder;
+    public AnalogInput backLeftEncoder;
+    public AnalogInput backRightEncoder;
 
-//    public SolversMotorEncoder[] encodersName;
-
-    public DistanceSensor intakeDistanceSensor;
+    public Motor.Encoder liftEncoder;
+    public Motor.Encoder extensionEncoder;
+    public Motor.Encoder parallelPod;
+    public Motor.Encoder perpendicularPod;
 
     public CoaxialSwerveModule fL;
     public CoaxialSwerveModule fR;
     public CoaxialSwerveModule bL;
     public CoaxialSwerveModule bR;
+
+    public DistanceSensor intakeDistanceSensor;
 
     private final Object imuLock = new Object();
     @GuardedBy("imuLock")
@@ -93,19 +101,19 @@ public class Robot {
 
     // Make sure to run this after instance has been enabled/made
     public void init(HardwareMap hardwareMap) {
-        liftLeft = new SolversMotor("liftLeft", 0.01);
+        liftLeft = new SolversMotor((hardwareMap.get(PhotonDcMotor.class, "liftLeft")), 0.01);
         liftLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        liftRight = new SolversMotor("liftRight", 0.01);
+        liftRight = new SolversMotor(hardwareMap.get(PhotonDcMotor.class, "liftRight"), 0.01);
         liftRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        extension = new SolversMotor("extension", 0.01);
+        extension = new SolversMotor(hardwareMap.get(PhotonDcMotor.class, "extension"), 0.01);
         extension.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         extension.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        intakeMotor = new SolversMotor("intakeMotor", 0.01);
+        intakeMotor = new SolversMotor(hardwareMap.get(PhotonDcMotor.class, "intakeMotor"), 0.01);
 
-        frontLeftMotor = new SolversMotor("frontLeftMotor", 0.01);
-        frontRightMotor = new SolversMotor("frontRightMotor", 0.01);
-        backLeftMotor = new SolversMotor("backLeftMotor", 0.01);
-        backRightMotor = new SolversMotor("backRightMotor", 0.01);
+        frontLeftMotor = new SolversMotor(hardwareMap.get(PhotonDcMotor.class, "frontLeftMotor"), 0.01);
+        frontRightMotor = new SolversMotor(hardwareMap.get(PhotonDcMotor.class, "frontRightMotor"), 0.01);
+        backLeftMotor = new SolversMotor(hardwareMap.get(PhotonDcMotor.class, "backLeftMotor"), 0.01);
+        backRightMotor = new SolversMotor(hardwareMap.get(PhotonDcMotor.class, "backRightMotor"), 0.01);
 
         frontLeftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         frontLeftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -119,18 +127,18 @@ public class Robot {
         liftLeft.setDirection(DcMotorSimple.Direction.REVERSE);
         intakeMotor.setDirection(DcMotorSimple.Direction.REVERSE);
 
-        leftClaw = new SolversServo("leftClaw", 0.0);
-        rightClaw = new SolversServo("rightClaw", 0.0);
-        leftArm = new SolversServo("leftArm", 0.0);
-        rightArm = new SolversServo("rightArm", 0.0);
-        wrist = new SolversServo("wrist", 0.0);
-        tray = new SolversServo("tray", 0.0);
-        pitchingIntake = new SolversServo("pitchingIntake", 0.0);
+        leftClaw = new SolversServo(hardwareMap.get(PhotonServo.class, "leftClaw"), 0.0);
+        rightClaw = new SolversServo(hardwareMap.get(PhotonServo.class, "rightClaw"), 0.0);
+        leftArm = new SolversServo(hardwareMap.get(PhotonServo.class, "leftArm"), 0.0);
+        rightArm = new SolversServo(hardwareMap.get(PhotonServo.class, "rightArm"), 0.0);
+        wrist = new SolversServo(hardwareMap.get(PhotonServo.class, "wrist"), 0.0);
+        tray = new SolversServo(hardwareMap.get(PhotonServo.class, "tray"), 0.0);
+        pitchingIntake = new SolversServo(hardwareMap.get(PhotonServo.class, "pitchingIntake"), 0.0);
 
-        frontLeftServo = new SolversAxonServo("frontLeftServo", 0.01);
-        frontRightServo = new SolversAxonServo("frontRightServo", 0.01);
-        backLeftServo = new SolversAxonServo("backLeftServo", 0.01);
-        backRightServo = new SolversAxonServo("backRightServo", 0.01);
+        frontLeftServo = new SolversAxonServo(hardwareMap.get(PhotonCRServo.class, "frontLeftServo"), 0.01);
+        frontRightServo = new SolversAxonServo(hardwareMap.get(PhotonCRServo.class, "frontRightServo"), 0.01);
+        backLeftServo = new SolversAxonServo(hardwareMap.get(PhotonCRServo.class, "backLeftServo"), 0.01);
+        backRightServo = new SolversAxonServo(hardwareMap.get(PhotonCRServo.class, "backRightServo"), 0.01);
 
         frontLeftServo.setDirection(DcMotorSimple.Direction.REVERSE);
         frontRightServo.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -139,19 +147,18 @@ public class Robot {
 
         leftArm.setDirection(Servo.Direction.REVERSE);
 
-        frontLeftServo.setServoEncoder("frontLeftEncoder");
-        frontLeftServo.setServoEncoder("frontRightEncoder");
-        frontLeftServo.setServoEncoder("backLeftEncoder");
-        frontLeftServo.setServoEncoder("backRightEncoder");
+        frontLeftEncoder = hardwareMap.get(AnalogInput.class, "frontLeftEncoder");
+        frontRightEncoder = hardwareMap.get(AnalogInput.class, "frontRightEncoder");
+        backLeftEncoder = hardwareMap.get(AnalogInput.class, "backLeftEncoder");
+        backRightEncoder = hardwareMap.get(AnalogInput.class, "backRightEncoder");
 
-        liftEncoder = new SolversMotorEncoder(liftRight);
-        extensionEncoder = new SolversMotorEncoder(extension);
+        liftEncoder = new MotorEx(hardwareMap, "liftRight").encoder;
+        extensionEncoder = new MotorEx(hardwareMap, "extension").encoder;
 
-        parallelPod = new SolversMotorEncoder(backRightMotor);
-        parallelPod.setDirection(SolversMotorEncoder.Direction.REVERSE);
-
-        perpendicularPod = new SolversMotorEncoder(backLeftMotor);
-        perpendicularPod.setDirection(SolversMotorEncoder.Direction.REVERSE);
+        parallelPod = new MotorEx(hardwareMap, "backRightMotor").encoder;
+        parallelPod.setDirection(Motor.Direction.REVERSE);
+        perpendicularPod = new MotorEx(hardwareMap, "backLeftMotor").encoder;
+        perpendicularPod.setDirection(Motor.Direction.REVERSE);
 
         intakeDistanceSensor = hardwareMap.get(DistanceSensor.class, "intakeDistanceSensor");
 
@@ -185,10 +192,6 @@ public class Robot {
         fR.init();
         bL.init();
         bR.init();
-
-        swerveDrivetrain = new CoaxialSwerveDrivetrain (
-            new CoaxialSwerveModule[] { fL, fR, bL, bR }
-        );
 
         intake = new Intake();
         deposit = new Deposit();

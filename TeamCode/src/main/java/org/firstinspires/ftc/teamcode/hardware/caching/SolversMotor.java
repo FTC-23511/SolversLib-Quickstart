@@ -1,15 +1,8 @@
 package org.firstinspires.ftc.teamcode.hardware.caching;
 
-
-import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.hardwareMap;
-
-import com.outoftheboxrobotics.photoncore.Photon;
-
 import com.outoftheboxrobotics.photoncore.hardware.motor.PhotonDcMotor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
-
-import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 
 /**
  * A wrapper motor class that provides caching to avoid unnecessary setPower() calls.
@@ -22,9 +15,13 @@ public class SolversMotor {
 
     private double powerThreshold = 0.0;
 
-    public SolversMotor(String motorName, double powerThreshold) {
-        this.motor = (hardwareMap.get(PhotonDcMotor.class, motorName));
+    public SolversMotor(PhotonDcMotor motor, double powerThreshold) {
+        this.motor = motor;
         this.powerThreshold = powerThreshold;
+    }
+
+    public SolversMotor(PhotonDcMotor motor) {
+        this.motor = motor;
     }
 
     public void setPower(double power) {
@@ -42,11 +39,6 @@ public class SolversMotor {
         this.motor.setDirection(direction);
     }
 
-
-    public DcMotorSimple.Direction getDirection(){
-        return(motor.getDirection());
-    }
-
     public void setCachingThreshold(double powerThreshold) {
         this.powerThreshold = powerThreshold;
     }
@@ -59,19 +51,7 @@ public class SolversMotor {
         this.motor.setMode(runMode);
     }
 
-    public DcMotor.RunMode getMode() {
-        return this.motor.getMode();
-    }
-
     public void setZeroPowerBehavior(DcMotor.ZeroPowerBehavior zeroPowerBehavior) {
         this.motor.setZeroPowerBehavior(zeroPowerBehavior);
-    }
-
-    public double getVelocity() {
-        return this.motor.getVelocity();
-    }
-
-    public double getCurrent(CurrentUnit currentUnit) {
-        return this.motor.getCorrectedCurrent(currentUnit);
     }
 }
