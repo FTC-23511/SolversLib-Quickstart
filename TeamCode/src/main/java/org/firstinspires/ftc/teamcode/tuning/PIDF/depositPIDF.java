@@ -17,11 +17,11 @@ import org.firstinspires.ftc.teamcode.hardware.Robot;
 @TeleOp
 public class depositPIDF extends OpMode {
 
-    // D, 0.0004
-    // F, 0.0006
+    // D, 0.0007
+    // F, 0.00085
     // I, 0
     // maxPowerConstant, 0.5
-    // P, 0.011
+    // P, 0.024
 
     public static double p = 0.00;
     public static double i = 0;
