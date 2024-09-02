@@ -35,8 +35,8 @@ public class Globals {
     // Converts value of -1 to 1 to max m/s if full power
     public static final double STRAFE_MULTIPLIER = MAXIMUM_MODULE_SPEED;
     // Converts value of -1 to 1 to max rad/sec if full power
-    // Takes circumference of circle formed by wheels divided by maximum module speed
-    public static final double TURN_MULTIPLIER = (Math.hypot(LENGTH, WIDTH) * Math.PI)/MAXIMUM_MODULE_SPEED;
+    // Takes maximum module speed divided by circumference of circle formed by wheels divided multiplied by 2 PI (for radians)
+    public static final double TURN_MULTIPLIER = (MAXIMUM_MODULE_SPEED/(Math.hypot(LENGTH, WIDTH) * Math.PI)) * 2 * Math.PI;
 
     // By default values refer to servo positions, unless otherwise specified
     // By default for values that control opposite running hardware, the right value of the hardware is used

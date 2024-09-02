@@ -1,6 +1,5 @@
 package org.firstinspires.ftc.teamcode.hardware.caching;
 
-import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.hardwareMap;
 import static org.firstinspires.ftc.robotcore.external.navigation.AngleUnit.normalizeRadians;
 
 import androidx.annotation.NonNull;
@@ -16,6 +15,7 @@ import com.qualcomm.robotcore.hardware.ServoControllerEx;
  * A wrapper CRServo class for axon servos that has two goals.
  * 1) Provide caching to avoid unnecessary setPower() lynxcommands.
  * 2) Allow for easy usage of the Axon servos.
+ * Credit to 22105 Runtime Terror for majority of the class
  */
 
 @Photon
@@ -39,10 +39,10 @@ public class SolversAxonServo {
 
     /**
      * Sets the servo encoder.
-     * @param axonEncoderName The analog port of the servo encoder.
+     * @param absoluteEncoder The analog input of the absolute encoder.
      */
-    public void setServoEncoder(String axonEncoderName) {
-        this.servoEncoder = hardwareMap.get(AnalogInput.class, axonEncoderName);
+    public void setServoEncoder(AnalogInput absoluteEncoder) {
+        this.servoEncoder = absoluteEncoder;
     }
 
     synchronized public void setPower(double power) {

@@ -19,6 +19,8 @@ public class CoaxialSwerveDrivetrain extends SubsystemBase {
     private final CoaxialSwerveModule bL;
     private final CoaxialSwerveModule bR;
 
+    private ChassisSpeeds chassisSpeeds = new ChassisSpeeds(0, 0, 0);
+
     private SwerveDriveKinematics swerveDriveKinematics;
 
     // Enter in modules in fL, fR, bL, bR order (f = front, b = back, L = left, R = right)
@@ -31,15 +33,19 @@ public class CoaxialSwerveDrivetrain extends SubsystemBase {
 
         swerveDriveKinematics = new SwerveDriveKinematics(
                 new Translation2d(WIDTH/2, LENGTH/2),
-                new Translation2d(-WIDTH/2, LENGTH/2),
                 new Translation2d(WIDTH/2, -LENGTH/2),
+                new Translation2d(-WIDTH/2, LENGTH/2),
                 new Translation2d(-WIDTH/2, -LENGTH/2)
         );
     }
 
-    public void update(ChassisSpeeds chassisSpeeds) {
+    public SwerveModuleState[] update(ChassisSpeeds chassisSpeeds) {
+        if (chassisSpeeds != null) {
+            this.chassisSpeeds = chassisSpeeds;
+        }
+
         // Kinematics math (<3 FTCLib/WPILib) pls work
-        SwerveModuleState[] moduleStates = swerveDriveKinematics.toSwerveModuleStates(chassisSpeeds);
+        SwerveModuleState[] moduleStates = swerveDriveKinematics.toSwerveModuleStates(this.chassisSpeeds);
         normalizeWheelSpeeds(moduleStates, MAXIMUM_MODULE_SPEED);
 
         // Update individual modules
@@ -47,6 +53,9 @@ public class CoaxialSwerveDrivetrain extends SubsystemBase {
         fR.update(moduleStates[1].angle.getRadians(), moduleStates[1].speedMetersPerSecond/MAXIMUM_MODULE_SPEED);
         bL.update(moduleStates[2].angle.getRadians(), moduleStates[2].speedMetersPerSecond/MAXIMUM_MODULE_SPEED);
         bR.update(moduleStates[3].angle.getRadians(), moduleStates[3].speedMetersPerSecond/MAXIMUM_MODULE_SPEED);
+
+        // Only for testing purposes
+        return moduleStates;
     }
 
     public void read() {

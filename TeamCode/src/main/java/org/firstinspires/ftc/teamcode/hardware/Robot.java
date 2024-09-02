@@ -152,6 +152,11 @@ public class Robot {
         backLeftEncoder = hardwareMap.get(AnalogInput.class, "backLeftEncoder");
         backRightEncoder = hardwareMap.get(AnalogInput.class, "backRightEncoder");
 
+        frontLeftServo.setServoEncoder(frontLeftEncoder);
+        frontRightServo.setServoEncoder(frontRightEncoder);
+        backLeftServo.setServoEncoder(backLeftEncoder);
+        backRightServo.setServoEncoder(backRightEncoder);
+
         liftEncoder = new MotorEx(hardwareMap, "liftRight").encoder;
         extensionEncoder = new MotorEx(hardwareMap, "extension").encoder;
 
@@ -183,27 +188,30 @@ public class Robot {
 
         imuOffset = Globals.STARTING_HEADING;
 
-        fL = new CoaxialSwerveModule(frontLeftMotor, frontLeftServo, 0);
-        fR = new CoaxialSwerveModule(frontRightMotor, frontRightServo, 0);
-        bL = new CoaxialSwerveModule(backLeftMotor, backLeftServo, 0);
-        bR = new CoaxialSwerveModule(backRightMotor, backRightServo, 0);
+        fL = new CoaxialSwerveModule(frontLeftMotor, frontLeftServo, -2.524);
+        fR = new CoaxialSwerveModule(frontRightMotor, frontRightServo, 0.529);
+        bL = new CoaxialSwerveModule(backLeftMotor, backLeftServo, -2.163);
+        bR = new CoaxialSwerveModule(backRightMotor, backRightServo, -1.832);
 
         fL.init();
         fR.init();
         bL.init();
         bR.init();
 
+        swerveDrivetrain = new CoaxialSwerveDrivetrain(new CoaxialSwerveModule[]{ fL, fR, bL, bR });
+
         intake = new Intake();
         deposit = new Deposit();
 
-        deposit.init();
-        intake.init();
+        // Inits commented out for kinematics testing
+//        deposit.init();
+//        intake.init();
 
         // Add any OpMode specific initializations here
         if (Globals.opModeType == Globals.OpModeType.AUTO) {
-            deposit.initAuto();
+            // deposit.initAuto();
         } else {
-            deposit.initTeleOp();
+            // deposit.initTeleOp();
         }
     }
 
@@ -220,7 +228,7 @@ public class Robot {
         }
     }
 
-    public void resetIMUOffset() {
+    public void resetIMU() {
         imuOffset = rawIMUAngle;
     }
 

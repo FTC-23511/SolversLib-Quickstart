@@ -50,8 +50,10 @@ public class CoaxialSwerveModule {
         this.podTargetHeading = normalizeRadians(podTargetHeading);
         this.motorTargetPower = motorTargetPower;
 
+        double error = normalizeRadians(this.podTargetHeading - this.podHeading);
+
         // Optimize with wheel flipping
-        if (normalizeRadians(Math.abs(this.podTargetHeading - this.podHeading)) > Math.PI/2) {
+        if (Math.abs(error) > (Math.PI / 2)) {
             this.motorFlipped = true;
             this.podTargetHeading = normalizeRadians(this.podTargetHeading + Math.PI);
         } else {
@@ -61,7 +63,7 @@ public class CoaxialSwerveModule {
         // Only for tuning purposes - remove once tuned pod PIDF or leave it :shrug:
         podPIDF.setPIDF(P, I, D, F);
 
-        servo.setPower(podPIDF.calculate(podHeading, this.podTargetHeading));
+        servo.setPower(podPIDF.calculate(0, error));
         motor.setPower(motorFlipped ? -this.motorTargetPower : this.motorTargetPower);
     }
 }

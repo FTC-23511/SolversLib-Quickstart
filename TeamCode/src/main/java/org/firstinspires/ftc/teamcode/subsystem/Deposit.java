@@ -38,10 +38,8 @@ public class Deposit extends SubsystemBase {
         slidePIDF.setTolerance(10, 10);
 
         setArmTransfer(true);
-        armTransfer = true;
 
         setWristTransfer();
-        wristTransfer = true;
 
         setSlideTarget(0);
     }
