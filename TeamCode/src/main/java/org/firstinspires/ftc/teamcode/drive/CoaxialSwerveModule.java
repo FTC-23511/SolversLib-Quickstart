@@ -60,6 +60,8 @@ public class CoaxialSwerveModule {
             motorFlipped = false;
         }
 
+        error = normalizeRadians(this.podTargetHeading - this.podHeading);
+
         // Only for tuning purposes - remove once tuned pod PIDF or leave it :shrug:
         podPIDF.setPIDF(P, I, D, F);
 
