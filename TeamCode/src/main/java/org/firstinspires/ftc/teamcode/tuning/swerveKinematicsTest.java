@@ -1,7 +1,6 @@
 package org.firstinspires.ftc.teamcode.tuning;
 
 import static org.firstinspires.ftc.teamcode.hardware.Globals.DriveMode;
-import static org.firstinspires.ftc.teamcode.hardware.Globals.MAXIMUM_MODULE_SPEED;
 import static org.firstinspires.ftc.teamcode.hardware.Globals.OpModeType;
 import static org.firstinspires.ftc.teamcode.hardware.Globals.STARTING_HEADING;
 import static org.firstinspires.ftc.teamcode.hardware.Globals.STRAFE_MULTIPLIER;
@@ -59,6 +58,8 @@ public class swerveKinematicsTest extends CommandOpMode {
             robot.startIMUThread(this);
         }
 
+        timer.reset();
+
         if (driver.wasJustPressed(GamepadKeys.Button.RIGHT_STICK_BUTTON)) {
             robot.resetIMU();
         }
@@ -75,20 +76,38 @@ public class swerveKinematicsTest extends CommandOpMode {
 
         SwerveModuleState[] moduleStates = robot.swerveDrivetrain.update(chassisSpeeds);
 
-        telemetry.addData("front left module motor power", moduleStates[0].speedMetersPerSecond/MAXIMUM_MODULE_SPEED);
-        telemetry.addData("front right module motor power", moduleStates[1].speedMetersPerSecond/MAXIMUM_MODULE_SPEED);
-        telemetry.addData("back left module motor power", moduleStates[2].speedMetersPerSecond/MAXIMUM_MODULE_SPEED);
-        telemetry.addData("back right module motor power", moduleStates[3].speedMetersPerSecond/MAXIMUM_MODULE_SPEED);
+//        telemetry.addData("fL target power", moduleStates[0].speedMetersPerSecond/MAXIMUM_MODULE_SPEED);
+//        telemetry.addData("fR target power", moduleStates[1].speedMetersPerSecond/MAXIMUM_MODULE_SPEED);
+//        telemetry.addData("bL target power", moduleStates[2].speedMetersPerSecond/MAXIMUM_MODULE_SPEED);
+//        telemetry.addData("bR target power", moduleStates[3].speedMetersPerSecond/MAXIMUM_MODULE_SPEED);
 
-        telemetry.addData("front left module angle", moduleStates[0].angle.getRadians());
-        telemetry.addData("front right module angle", moduleStates[1].angle.getRadians());
-        telemetry.addData("back left module angle", moduleStates[2].angle.getRadians());
-        telemetry.addData("back right module angle", moduleStates[3].angle.getRadians());
+        telemetry.addData("fL target module angle", moduleStates[0].angle.getRadians());
+        telemetry.addData("fR target module angle", moduleStates[1].angle.getRadians());
+        telemetry.addData("bL target module angle", moduleStates[2].angle.getRadians());
+        telemetry.addData("bR target module angle", moduleStates[3].angle.getRadians());
+
+        telemetry.addData("fL module angle", robot.frontLeftServo.getPosition());
+        telemetry.addData("fR module angle", robot.frontRightServo.getPosition());
+        telemetry.addData("bL module angle", robot.backLeftServo.getPosition());
+        telemetry.addData("fR module angle", robot.backRightServo.getPosition());
+
+        telemetry.addData("fL servo power", robot.frontLeftServo.getPower());
+        telemetry.addData("fR servo power", robot.frontRightServo.getPower());
+        telemetry.addData("bL servo power", robot.backLeftServo.getPower());
+        telemetry.addData("bR servo power", robot.backRightServo.getPower());
 
         telemetry.addData("ChassisSpeeds rad/sec", chassisSpeeds.omegaRadiansPerSecond);
         telemetry.addData("ChassisSpeeds vx m/s", chassisSpeeds.vxMetersPerSecond);
         telemetry.addData("ChassisSpeeds vy m/s", chassisSpeeds.vyMetersPerSecond);
         telemetry.addData("robot angle", robot.getAngle());
+
+        telemetry.addData("loop time (ms)", timer.milliseconds());
+
         telemetry.update();
+
+        // DO NOT REMOVE! Removing this will return stale data since bulk caching is on Manual mode
+        // Also only clearing the control hub to decrease loop times
+        // This means if we start reading both hubs (which we aren't) we need to clear both
+        robot.ControlHub.clearBulkCache();
     }
 }

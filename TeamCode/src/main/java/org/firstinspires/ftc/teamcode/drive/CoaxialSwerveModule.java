@@ -17,7 +17,7 @@ public class CoaxialSwerveModule {
     private final SolversAxonServo servo;
 
     // Pod rotation PIDF
-    public static double P = 0;
+    public static double P = 1.2;
     public static double I = 0;
     public static double D = 0;
     public static double F = 0;
@@ -65,7 +65,9 @@ public class CoaxialSwerveModule {
         // Only for tuning purposes - remove once tuned pod PIDF or leave it :shrug:
         podPIDF.setPIDF(P, I, D, F);
 
+
         servo.setPower(podPIDF.calculate(0, error));
         motor.setPower(motorFlipped ? -this.motorTargetPower : this.motorTargetPower);
+
     }
 }

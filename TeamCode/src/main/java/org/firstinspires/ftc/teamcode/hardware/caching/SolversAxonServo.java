@@ -10,6 +10,7 @@ import com.qualcomm.robotcore.hardware.AnalogInput;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.PwmControl;
 import com.qualcomm.robotcore.hardware.ServoControllerEx;
+import com.qualcomm.robotcore.util.Range;
 
 /**
  * A wrapper CRServo class for axon servos that has two goals.
@@ -48,7 +49,7 @@ public class SolversAxonServo {
     synchronized public void setPower(double power) {
         if (Math.abs(this.lastPower - power) > this.powerThreshold) {
             this.lastPower = power;
-            this.crservo.setPower(power);
+            this.crservo.setPower(Range.clip(power, -1, 1));
         }
     }
 
