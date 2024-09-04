@@ -12,6 +12,8 @@ import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.arcrobotics.ftclib.command.CommandOpMode;
+import com.arcrobotics.ftclib.command.button.Button;
+import com.arcrobotics.ftclib.command.button.GamepadButton;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.arcrobotics.ftclib.geometry.Rotation2d;
@@ -22,6 +24,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.hardware.Robot;
+import org.firstinspires.ftc.teamcode.subsystem.commands.resetIMU;
 
 @Photon
 @Config
@@ -60,9 +63,11 @@ public class swerveKinematicsTest extends CommandOpMode {
 
         timer.reset();
 
-        if (driver.wasJustPressed(GamepadKeys.Button.RIGHT_STICK_BUTTON)) {
-            robot.resetIMU();
-        }
+        // Runs command scheduler
+        super.run();
+
+        Button resetYaw = new GamepadButton(driver, GamepadKeys.Button.RIGHT_STICK_BUTTON);
+        resetYaw.whenPressed(new resetIMU(robot));
 
         double speedMultiplier = (driver.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) * 0.8) + 0.2;
 

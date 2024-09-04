@@ -32,10 +32,10 @@ public class CoaxialSwerveDrivetrain extends SubsystemBase {
         bR = modules[3];
 
         swerveDriveKinematics = new SwerveDriveKinematics(
-                new Translation2d(WIDTH/2, LENGTH/2),
                 new Translation2d(WIDTH/2, -LENGTH/2),
-                new Translation2d(-WIDTH/2, LENGTH/2),
-                new Translation2d(-WIDTH/2, -LENGTH/2)
+                new Translation2d(WIDTH/2, LENGTH/2),
+                new Translation2d(-WIDTH/2, -LENGTH/2),
+                new Translation2d(-WIDTH/2, LENGTH/2)
         );
     }
 
