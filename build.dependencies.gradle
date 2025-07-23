@@ -1,18 +1,26 @@
 repositories {
     mavenCentral()
     google() // Needed for androidx
+    maven { url = "https://maven.rowanmcalpin.com/" }
+    maven { url = "https://maven.pedropathing.com/" } // Remove if you don't intend to use PedroPathing
+    maven { url = "https://maven.brott.dev/" } // Remove if you don't intend to use the FTC Dashboard (required if using PedroPathing)
 }
 
 dependencies {
-    implementation 'org.firstinspires.ftc:Inspection:10.2.0'
-    implementation 'org.firstinspires.ftc:Blocks:10.2.0'
-    implementation 'org.firstinspires.ftc:RobotCore:10.2.0'
-    implementation 'org.firstinspires.ftc:RobotServer:10.2.0'
-    implementation 'org.firstinspires.ftc:OnBotJava:10.2.0'
-    implementation 'org.firstinspires.ftc:Hardware:10.2.0'
-    implementation 'org.firstinspires.ftc:FtcCommon:10.2.0'
-    implementation 'org.firstinspires.ftc:Vision:10.2.0'
+    implementation 'org.firstinspires.ftc:Inspection:10.3.0'
+    implementation 'org.firstinspires.ftc:Blocks:10.3.0'
+    implementation 'org.firstinspires.ftc:RobotCore:10.3.0'
+    implementation 'org.firstinspires.ftc:RobotServer:10.3.0'
+    implementation 'org.firstinspires.ftc:OnBotJava:10.3.0'
+    implementation 'org.firstinspires.ftc:Hardware:10.3.0'
+    implementation 'org.firstinspires.ftc:FtcCommon:10.3.0'
+    implementation 'org.firstinspires.ftc:Vision:10.3.0'
     //noinspection GradleDependency
     implementation 'androidx.appcompat:appcompat:1.2.0'
+    implementation 'com.rowanmcalpin.nextftc:core:0.6.2'
+    implementation 'com.rowanmcalpin.nextftc:ftc:0.6.2'
+    implementation 'com.rowanmcalpin.nextftc:pedro:0.6.2' // Remove if you don't intend to use PedroPathing
+    implementation 'com.pedropathing:pedro:1.0.9' // Remove if you don't intend to use PedroPathing
+    implementation 'com.acmerobotics.dashboard:dashboard:0.4.16' // Remove if you don't intend to use the FTC Dashboard (required if using PedroPathing)
 }
 

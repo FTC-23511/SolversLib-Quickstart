@@ -1,0 +1,34 @@
+<?xml version='1.0' encoding='UTF-8' standalone='yes' ?>
+<Robot type="FirstInspires-FTC">
+    <LynxUsbDevice name="Expansion Hub Portal 1" serialNumber="DQ92KR78" parentModuleAddress="2">
+        <LynxModule name="Expansion Hub 2" port="2">
+            <goBILDA5202SeriesMotor name="motor_lift_r" port="0" />
+            <goBILDA5202SeriesMotor name="motor_lift_l" port="1" />
+            <goBILDA5202SeriesMotor name="motor_extendo" port="2" />
+            <Servo name="servo_wrist" port="0" />
+            <Servo name="servo_arm_l" port="1" />
+            <Servo name="servo_claw" port="2" />
+            <Servo name="servo_stilt_l" port="3" />
+            <Servo name="servo_arm_r" port="4" />
+            <Servo name="servo_pto_l" port="5" />
+        </LynxModule>
+    </LynxUsbDevice>
+    <EthernetDevice name="limelight" serialNumber="EthernetOverUsb:eth0:172.29.0.22" port="0" ipAddress="172.29.0.1" />
+    <LynxUsbDevice name="Control Hub Portal" serialNumber="(embedded)" parentModuleAddress="173">
+        <LynxModule name="Control Hub" port="173">
+            <goBILDA5202SeriesMotor name="motor_f_l" port="3" />
+            <goBILDA5202SeriesMotor name="motor_b_l" port="2" />
+            <goBILDA5202SeriesMotor name="motor_f_r" port="1" />
+            <goBILDA5202SeriesMotor name="motor_b_r" port="0" />
+            <Servo name="servo_pto_r" port="0" />
+            <ContinuousRotationServo name="crservo_intake" port="1" />
+            <Servo name="servo_stilt_r" port="2" />
+            <Servo name="servo_pitch" port="3" />
+            <Servo name="servo_sweeper" port="4" />
+            <Servo name="servo_intake_pod" port="5" />
+            <RevColorSensorV3 name="sensor_color" port="0" bus="2" />
+            <ControlHubImuBHI260AP name="imu" port="0" bus="0" />
+            <SparkFunOTOS2 name="sensor_otos" port="0" bus="1" />
+        </LynxModule>
+    </LynxUsbDevice>
+</Robot>

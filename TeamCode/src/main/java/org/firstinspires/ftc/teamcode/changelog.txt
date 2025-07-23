@@ -1,0 +1,6 @@
+ - 7/16/2025 Evening
+Me and Alex finished all the subsystems for command-based excluding the specific values/numbers.
+Only task left is the linking of commands to buttons
+
+ - 7/17/25 Evening
+Me and alex and dan finished all the linking of buttons. Testing needs to be done for spec hanging(time, and power to counter gravity)
