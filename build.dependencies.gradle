@@ -25,7 +25,7 @@ dependencies {
     implementation 'com.pedropathing:telemetry:0.0.6'
 
     // Panels Dashboard
-    implementation "com.bylazar:fullpanels:1.0.2"
+    implementation "com.bylazar:fullpanels:1.0.5"
 
     //noinspection GradleDependency
     implementation 'androidx.appcompat:appcompat:1.2.0'
