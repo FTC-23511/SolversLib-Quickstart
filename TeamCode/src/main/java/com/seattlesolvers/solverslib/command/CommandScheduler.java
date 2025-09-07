@@ -7,6 +7,9 @@
 
 package com.seattlesolvers.solverslib.command;
 
+import com.qualcomm.hardware.lynx.LynxModule;
+import com.qualcomm.robotcore.hardware.HardwareMap;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -73,6 +76,8 @@ public final class CommandScheduler {
     private final Map<Command, Boolean> m_toSchedule = new LinkedHashMap<>();
     private boolean m_inRunLoop;
     private final List<Command> m_toCancel = new ArrayList<>();
+    private boolean clearHubCache = false;
+    private List<LynxModule> allHubs;
 
     CommandScheduler() {
 
@@ -269,6 +274,12 @@ public final class CommandScheduler {
                 schedule(subsystemCommand.getValue());
             }
         }
+
+        if (clearHubCache) {
+            for (LynxModule hub : allHubs) {
+                hub.clearBulkCache();
+            }
+        }
     }
 
     /**
@@ -293,6 +304,27 @@ public final class CommandScheduler {
      */
     public void unregisterSubsystem(Subsystem... subsystems) {
         m_subsystems.keySet().removeAll(Arrays.asList(subsystems));
+    }
+
+    /**
+     * Method to automatically set all hubs to bulk read, greatly reducing loop times.
+     * @param hwMap hardwareMap to access hub objects
+     * @param cachingMode the mode in which the hubs operate during bulk reading/caching.
+     *                    MANUAL mode is highly recommended and comes to the user with no
+     *                    extra work and doesn't read any hardware more than once per loop,
+     *                    while AUTO enables bulk reads but will conduct a bulk read any time
+     *                    a specific hardware is read the second time, even in a loop,
+     *                    potentially leading to worse loop times.
+     */
+    public void setBulkReading(HardwareMap hwMap, LynxModule.BulkCachingMode cachingMode) {
+        if (!cachingMode.equals(LynxModule.BulkCachingMode.OFF)) {
+            allHubs = hwMap.getAll(LynxModule.class);
+            for (LynxModule hub : allHubs) {
+                hub.setBulkCachingMode(cachingMode);
+            }
+        }
+
+        clearHubCache = cachingMode.equals(LynxModule.BulkCachingMode.MANUAL);
     }
 
     /**

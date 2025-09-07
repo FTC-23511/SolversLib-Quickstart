@@ -22,19 +22,19 @@ public class CRServoEx extends CRServo {
     private double cachingTolerance = 0.0001;
     private PIDFController pidf;
 
-/**
- * The mode in which the CR servo should behave.
- */
-public enum RunMode {
     /**
-     * Mode in which the CR servo takes the shortest path to reach a specific angle
+     * The mode in which the CR servo should behave.
      */
-    OptimizedPositionalControl,
-    /**
-     * Mode in which the CR servo is controlled with raw power
-     */
-    RawPower
-}
+    public enum RunMode {
+        /**
+         * Mode in which the CR servo takes the shortest path to reach a specific angle
+         */
+        OptimizedPositionalControl,
+        /**
+         * Mode in which the CR servo is controlled with raw power
+         */
+        RawPower
+    }
     private RunMode runmode;
 
     /**

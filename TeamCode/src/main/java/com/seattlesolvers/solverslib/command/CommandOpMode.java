@@ -3,7 +3,7 @@ package com.seattlesolvers.solverslib.command;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 /**
- * As opposed to the general WPILib-style Robot paradigm, FTCLib also offers a command opmode
+ * As opposed to the general WPILib-style Robot paradigm, SolversLib also offers a command opmode
  * for individual opmodes.
  *
  * @author Jackson

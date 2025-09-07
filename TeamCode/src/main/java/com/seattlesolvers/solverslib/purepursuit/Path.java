@@ -22,8 +22,8 @@ import java.util.Queue;
  * This class represents a pure pursuit path. It is used to store a path's waypoints, and do all the
  * calculation required to traverse the path. A path can be implemented in two different way. The first
  * way is running the loop/updating motor powers manually. This is a good implementation for those teams
- * who wish to just use the pure pursuit section FtcLib and not much else. The other implementation
- * is using the automatic feature. This features does all the hard work for you. Teams who use FtcLib's
+ * who wish to just use the pure pursuit section SolversLib and not much else. The other implementation
+ * is using the automatic feature. This features does all the hard work for you. Teams who use SolversLib's
  * features to power most of their code will find this method appealing.
  * <p>
  * To learn how to implement a pure pursuit path, please see the example implementations and tutorials.

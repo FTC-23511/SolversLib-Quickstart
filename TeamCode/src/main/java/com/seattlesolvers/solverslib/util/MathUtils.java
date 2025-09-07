@@ -62,11 +62,15 @@ public final class MathUtils {
         double angle2 = angle % max;
         if (zeroToMax && angle2 < 0) {
             return angle2 + max;
-        } else if (!zeroToMax && angle2 < max/2) {
-            return angle2 + max;
-        } else {
-            return angle2;
+        } else if (!zeroToMax) {
+            if (angle2 > max/2) {
+                return angle2 - max;
+            } else if (angle2 < -max/2) {
+                return angle2 + max;
+            }
         }
+
+        return angle2;
     }
 
     public static double normalizeRadians(double angle, boolean zeroToFull) {

@@ -29,7 +29,7 @@ public class ServoEx implements HardwareDevice {
      */
     public ServoEx(HardwareMap hwMap, String id, double min, double max) {
         if (max < min) {
-            throw new IllegalArgumentException("Minimum angle should be less than maximum angle");
+            throw new IllegalArgumentException("Minimum angle should be less than maximum angle!");
         }
         if (min < 0) {
             throw new IllegalArgumentException("Minimum angle should be greater than or equal to 0!");
@@ -59,7 +59,7 @@ public class ServoEx implements HardwareDevice {
         this(hwMap, id, 0.0, 1.0);
     }
 
-    // 1TODO: Actually implement this (needs more research on how it behaves with get and set positions)
+    // TODO: Actually implement this (needs more research on how it behaves with get and set positions)
 //    public void scaleRange(double min, double max) {
 //        servo.scaleRange(min, max);
 //    }

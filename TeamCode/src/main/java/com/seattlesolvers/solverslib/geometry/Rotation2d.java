@@ -137,7 +137,7 @@ public class Rotation2d {
         );
     }
 
-    /*
+    /**
      * Returns the radian value of the rotation.
      *
      * @return The radian value of the rotation.
