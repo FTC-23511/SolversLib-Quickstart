@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 
 /**
  * An extended motor class that utilizes more features than the
@@ -129,5 +130,40 @@ public class MotorEx extends Motor {
         if ((Math.abs(power - motorEx.getPower()) > cachingTolerance) || (power == 0 && motorEx.getPower() != 0)) {
             motorEx.setPower(power);
         }
+    }
+
+    /**
+     * Gets the current in the specified unit
+     * @param currentUnit the unit to get the current in
+     * @return the current in the specified unit
+     */
+    public double getCurrent(CurrentUnit currentUnit) {
+        return motorEx.getCurrent(currentUnit);
+    }
+
+    /**
+     * Gets the current alert in the specified unit
+     * @param currentUnit the unit to get the current alert in
+     * @return the current alert in the specified unit
+     */
+    public double getCurrentAlert(CurrentUnit currentUnit) {
+        return motorEx.getCurrentAlert(currentUnit);
+    }
+
+    /**
+     * Sets the current alert in the specified unit
+     * @param current the current alert to set
+     * @param unit the unit to set the current alert in
+     */
+    public void setCurrentAlert(double current, CurrentUnit unit) {
+        motorEx.setCurrentAlert(current, unit);
+    }
+
+    /**
+     * Checks if the motor is over the current limit
+     * @return true if the motor is over the current limit, false otherwise
+     */
+    public boolean isOverCurrent() {
+        return motorEx.isOverCurrent();
     }
 }
