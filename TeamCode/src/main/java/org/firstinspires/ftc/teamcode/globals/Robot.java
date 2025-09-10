@@ -33,7 +33,6 @@ public class Robot extends com.seattlesolvers.solverslib.command.Robot {
     public MotorEx BRmotor;
 
     public MotorEx intakeMotor;
-
     private MotorEx launchMotorTop;
     private MotorEx launchMotorBottom;
 
@@ -46,6 +45,7 @@ public class Robot extends com.seattlesolvers.solverslib.command.Robot {
 
     public ServoEx leftIntakePivot;
     public ServoEx rightIntakePivot;
+    public ServoEx depositPivot;
 
     public RevColorSensorV3 colorSensor;
 //    public Limelight3A limelight;
@@ -79,6 +79,9 @@ public class Robot extends com.seattlesolvers.solverslib.command.Robot {
 
         leftIntakePivot = new ServoEx(hwMap, "leftIntakePivot").setCachingTolerance(0.01);;
         rightIntakePivot = new ServoEx(hwMap, "rightIntakePivot").setCachingTolerance(0.01);;
+        depositPivot = new ServoEx(hwMap, "depositPivot").setCachingTolerance(0.01);;
+
+        rightIntakePivot.setInverted(true);
 
         pinpoint = hwMap.get(GoBildaPinpointDriver.class, "pinpoint");
         pinpoint.setOffsets(-75.96, 152.62, DistanceUnit.MM);

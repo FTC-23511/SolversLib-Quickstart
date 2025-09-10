@@ -31,6 +31,7 @@
 
             <Servo name="leftIntakePivot" port="1"/>
             <Servo name="rightIntakePivot" port="2"/>
+            <Servo name="depositPivot" port="3"/>
         </LynxModule>
 
         <ServoHub name="Servo Hub 3" port="3">
