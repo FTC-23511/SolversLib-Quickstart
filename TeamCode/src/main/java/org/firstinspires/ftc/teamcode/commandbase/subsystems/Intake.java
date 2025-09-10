@@ -2,6 +2,10 @@ package org.firstinspires.ftc.teamcode.commandbase.subsystems;
 
 
 
+import static org.firstinspires.ftc.teamcode.commandbase.subsystems.Intake.IntakeMotorState.*;
+import static org.firstinspires.ftc.teamcode.commandbase.subsystems.Intake.IntakePivotState.*;
+import static org.firstinspires.ftc.teamcode.globals.Constants.*;
+
 import com.seattlesolvers.solverslib.command.SequentialCommandGroup;
 import com.seattlesolvers.solverslib.command.SubsystemBase;
 import com.seattlesolvers.solverslib.command.WaitCommand;
@@ -59,30 +63,29 @@ public class Intake extends SubsystemBase {
 
     public void setActiveIntake(IntakeMotorState intakeMotorState) {
         if (intakeMotorState.equals(HOLD)) {
-            robot.intakeMotor.setPower(INTAKE_HOLD_SPEED);
+            robot.intakeMotor.set(INTAKE_HOLD_SPEED);
             Intake.intakeMotorState = intakeMotorState;
-        } else if (intakePivotState.equals(INTAKE) || intakePivotState.equals(INTAKE_READY)) {
+        } else if (intakePivotState.equals(IntakePivotState.INTAKE) || intakePivotState.equals(IntakePivotState.INTAKE_READY)) {
             switch (intakeMotorState) {
                 case FORWARD:
-                    robot.intakeMotor.setPower(INTAKE_FORWARD_SPEED);
+                    robot.intakeMotor.set(INTAKE_FORWARD_SPEED);
                     break;
                 case REVERSE:
-                    robot.intakeMotor.setPower(INTAKE_REVERSE_SPEED);
-                    reverseIntakeTimer.reset();
+                    robot.intakeMotor.set(INTAKE_REVERSE_SPEED);
                     break;
                 case STOP:
-                    robot.intakeMotor.setPower(0);
+                    robot.intakeMotor.set(0);
                     break;
             }
             Intake.intakeMotorState = intakeMotorState;
         }
     }
 
-    public void toggleActiveIntake(SampleColorTarget sampleColorTarget) {
-        if (intakePivotState.equals(INTAKE) || intakePivotState.equals(INTAKE_READY)) {
-            if (intakeMotorState.equals(FORWARD)) {
-                setActiveIntake(STOP);
-            } else if (intakeMotorState.equals(STOP) || intakeMotorState.equals(HOLD)) {
+    public void toggleActiveIntake() {
+        if (intakePivotState.equals(IntakePivotState.INTAKE) || intakePivotState.equals(IntakePivotState.INTAKE_READY)) {
+            if (intakeMotorState.equals(IntakeMotorState.FORWARD)) {
+                setActiveIntake(IntakeMotorState.STOP);
+            } else if (intakeMotorState.equals(IntakeMotorState.STOP) || intakeMotorState.equals(HOLD)) {
                 setActiveIntake(FORWARD);
             }
             Intake.sampleColorTarget = sampleColorTarget;
@@ -213,7 +216,6 @@ public class Intake extends SubsystemBase {
 
     @Override
     public void periodic() {
-        autoUpdateExtendo();
         autoUpdateActiveIntake();
     }
 }

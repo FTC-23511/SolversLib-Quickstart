@@ -29,4 +29,12 @@ public class Constants {
     public static double BL_ENCODER_OFFSET = 0.619; // Radians
     public static double BR_ENCODER_OFFSET = 2.149; // Radians
 
+    // Intake
+    public static double INTAKE_PIVOT_TRANSFER_POS = 0.00;
+    public static double INTAKE_PIVOT_INTAKE_POS = 0.00;
+    public static double INTAKE_PIVOT_READY_INTAKE_POS = 0.00;
+
+    public static double INTAKE_FORWARD_SPEED = 0.00;
+    public static double INTAKE_REVERSE_SPEED = 0.00;
+    public static double INTAKE_HOLD_SPEED = 0.00;
 }
