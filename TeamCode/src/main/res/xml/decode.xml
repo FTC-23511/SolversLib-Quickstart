@@ -1,0 +1,38 @@
+<Robot type="FirstInspires-FTC">
+    <!-- Config for main 2024 Robot -->
+<!--    <EthernetDevice name="limelight" serialNumber="EthernetOverUsb:eth0:172.29.0.31" port="0" ipAddress="172.29.0.1" />-->
+
+    <LynxUsbDevice name="Control Hub Portal" serialNumber="(embedded)" parentModuleAddress="173">
+        <LynxModule name="Control Hub" port="173">
+
+
+
+            <goBILDA5202SeriesMotor name="intakeMotor" port="0"/>-->
+            <goBILDA5202SeriesMotor name="launchMotor" port="1"/>-->
+
+            <ControlHubImuBHI260AP name="imu" port="0" bus="0"/>
+            <RevColorSensorV3 name="colorSensor" port="0" bus="1"/>
+            <goBILDAPinpoint name="pinpoint" port="0" bus="2"/>
+
+        </LynxModule>
+    </LynxUsbDevice>
+
+    <LynxUsbDevice name="Expansion Hub Portal 1" serialNumber="DQ81DA4Y" parentModuleAddress="2">
+        <LynxModule name="Expansion Hub 2" port="2">
+
+            <goBILDA5202SeriesMotor name="FR" port="0"/>
+            <goBILDA5202SeriesMotor name="FL" port="1"/>
+            <goBILDA5202SeriesMotor name="BL" port="2"/>
+            <goBILDA5202SeriesMotor name="BR" port="3"/>
+
+            <ContinuousRotationServo name="crServo" port="1"/>
+            <Servo name="servo" port="2"/>
+        </LynxModule>
+
+        <ServoHub name="Servo Hub 3" port="3">
+            <ContinuousRotationServo name="crServo" port="0"/>
+            <Servo name="servo" port="1"/>
+            <ContinuousRotationServo name="crServo" port="2"/>
+        </ServoHub>
+    </LynxUsbDevice>
+</Robot>
