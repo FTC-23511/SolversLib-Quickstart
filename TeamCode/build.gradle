@@ -18,6 +18,11 @@ apply from: '../build.dependencies.gradle'
 android {
     namespace = 'org.firstinspires.ftc.teamcode'
 
+    compileSdk 35
+    defaultConfig {
+        minSdk 24
+    }
+
     packagingOptions {
         jniLibs.useLegacyPackaging true
     }
@@ -48,6 +53,9 @@ dependencies {
 //    implementation "org.solverslib:pedroPathing:SNAPSHOT-7cdcc66" // pedroPathing
 
     implementation "com.acmerobotics.dashboard:dashboard:0.4.17" // FTC Dashboard
+
+    // Panels Dashboard
+    implementation "com.bylazar:fullpanels:1.0.5"
 
     //noinspection GradleDependency, could be 0.43 but haven't tested it out yet
     implementation('org.ejml:ejml-simple:0.39') {
