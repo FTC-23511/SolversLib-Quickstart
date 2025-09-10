@@ -5,7 +5,6 @@ import static org.firstinspires.ftc.teamcode.globals.Constants.*;
 import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.hardware.rev.RevColorSensorV3;
-import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.seattlesolvers.solverslib.geometry.Pose2d;
 import com.seattlesolvers.solverslib.hardware.AbsoluteAnalogEncoder;
@@ -108,13 +107,14 @@ public class Robot extends com.seattlesolvers.solverslib.command.Robot {
 
     }
 
-    // Not needed now that we have pinpoint
-//    public void initializeImu(HardwareMap hardwareMap) {
-//        // IMU orientation
-//        imu = hardwareMap.get(IMU.class, "imu");
-//        IMU.Parameters parameters = new IMU.Parameters(new RevHubOrientationOnRobot(
-//                RevHubOrientationOnRobot.LogoFacingDirection.RIGHT,
-//                RevHubOrientationOnRobot.UsbFacingDirection.UP));
-//        imu.initialize(parameters);
-//    }
+    /* Not needed now that we have pinpoint
+    public void initializeImu(HardwareMap hardwareMap) {
+        // IMU orientation
+        imu = hardwareMap.get(IMU.class, "imu");
+        IMU.Parameters parameters = new IMU.Parameters(new RevHubOrientationOnRobot(
+                RevHubOrientationOnRobot.LogoFacingDirection.RIGHT,
+                RevHubOrientationOnRobot.UsbFacingDirection.UP));
+        imu.initialize(parameters);
+    }
+     */
 }
