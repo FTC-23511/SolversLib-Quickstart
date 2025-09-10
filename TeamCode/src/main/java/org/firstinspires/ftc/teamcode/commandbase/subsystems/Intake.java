@@ -1,9 +1,5 @@
 package org.firstinspires.ftc.teamcode.commandbase.subsystems;
 
-
-
-import static org.firstinspires.ftc.teamcode.commandbase.subsystems.Intake.IntakeMotorState.*;
-import static org.firstinspires.ftc.teamcode.commandbase.subsystems.Intake.IntakePivotState.*;
 import static org.firstinspires.ftc.teamcode.globals.Constants.*;
 
 import com.seattlesolvers.solverslib.command.SubsystemBase;
@@ -14,30 +10,30 @@ import org.firstinspires.ftc.teamcode.globals.Robot;
 public class Intake extends SubsystemBase {
     private final Robot robot = Robot.getInstance();
 
-    public enum IntakeMotorState {
+    public enum MotorState {
         REVERSE,
         STOP,
         FORWARD,
         HOLD
     }
 
-    public enum IntakePivotState {
+    public enum PivotState {
         INTAKE,
         TRANSFER,
         INTAKE_READY,
         HOLD
     }
 
-    public static IntakeMotorState intakeMotorState = IntakeMotorState.STOP;
-    public static IntakePivotState intakePivotState = IntakePivotState.HOLD;
+    public static MotorState motorState = MotorState.STOP;
+    public static PivotState pivotState = PivotState.HOLD;
 
     public void init() {
-        setPivot(IntakePivotState.INTAKE);
+        setPivot(PivotState.INTAKE);
         robot.colorSensor.enableLed(true);
     }
 
-    public void setPivot(IntakePivotState intakePivotState) {
-        switch (intakePivotState) {
+    public void setPivot(PivotState pivotState) {
+        switch (pivotState) {
             case TRANSFER:
                 robot.leftIntakePivot.set(INTAKE_PIVOT_TRANSFER_POS);
                 robot.rightIntakePivot.set(INTAKE_PIVOT_TRANSFER_POS);
@@ -54,15 +50,15 @@ public class Intake extends SubsystemBase {
                 break;
         }
 
-        Intake.intakePivotState = intakePivotState;
+        Intake.pivotState = pivotState;
     }
 
-    public void setIntake(IntakeMotorState intakeMotorState) {
-        if (intakeMotorState.equals(IntakeMotorState.HOLD)) {
+    public void setIntake(MotorState motorState) {
+        if (motorState.equals(MotorState.HOLD)) {
             robot.intakeMotor.set(INTAKE_HOLD_SPEED);
-            Intake.intakeMotorState = intakeMotorState;
-        } else if (intakePivotState.equals(INTAKE) || intakePivotState.equals(INTAKE_READY)) {
-            switch (intakeMotorState) {
+            Intake.motorState = motorState;
+        } else if (pivotState.equals(PivotState.INTAKE) || pivotState.equals(PivotState.INTAKE_READY)) {
+            switch (motorState) {
                 case FORWARD:
                     robot.intakeMotor.set(INTAKE_FORWARD_SPEED);
                     break;
@@ -73,23 +69,23 @@ public class Intake extends SubsystemBase {
                     robot.intakeMotor.set(0);
                     break;
             }
-            Intake.intakeMotorState = intakeMotorState;
+            Intake.motorState = motorState;
         }
     }
 
     public void toggleIntake() {
-        if (intakePivotState.equals(IntakePivotState.INTAKE) || intakePivotState.equals(IntakePivotState.INTAKE_READY)) {
-            if (intakeMotorState.equals(IntakeMotorState.FORWARD)) {
-                setIntake(IntakeMotorState.STOP);
-            } else if (intakeMotorState.equals(IntakeMotorState.STOP) || intakeMotorState.equals(IntakeMotorState.HOLD)) {
-                setIntake(FORWARD);
+        if (pivotState.equals(PivotState.INTAKE) || pivotState.equals(PivotState.INTAKE_READY)) {
+            if (motorState.equals(MotorState.FORWARD)) {
+                setIntake(MotorState.STOP);
+            } else if (motorState.equals(MotorState.STOP) || motorState.equals(MotorState.HOLD)) {
+                setIntake(MotorState.FORWARD);
             }
         }
     }
 
     public void updateIntake() {
-        if (intakePivotState.equals(INTAKE) || intakePivotState.equals(INTAKE_READY)) {
-            switch (intakeMotorState) {
+        if (pivotState.equals(PivotState.INTAKE) || pivotState.equals(PivotState.INTAKE_READY)) {
+            switch (motorState) {
                 case FORWARD:
                     if (hasArtifact()) {
                         // TODO: add code for forward
@@ -103,8 +99,8 @@ public class Intake extends SubsystemBase {
                     break;
                 // No point of setting intakeMotor to 0 again
             }
-        } else if (intakePivotState.equals(TRANSFER) || intakePivotState.equals(IntakePivotState.HOLD)) {
-            setIntake(IntakeMotorState.HOLD);
+        } else if (pivotState.equals(PivotState.TRANSFER) || pivotState.equals(PivotState.HOLD)) {
+            setIntake(MotorState.HOLD);
         }
     }
 

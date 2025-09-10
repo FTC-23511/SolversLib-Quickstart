@@ -1,11 +1,6 @@
 package org.firstinspires.ftc.teamcode.commandbase.subsystems;
 
-import static org.firstinspires.ftc.teamcode.commandbase.subsystems.Intake.IntakePivotState.INTAKE;
-import static org.firstinspires.ftc.teamcode.commandbase.subsystems.Intake.IntakePivotState.INTAKE_READY;
-import static org.firstinspires.ftc.teamcode.commandbase.subsystems.Intake.IntakePivotState.TRANSFER;
-import static org.firstinspires.ftc.teamcode.globals.Constants.INTAKE_FORWARD_SPEED;
-import static org.firstinspires.ftc.teamcode.globals.Constants.INTAKE_HOLD_SPEED;
-import static org.firstinspires.ftc.teamcode.globals.Constants.INTAKE_REVERSE_SPEED;
+import static org.firstinspires.ftc.teamcode.globals.Constants.*;
 
 import com.seattlesolvers.solverslib.command.SubsystemBase;
 
@@ -14,24 +9,24 @@ import org.firstinspires.ftc.teamcode.globals.Robot;
 public class Launcher extends SubsystemBase {
     private final Robot robot = Robot.getInstance();
 
-    public enum LauncherMotorState {
+    public enum MotorState {
         REVERSE,
         STOP,
         FORWARD,
         HOLD
     }
 
-    public static LauncherMotorState launcherMotorState = LauncherMotorState.STOP;
+    public static MotorState motorState = MotorState.STOP;
 
     public void init() {
 
     }
 
-    public void setLauncher(LauncherMotorState launcherMotorState) {
-        if (launcherMotorState.equals(LauncherMotorState.HOLD)) {
+    public void setLauncher(MotorState motorState) {
+        if (motorState.equals(MotorState.HOLD)) {
             robot.intakeMotor.set(INTAKE_HOLD_SPEED);
         } else {
-            switch (launcherMotorState) {
+            switch (motorState) {
                 case FORWARD:
                     robot.launchMotors.set(INTAKE_FORWARD_SPEED);
                     break;
@@ -43,7 +38,7 @@ public class Launcher extends SubsystemBase {
                     break;
             }
         }
-        Launcher.launcherMotorState = launcherMotorState;
+        Launcher.motorState = motorState;
     }
 
     public void updateLauncher() {
