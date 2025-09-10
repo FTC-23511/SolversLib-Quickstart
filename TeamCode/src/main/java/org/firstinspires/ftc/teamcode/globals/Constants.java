@@ -14,6 +14,8 @@ public class Constants {
         RED,
         BLUE
     }
+
+    // Drive
     public static OpModeType OP_MODE_TYPE;
     public static AllianceColor ALLIANCE_COLOR = AllianceColor.BLUE;
     public static Pose2d END_POSE = new Pose2d();
@@ -37,4 +39,9 @@ public class Constants {
     public static double INTAKE_FORWARD_SPEED = 0.00;
     public static double INTAKE_REVERSE_SPEED = 0.00;
     public static double INTAKE_HOLD_SPEED = 0.00;
+
+    public static double MIN_DISTANCE_THRESHOLD = 0.00;
+    public static double MAX_DISTANCE_THRESHOLD = 0.00;
+
+    // Launcher
 }

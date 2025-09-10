@@ -5,10 +5,14 @@
     <LynxUsbDevice name="Control Hub Portal" serialNumber="(embedded)" parentModuleAddress="173">
         <LynxModule name="Control Hub" port="173">
 
-
-
             <goBILDA5202SeriesMotor name="intakeMotor" port="0"/>-->
-            <goBILDA5202SeriesMotor name="launchMotor" port="1"/>-->
+            <goBILDA5202SeriesMotor name="launchMotorTop" port="1"/>-->
+            <goBILDA5202SeriesMotor name="launchMotorBottom" port="2"/>-->
+
+            <ContinuousRotationServo name="FR" port="1"/>
+            <ContinuousRotationServo name="FL" port="2"/>
+            <ContinuousRotationServo name="BL" port="3"/>
+            <ContinuousRotationServo name="BR" port="4"/>
 
             <ControlHubImuBHI260AP name="imu" port="0" bus="0"/>
             <RevColorSensorV3 name="colorSensor" port="0" bus="1"/>
@@ -25,8 +29,8 @@
             <goBILDA5202SeriesMotor name="BL" port="2"/>
             <goBILDA5202SeriesMotor name="BR" port="3"/>
 
-            <ContinuousRotationServo name="crServo" port="1"/>
-            <Servo name="servo" port="2"/>
+            <Servo name="leftIntakePivot" port="1"/>
+            <Servo name="rightIntakePivot" port="2"/>
         </LynxModule>
 
         <ServoHub name="Servo Hub 3" port="3">

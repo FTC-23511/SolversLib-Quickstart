@@ -6,11 +6,7 @@ import static org.firstinspires.ftc.teamcode.commandbase.subsystems.Intake.Intak
 import static org.firstinspires.ftc.teamcode.commandbase.subsystems.Intake.IntakePivotState.*;
 import static org.firstinspires.ftc.teamcode.globals.Constants.*;
 
-import com.seattlesolvers.solverslib.command.SequentialCommandGroup;
 import com.seattlesolvers.solverslib.command.SubsystemBase;
-import com.seattlesolvers.solverslib.command.WaitCommand;
-
-import com.seattlesolvers.solverslib.controller.PIDFController;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.globals.Robot;
@@ -61,11 +57,11 @@ public class Intake extends SubsystemBase {
         Intake.intakePivotState = intakePivotState;
     }
 
-    public void setActiveIntake(IntakeMotorState intakeMotorState) {
-        if (intakeMotorState.equals(HOLD)) {
+    public void setIntake(IntakeMotorState intakeMotorState) {
+        if (intakeMotorState.equals(IntakeMotorState.HOLD)) {
             robot.intakeMotor.set(INTAKE_HOLD_SPEED);
             Intake.intakeMotorState = intakeMotorState;
-        } else if (intakePivotState.equals(IntakePivotState.INTAKE) || intakePivotState.equals(IntakePivotState.INTAKE_READY)) {
+        } else if (intakePivotState.equals(INTAKE) || intakePivotState.equals(INTAKE_READY)) {
             switch (intakeMotorState) {
                 case FORWARD:
                     robot.intakeMotor.set(INTAKE_FORWARD_SPEED);
@@ -81,108 +77,38 @@ public class Intake extends SubsystemBase {
         }
     }
 
-    public void toggleActiveIntake() {
+    public void toggleIntake() {
         if (intakePivotState.equals(IntakePivotState.INTAKE) || intakePivotState.equals(IntakePivotState.INTAKE_READY)) {
             if (intakeMotorState.equals(IntakeMotorState.FORWARD)) {
-                setActiveIntake(IntakeMotorState.STOP);
-            } else if (intakeMotorState.equals(IntakeMotorState.STOP) || intakeMotorState.equals(HOLD)) {
-                setActiveIntake(FORWARD);
+                setIntake(IntakeMotorState.STOP);
+            } else if (intakeMotorState.equals(IntakeMotorState.STOP) || intakeMotorState.equals(IntakeMotorState.HOLD)) {
+                setIntake(FORWARD);
             }
-            Intake.sampleColorTarget = sampleColorTarget;
         }
     }
 
-    public void autoUpdateActiveIntake() {
+    public void updateIntake() {
         if (intakePivotState.equals(INTAKE) || intakePivotState.equals(INTAKE_READY)) {
             switch (intakeMotorState) {
                 case FORWARD:
-                    if (hasSample()) {
-                        if (!readyForColorDetection) {
-                            colorDetectionTimer.reset();
-                            readyForColorDetection = true;
-                        } else if (readyForColorDetection && colorDetectionTimer.milliseconds() > 50) {
-                            readyForColorDetection = false;
-
-                            sampleColor = sampleColorDetected(robot.colorSensor.red(), robot.colorSensor.green(), robot.colorSensor.blue());
-                            if (correctSampleDetected()) {
-                                setActiveIntake(HOLD);
-                                if (opModeType.equals(OpModeType.TELEOP)) {
-                                    if (sampleColorTarget.equals(ANY_COLOR)) {
-                                        if (soloTeleOp) {
-                                            new SequentialCommandGroup(
-                                                    new RealTransfer(robot).beforeStarting(new WaitCommand(250))
-//                                                    new SetDeposit(robot, Deposit.DepositPivotState.SCORING, HIGH_BUCKET_HEIGHT, false)
-                                            ).schedule(false);
-                                        } else {
-                                            new RealTransfer(robot).beforeStarting(
-                                                    new WaitCommand(250)
-                                            ).schedule(false);
-                                        }
-                                    } else {
-                                        new SetIntake(robot, TRANSFER, HOLD, 0, false).schedule(false);
-                                    }
-                                }
-                            } else {
-                                reverseIntakeTimer.reset();
-                                setActiveIntake(REVERSE);
-                            }
-                        }
+                    if (hasArtifact()) {
+                        // TODO: add code for forward
                     }
                     break;
                 case REVERSE:
-                    if (!hasSample() && !waitingForReverse) {
-                        reverseIntakeTimer.reset();
-                        waitingForReverse = true;
-                    } else if (!hasSample() && waitingForReverse && reverseIntakeTimer.milliseconds() > REVERSE_TIME_MS) {
-                        waitingForReverse = false;
-                        if (opModeType.equals(OpModeType.TELEOP)) {
-                            setActiveIntake(FORWARD);
-                        } else {
-                            setActiveIntake(STOP);
-                        }
-                    }
+                    // ..
                     break;
                 case HOLD:
-                    if (!correctSampleDetected() && hasSample() && Intake.intakePivotState.equals(INTAKE)) {
-                        setActiveIntake(REVERSE);
-                    }
+                    // ...
                     break;
                 // No point of setting intakeMotor to 0 again
             }
-        } else if (intakePivotState.equals(TRANSFER) || intakePivotState.equals(INSIDE)) {
-            setActiveIntake(HOLD);
+        } else if (intakePivotState.equals(TRANSFER) || intakePivotState.equals(IntakePivotState.HOLD)) {
+            setIntake(IntakeMotorState.HOLD);
         }
     }
 
-    public static SampleColorDetected sampleColorDetected(int red, int green, int blue) {
-        if (blue >= green && blue >= red) {
-            return BLUE;
-        } else if (green >= red) {
-            return YELLOW;
-        } else {
-            return RED;
-        }
-    }
-
-    public static boolean correctSampleDetected() {
-        switch (sampleColorTarget) {
-            case ANY_COLOR:
-                if (sampleColor.equals(YELLOW) ||
-                        (sampleColor.equals(BLUE) && allianceColor.equals(AllianceColor.BLUE) ||
-                                (sampleColor.equals(RED) && allianceColor.equals(AllianceColor.RED)))) {
-                    return true;
-                }
-                break;
-            case ALLIANCE_ONLY:
-                if (sampleColor.equals(BLUE) && allianceColor.equals(AllianceColor.BLUE) ||
-                        (sampleColor.equals(RED) && allianceColor.equals(AllianceColor.RED))) {
-                    return true;
-                }
-                break;
-        }
-        return false;
-    }
-    public boolean hasSample() {
+    public boolean hasArtifact() {
         /* Color thresholding (not used)
         int red = robot.colorSensor.red();
         int green = robot.colorSensor.green();
@@ -216,6 +142,6 @@ public class Intake extends SubsystemBase {
 
     @Override
     public void periodic() {
-        autoUpdateActiveIntake();
+        updateIntake();
     }
 }
