@@ -59,26 +59,34 @@ public class Robot extends com.seattlesolvers.solverslib.command.Robot {
     public void init(HardwareMap hwMap) {
         // Hardware
         FRmotor = new MotorEx(hwMap, "FR").setCachingTolerance(0.01);
-        FLmotor = new MotorEx(hwMap, "FL").setCachingTolerance(0.01);;
-        BLmotor = new MotorEx(hwMap, "BL").setCachingTolerance(0.01);;
-        BRmotor = new MotorEx(hwMap, "BR").setCachingTolerance(0.01);;
+        FLmotor = new MotorEx(hwMap, "FL").setCachingTolerance(0.01);
+        BLmotor = new MotorEx(hwMap, "BL").setCachingTolerance(0.01);
+        BRmotor = new MotorEx(hwMap, "BR").setCachingTolerance(0.01);
 
-        intakeMotor = new MotorEx(hwMap, "intakeMotor").setCachingTolerance(0.01);;
-        launchMotorTop = new MotorEx(hwMap, "launchMotorTop").setCachingTolerance(0.01);;
-        launchMotorBottom = new MotorEx(hwMap, "launchMotorBottom").setCachingTolerance(0.01);;
+        intakeMotor = new MotorEx(hwMap, "intakeMotor").setCachingTolerance(0.01);
+        launchMotorTop = new MotorEx(hwMap, "launchMotorTop").setCachingTolerance(0.01);
+        launchMotorBottom = new MotorEx(hwMap, "launchMotorBottom").setCachingTolerance(0.01);
 
         launchMotorBottom.setInverted(true);
 
         launchMotors = new MotorGroup(launchMotorTop, launchMotorBottom);
 
-        FRswervo = new CRServoEx(hwMap, "FR", new AbsoluteAnalogEncoder(hwMap, "FR").zero(FR_ENCODER_OFFSET), CRServoEx.RunMode.RawPower).setCachingTolerance(0.01);;
-        FLswervo = new CRServoEx(hwMap, "FL", new AbsoluteAnalogEncoder(hwMap, "FL").zero(FL_ENCODER_OFFSET), CRServoEx.RunMode.RawPower).setCachingTolerance(0.01);;
-        BLswervo = new CRServoEx(hwMap, "BL", new AbsoluteAnalogEncoder(hwMap, "BL").zero(BL_ENCODER_OFFSET), CRServoEx.RunMode.RawPower).setCachingTolerance(0.01);;
-        BRswervo = new CRServoEx(hwMap, "BR", new AbsoluteAnalogEncoder(hwMap, "BR").zero(BR_ENCODER_OFFSET), CRServoEx.RunMode.RawPower).setCachingTolerance(0.01);;
+        FRswervo = new CRServoEx(hwMap, "FR", new AbsoluteAnalogEncoder(hwMap, "FR")
+                .zero(FR_ENCODER_OFFSET), CRServoEx.RunMode.RawPower)
+                .setCachingTolerance(0.01);
+        FLswervo = new CRServoEx(hwMap, "FL", new AbsoluteAnalogEncoder(hwMap, "FL")
+                .zero(FL_ENCODER_OFFSET), CRServoEx.RunMode.RawPower)
+                .setCachingTolerance(0.01);
+        BLswervo = new CRServoEx(hwMap, "BL", new AbsoluteAnalogEncoder(hwMap, "BL")
+                .zero(BL_ENCODER_OFFSET), CRServoEx.RunMode.RawPower)
+                .setCachingTolerance(0.01);
+        BRswervo = new CRServoEx(hwMap, "BR", new AbsoluteAnalogEncoder(hwMap, "BR")
+                .zero(BR_ENCODER_OFFSET), CRServoEx.RunMode.RawPower)
+                .setCachingTolerance(0.01);
 
-        leftIntakePivot = new ServoEx(hwMap, "leftIntakePivot").setCachingTolerance(0.01);;
-        rightIntakePivot = new ServoEx(hwMap, "rightIntakePivot").setCachingTolerance(0.01);;
-        depositPivot = new ServoEx(hwMap, "depositPivot").setCachingTolerance(0.01);;
+        leftIntakePivot = new ServoEx(hwMap, "leftIntakePivot").setCachingTolerance(0.01);
+        rightIntakePivot = new ServoEx(hwMap, "rightIntakePivot").setCachingTolerance(0.01);
+        depositPivot = new ServoEx(hwMap, "depositPivot").setCachingTolerance(0.01);
 
         rightIntakePivot.setInverted(true);
 
