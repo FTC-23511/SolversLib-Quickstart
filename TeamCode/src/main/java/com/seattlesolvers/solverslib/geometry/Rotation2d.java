@@ -8,6 +8,8 @@ package com.seattlesolvers.solverslib.geometry;
 /*----------------------------------------------------------------------------*/
 
 
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+
 /**
  * A rotation in a 2d coordinate frame represented a point on the unit circle
  * (cosine and sine).
@@ -154,6 +156,16 @@ public class Rotation2d {
     public double getDegrees() {
         return Math.toDegrees(m_value);
     }
+
+    /**
+     * Returns the angle value of the rotation in the specified angle unit.
+     *
+     * @param angleUnit The angle unit of the value to be returned.
+     * @return The value of the rotation.
+     */
+    public double getAngle(AngleUnit angleUnit) {
+        return angleUnit == AngleUnit.RADIANS ? getRadians() : getDegrees();
+    };
 
     /**
      * Returns the cosine of the rotation.

@@ -3,18 +3,18 @@ package com.seattlesolvers.solverslib.controller;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 
 /**
- * This is a PID controller (https://en.wikipedia.org/wiki/PID_controller)
+ * This is a SquIDF controller (based off the PIDF controller, but with error square rooted)
  * for your robot. Internally, it performs all the calculations for you.
  * You need to tune your values to the appropriate amounts in order
  * to properly utilize these calculations.
  * <p>
  * The equation we will use is:
- * u(t) = kP * e(t) + kI * int(0,t)[e(t')dt'] + kD * e'(t) + kF * r(t)
+ * u(t) = kP * sqrt(e(t)) + kI * int(0,t)[e(t')dt'] + kD * e'(t) + kF
  * where e(t) = r(t) - y(t) and r(t) is the setpoint and y(t) is the
  * measured value. If we consider e(t) the positional error, then
  * int(0,t)[e(t')dt'] is the total error and e'(t) is the velocity error.
  */
-public class PIDFController extends Controller {
+public class SquIDFController extends Controller {
     private double kP, kI, kD, kF;
     private double minIntegral, maxIntegral;
 
@@ -23,14 +23,14 @@ public class PIDFController extends Controller {
     /**
      * The base constructor for the PIDF controller
      */
-    public PIDFController(double kp, double ki, double kd, double kf) {
+    public SquIDFController(double kp, double ki, double kd, double kf) {
         this(kp, ki, kd, kf, 0, 0);
     }
 
     /**
      * Constructor for the PIDF controller with PIDFCoefficients
      */
-    public PIDFController(PIDFCoefficients coefficients) {
+    public SquIDFController(PIDFCoefficients coefficients) {
         this(coefficients.p, coefficients.i, coefficients.d, coefficients.f);
     }
 
@@ -43,7 +43,7 @@ public class PIDFController extends Controller {
      * @param pv The measured value of he pid control loop. We want sp = pv, or to the degree
      *           such that sp - pv, or e(t) < tolerance.
      */
-    public PIDFController(double kp, double ki, double kd, double kf, double sp, double pv) {
+    public SquIDFController(double kp, double ki, double kd, double kf, double sp, double pv) {
         kP = kp;
         kI = ki;
         kD = kd;
@@ -106,7 +106,7 @@ public class PIDFController extends Controller {
         totalError = totalError < minIntegral ? minIntegral : Math.min(maxIntegral, totalError);
 
         // returns u(t)
-        return kP * errorVal_p + kI * totalError + kD * errorVal_v + kF * setPoint;
+        return kP * Math.sqrt(errorVal_p) + kI * totalError + kD * errorVal_v + kF * setPoint;
     }
 
     public void setPIDF(double kp, double ki, double kd, double kf) {
