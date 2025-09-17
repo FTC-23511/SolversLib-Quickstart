@@ -36,8 +36,8 @@ public class P2PController {
         this.headingController = headingController;
         this.angleUnit = angleUnit;
         this.current = start;
-        // also initializes error
-        setTarget(target);
+        this.target = target;
+        getError(); // updates error
         setTolerance(positionalTolerance, angularTolerance);
     }
 
@@ -61,7 +61,9 @@ public class P2PController {
      * @return field-centric chassis speeds/power (depending on your controller scaling)
      */
     public ChassisSpeeds calculate(Pose2d pv) {
+        // Update internal variables
         current = pv;
+        getError();
 
         double xVal = xController.calculate(current.getX(), target.getX());
         double yVal = yController.calculate(current.getY(), target.getY());
@@ -77,7 +79,6 @@ public class P2PController {
      */
     public void setTarget(Pose2d sp) {
         target = sp;
-        error = target.minus(current);
     }
 
     /**
@@ -116,9 +117,12 @@ public class P2PController {
     }
 
     /**
+     * Updates the internal object for error and returns it
+     *
      * @return the positional and angular error
      */
     public Transform2d getError() {
+        error = target.minus(current);
         return error;
     }
 
