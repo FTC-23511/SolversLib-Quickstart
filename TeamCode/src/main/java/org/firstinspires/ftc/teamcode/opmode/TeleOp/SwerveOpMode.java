@@ -57,6 +57,11 @@ public class SwerveOpMode extends CommandOpMode {
             timer = new ElapsedTime();
         }
 
+        // Update any constants that are being updated by FTCDash
+        for (CoaxialSwerveModule module : robot.drive.swerve.getModules()) {
+            module.setSwervoPIDF(Constants.SWERVO_PIDF_COEFFICIENTS);
+        }
+
         // Drive the robot
         double minSpeed = 0.3; // As a fraction of the max speed of the robot
         double speedMultiplier = minSpeed + (1 - minSpeed) * driver.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER);
@@ -83,7 +88,6 @@ public class SwerveOpMode extends CommandOpMode {
 
         // DO NOT REMOVE ANY LINES BELOW! Runs the command scheduler and updates telemetry
         super.run();
-        robot.pinpoint.update();
         telemetryData.update();
     }
 
@@ -91,6 +95,5 @@ public class SwerveOpMode extends CommandOpMode {
     public void end() {
         Constants.END_POSE = robot.drive.getPose();
     }
-
 
 }
