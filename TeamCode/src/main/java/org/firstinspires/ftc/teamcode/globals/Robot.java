@@ -109,6 +109,10 @@ public class Robot extends com.seattlesolvers.solverslib.command.Robot {
         // Robot/CommandScheduler configurations
         setBulkReading(hwMap, LynxModule.BulkCachingMode.MANUAL);
         register(drive, intake, launcher);
+
+        if (OP_MODE_TYPE.equals(OpModeType.AUTO)) {
+            initHasMovement();
+        }
     }
 
     public void initHasMovement() {

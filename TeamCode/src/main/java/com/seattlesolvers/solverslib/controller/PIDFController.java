@@ -116,6 +116,10 @@ public class PIDFController extends Controller {
         kF = kf;
     }
 
+    public void setCoefficients(PIDFCoefficients coefficients) {
+        setPIDF(coefficients.p, coefficients.i, coefficients.d, coefficients.f);
+    }
+
     public void setIntegrationBounds(double integralMin, double integralMax) {
         minIntegral = integralMin;
         maxIntegral = integralMax;

@@ -17,11 +17,16 @@ public class DriveTo extends CommandBase {
 
     @Override
     public void initialize() {
-        // TODO: set target of follower to the target pose
+        robot.drive.follower.setTarget(target);
+    }
+
+    @Override
+    public void execute() {
+        robot.drive.swerve.updateWithTargetVelocity(robot.drive.follower.calculate(robot.drive.getPose()));
     }
 
     @Override
     public boolean isFinished() {
-        return true; // TODO: update once follower code is updated
+        return robot.drive.follower.atTarget();
     }
 }

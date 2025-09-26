@@ -9,10 +9,10 @@ import com.seattlesolvers.solverslib.util.MathUtils;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
 public class P2PController {
-    private final Controller xController;
-    private final Controller yController;
-    private final Controller headingController;
-    private final AngleUnit angleUnit;
+    public final Controller xController;
+    public final Controller yController;
+    public final Controller headingController;
+    public final AngleUnit angleUnit;
 
     private Pose2d target;
     private Pose2d current;
@@ -67,7 +67,7 @@ public class P2PController {
 
         double xVal = xController.calculate(current.getX(), target.getX());
         double yVal = yController.calculate(current.getY(), target.getY());
-        double headingVal = headingController.calculate(MathUtils.normalizeAngle(error.getRotation().getAngle(angleUnit), true, angleUnit), 0);
+        double headingVal = headingController.calculate(0, MathUtils.normalizeAngle(error.getRotation().getAngle(angleUnit), false, angleUnit));
 
         return new ChassisSpeeds(xVal, yVal, headingVal);
     }
@@ -125,5 +125,4 @@ public class P2PController {
         error = target.minus(current);
         return error;
     }
-
 }
