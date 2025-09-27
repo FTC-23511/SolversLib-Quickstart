@@ -30,10 +30,10 @@ public class Constants {
     public static double FL_ENCODER_OFFSET = 3.753; // Radians
     public static double BL_ENCODER_OFFSET = 0.619; // Radians
     public static double BR_ENCODER_OFFSET = 2.149; // Radians
-    public static PIDFCoefficients XY_COEFFICIENTS = new PIDFCoefficients(0, 0, 0, 0); // Coefficients for inches
-    public static PIDFCoefficients HEADING_COEFFICIENTS = new PIDFCoefficients(0, 0, 0, 0); // Coefficients for radians
+    public static PIDFCoefficients XY_COEFFICIENTS = new PIDFCoefficients(6, 0, 0.2, 0); // Coefficients for inches
+    public static PIDFCoefficients HEADING_COEFFICIENTS = new PIDFCoefficients(5, 0, 0, 0); // Coefficients for radians
     public static double XY_TOLERANCE = 0.25; // Inches
-    public static double HEADING_TOLERANCE = 0.1; // Radians
+    public static double HEADING_TOLERANCE = 0.05; // Radians
 
     // Intake
     public static double INTAKE_PIVOT_TRANSFER_POS = 0.00;

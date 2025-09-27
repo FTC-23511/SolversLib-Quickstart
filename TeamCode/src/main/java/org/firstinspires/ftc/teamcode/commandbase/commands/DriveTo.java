@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.commandbase.commands;
 
 import com.seattlesolvers.solverslib.command.CommandBase;
 import com.seattlesolvers.solverslib.geometry.Pose2d;
+import com.seattlesolvers.solverslib.kinematics.wpilibkinematics.ChassisSpeeds;
 
 import org.firstinspires.ftc.teamcode.globals.Robot;
 
@@ -22,7 +23,12 @@ public class DriveTo extends CommandBase {
 
     @Override
     public void execute() {
-        robot.drive.swerve.updateWithTargetVelocity(robot.drive.follower.calculate(robot.drive.getPose()));
+        robot.drive.swerve.updateWithTargetVelocity(
+                ChassisSpeeds.fromFieldRelativeSpeeds(
+                        robot.drive.follower.calculate(robot.drive.getPose()),
+                        robot.drive.getPose().getRotation()
+                )
+        );
     }
 
     @Override

@@ -84,6 +84,10 @@ public class ChassisSpeeds {
         );
     }
 
+    public static ChassisSpeeds fromFieldRelativeSpeeds(ChassisSpeeds robotCentricSpeeds, Rotation2d robotAngle) {
+        return fromFieldRelativeSpeeds(robotCentricSpeeds.vxMetersPerSecond, robotCentricSpeeds.vyMetersPerSecond, robotCentricSpeeds.omegaRadiansPerSecond, robotAngle);
+    }
+
     @Override
     public String toString() {
         return String.format("ChassisSpeeds(Vx: %.2f m/s, Vy: %.2f m/s, Omega: %.2f rad/s)",

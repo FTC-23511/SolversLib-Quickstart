@@ -15,10 +15,10 @@ import com.qualcomm.robotcore.hardware.PIDFCoefficients;
  * int(0,t)[e(t')dt'] is the total error and e'(t) is the velocity error.
  */
 public class PIDFController extends Controller {
-    private double kP, kI, kD, kF;
-    private double minIntegral, maxIntegral;
+    protected double kP, kI, kD, kF;
+    protected double minIntegral, maxIntegral;
 
-    private double totalError;
+    protected double totalError;
 
     /**
      * The base constructor for the PIDF controller
