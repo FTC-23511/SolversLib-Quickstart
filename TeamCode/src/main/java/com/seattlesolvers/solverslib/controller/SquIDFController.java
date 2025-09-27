@@ -43,7 +43,7 @@ public class SquIDFController extends PIDFController {
     }
 
     @Override
-    public double calculate(double pv) {
+    public double calculateOutput(double pv) {
         prevErrorVal = errorVal_p;
 
         double currentTimeStamp = (double) System.nanoTime() / 1E9;

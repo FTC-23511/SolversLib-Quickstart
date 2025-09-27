@@ -77,7 +77,7 @@ public class PIDFController extends Controller {
      * @param pv The current measurement of the process variable.
      * @return the value produced by u(t).
      */
-    public double calculate(double pv) {
+    public double calculateOutput(double pv) {
         prevErrorVal = errorVal_p;
 
         double currentTimeStamp = (double) System.nanoTime() / 1E9;
