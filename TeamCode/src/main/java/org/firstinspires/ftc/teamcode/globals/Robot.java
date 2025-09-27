@@ -32,10 +32,9 @@ public class Robot extends com.seattlesolvers.solverslib.command.Robot {
     public MotorEx BRmotor;
 
     public MotorEx intakeMotor;
-    private MotorEx launchMotorTop;
-    private MotorEx launchMotorBottom;
 
     public MotorGroup launchMotors;
+    public MotorEx.Encoder launchEncoder;
 
     public CRServoEx FRswervo;
     public CRServoEx FLswervo;
@@ -64,12 +63,15 @@ public class Robot extends com.seattlesolvers.solverslib.command.Robot {
         BRmotor = new MotorEx(hwMap, "BR").setCachingTolerance(0.01);
 
         intakeMotor = new MotorEx(hwMap, "intakeMotor").setCachingTolerance(0.01);
-        launchMotorTop = new MotorEx(hwMap, "launchMotorTop").setCachingTolerance(0.01);
-        launchMotorBottom = new MotorEx(hwMap, "launchMotorBottom").setCachingTolerance(0.01);
 
-        launchMotorBottom.setInverted(true);
+        launchMotors = new MotorGroup(
+                (new MotorEx(hwMap, "launchMotorTop").setCachingTolerance(0.01)),
+                (new MotorEx(hwMap, "launchMotorBottom").setCachingTolerance(0.01))
+        );
 
-        launchMotors = new MotorGroup(launchMotorTop, launchMotorBottom);
+        launchMotors.setInverted(true);
+
+        launchEncoder = new MotorEx(hwMap, "launchMotorTop").encoder;
 
         FRswervo = new CRServoEx(hwMap, "FR", new AbsoluteAnalogEncoder(hwMap, "FR")
                 .zero(FR_ENCODER_OFFSET), CRServoEx.RunMode.RawPower)

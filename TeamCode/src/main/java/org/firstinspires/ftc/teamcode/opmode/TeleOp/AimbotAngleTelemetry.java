@@ -1,6 +1,8 @@
 package org.firstinspires.ftc.teamcode.opmode.TeleOp;
 
+import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
+import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -12,14 +14,14 @@ import org.firstinspires.ftc.teamcode.globals.Constants;
 import org.firstinspires.ftc.teamcode.globals.Robot;
 
 @Disabled
-@TeleOp(name = "ExampleTeleOp")
+@TeleOp(name = "Aimbot")
 public class AimbotAngleTelemetry extends CommandOpMode {
     public GamepadEx driver;
     public GamepadEx operator;
 
     public ElapsedTime timer;
 
-    TelemetryData telemetryData = new TelemetryData(telemetry);
+    TelemetryData telemetryData = new TelemetryData(new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry()));
 
     private final Robot robot = Robot.getInstance();
     final double gravity = 9.81;

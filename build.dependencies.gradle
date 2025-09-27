@@ -6,6 +6,7 @@ repositories {
 dependencies {
     implementation 'org.firstinspires.ftc:Inspection:11.0.0'
     implementation 'org.firstinspires.ftc:Blocks:11.0.0'
+    //noinspection Aligned16KB
     implementation 'org.firstinspires.ftc:RobotCore:11.0.0'
     implementation 'org.firstinspires.ftc:RobotServer:11.0.0'
     implementation 'org.firstinspires.ftc:OnBotJava:11.0.0'
