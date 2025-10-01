@@ -3,12 +3,13 @@ package org.firstinspires.ftc.teamcode.globals;
 import static org.firstinspires.ftc.teamcode.globals.Constants.*;
 
 import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
+import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.hardware.rev.RevColorSensorV3;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.seattlesolvers.solverslib.geometry.Pose2d;
 import com.seattlesolvers.solverslib.hardware.AbsoluteAnalogEncoder;
-import com.seattlesolvers.solverslib.hardware.ServoEx;
+import com.seattlesolvers.solverslib.hardware.servos.ServoEx;
 import com.seattlesolvers.solverslib.hardware.motors.CRServoEx;
 import com.seattlesolvers.solverslib.hardware.motors.MotorEx;
 import com.seattlesolvers.solverslib.hardware.motors.MotorGroup;
@@ -46,7 +47,7 @@ public class Robot extends com.seattlesolvers.solverslib.command.Robot {
     public ServoEx depositPivot;
 
     public RevColorSensorV3 colorSensor;
-//    public Limelight3A limelight;
+    public Limelight3A limelight;
 
     public GoBildaPinpointDriver pinpoint;
 //    public IMU imu;
@@ -101,7 +102,7 @@ public class Robot extends com.seattlesolvers.solverslib.command.Robot {
         colorSensor = (RevColorSensorV3) hwMap.colorSensor.get("colorSensor");
         colorSensor.enableLed(true);
 
-//        limelight = hardwareMap.get(Limelight3A.class, "limelight");
+        limelight = hwMap.get(Limelight3A.class, "limelight");
 
         // Subsystems
         drive = new Drive();
