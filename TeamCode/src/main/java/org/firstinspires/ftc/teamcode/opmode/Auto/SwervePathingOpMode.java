@@ -40,8 +40,9 @@ public class SwervePathingOpMode extends CommandOpMode {
 
     public ArrayList<Pose2d> pathPoses;
     public void generatePath() {
-        pathPoses.add(new Pose2d(24, 24, Math.PI/2));
-        pathPoses.add(new Pose2d(0, 0, 0));
+        pathPoses.add(new Pose2d(0, 0, 0)); // Starting Pose
+        pathPoses.add(new Pose2d(24, 24, Math.PI/2)); // Line 1
+        pathPoses.add(new Pose2d(0, 0, 0)); // Line 2
     }
 
     @Override
@@ -59,13 +60,13 @@ public class SwervePathingOpMode extends CommandOpMode {
         robot.init(hardwareMap);
 
         // Schedule the full auto
-        robot.drive.setPose(new Pose2d(0, 0, new Rotation2d(0)));
+        robot.drive.setPose(pathPoses.get(0));
 
         schedule(
                 new ConditionalCommand(
                         new SequentialCommandGroup(
-                                new DriveTo(pathPoses.get(0)),
-                                new DriveTo(pathPoses.get(1))
+                                new DriveTo(pathPoses.get(1)),
+                                new DriveTo(pathPoses.get(2))
                         ),
                         new RunCommand(
                                 () -> schedule(new DriveTo(new Pose2d(xTarget, yTarget, new Rotation2d(headingTarget))))
