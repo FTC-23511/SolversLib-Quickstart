@@ -48,6 +48,20 @@ public class Pose2d {
     }
 
     /**
+     * Convenience constructors that takes in x, y, and heading values directly instead of
+     * having to construct a Translation2d and Rotation2d.
+     *
+     * @param x        The x component of the translational component of the pose.
+     * @param y        The y component of the translational component of the pose.
+     * @param rotation The rotational component of the pose.
+     */
+    @SuppressWarnings("ParameterName")
+    public Pose2d(double x, double y, double rotation) {
+        m_translation = new Translation2d(x, y);
+        m_rotation = new Rotation2d(rotation);
+    }
+
+    /**
      * Convenience constructor to convert SDK Pose2D objects to SolversLib Pose2d objects
      * @param pose2D the SDK Pose2D object
      * @param distanceUnit the distance unit to be used for translational values

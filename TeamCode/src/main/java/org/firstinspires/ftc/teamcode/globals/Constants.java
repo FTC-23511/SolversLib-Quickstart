@@ -34,6 +34,8 @@ public class Constants {
     public static PIDFCoefficients HEADING_COEFFICIENTS = new PIDFCoefficients(5, 0, 0, 0); // Coefficients for radians
     public static double XY_TOLERANCE = 0.25; // Inches
     public static double HEADING_TOLERANCE = 0.05; // Radians
+    public static double XY_MIN_OUTPUT = 8; // Inches/second
+    public static double HEADING_MIN_OUTPUT = 0.15; // Radians/second
 
     // Intake
     public static double INTAKE_PIVOT_TRANSFER_POS = 0.00;

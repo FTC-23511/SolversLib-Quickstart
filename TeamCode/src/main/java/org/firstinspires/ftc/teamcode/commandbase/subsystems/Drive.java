@@ -47,9 +47,9 @@ public class Drive extends SubsystemBase {
         ).setCachingTolerance(0.01, 0.01);
 
         follower = new P2PController(
-                new PIDFController(XY_COEFFICIENTS),
-                new PIDFController(XY_COEFFICIENTS),
-                new PIDFController(HEADING_COEFFICIENTS),
+                new PIDFController(XY_COEFFICIENTS).setMinimumOutput(XY_MIN_OUTPUT),
+                new PIDFController(XY_COEFFICIENTS).setMinimumOutput(XY_MIN_OUTPUT),
+                new PIDFController(HEADING_COEFFICIENTS).setMinimumOutput(HEADING_MIN_OUTPUT),
                 ANGLE_UNIT,
                 XY_TOLERANCE,
                 HEADING_TOLERANCE
