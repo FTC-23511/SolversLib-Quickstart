@@ -71,18 +71,30 @@ public class LimeLightTest extends CommandOpMode {
 
                 if ((Constants.ALLIANCE_COLOR.equals(Constants.AllianceColor.BLUE) && id == 20)
                         || (Constants.ALLIANCE_COLOR.equals(Constants.AllianceColor.RED) && id == 24)) {
+
+                    Pose3D botpose = result.getBotpose();
+                    if (botpose != null) {
+                        double x = botpose.getPosition().x;
+                        double y = botpose.getPosition().y;
+                        telemetry.addData("MT1 Location", "(" + x + ", " + y + ")");
+                    } else {
+                        telemetry.addData("MT1 Location", (Object) null);
+                    }
+
                     Pose3D botpose_mt2 = result.getBotpose_MT2();
                     if (botpose_mt2 != null) {
                         double x = botpose_mt2.getPosition().x;
                         double y = botpose_mt2.getPosition().y;
                         telemetry.addData("MT2 Location:", "(" + x + ", " + y + ")");
+                    } else {
+                        telemetry.addData("MT2 Location", (Object) null);
                     }
                 }
                 else if (id == 21) {
                     telemetry.addData("Obelisk location:", "GPP");
                 }
                 else if (id == 22) {
-                    telemetry.addData("Obelisk location:", "PPG");
+                    telemetry.addData("Obelisk location:", "PGP");
                 }
                 else if (id == 23) {
                     telemetry.addData("Obelisk location:", "PPG");
