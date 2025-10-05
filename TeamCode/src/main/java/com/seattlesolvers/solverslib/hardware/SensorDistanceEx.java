@@ -85,6 +85,15 @@ public interface SensorDistanceEx extends SensorDistance {
         }
 
         /**
+         * Change the threshold value
+         *
+         * @param threshold the new threshold
+         */
+        public void setThreshold(double threshold) {
+            this.threshold = threshold;
+        }
+
+        /**
          * Changes the unit of measurement
          *
          * @param unit the new unit value
