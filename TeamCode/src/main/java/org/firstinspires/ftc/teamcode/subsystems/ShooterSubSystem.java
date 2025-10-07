@@ -1,9 +1,13 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.subsystems;
+
+import static org.firstinspires.ftc.teamcode.RobotConstants.*;
+import static org.firstinspires.ftc.teamcode.RobotConstants.SPINDEXER_CACHETHRESHOLD;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.seattlesolvers.solverslib.command.SubsystemBase;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.seattlesolvers.solverslib.controller.PIDFController;
+
 
 public class ShooterSubSystem extends SubsystemBase {
 
@@ -12,6 +16,9 @@ public class ShooterSubSystem extends SubsystemBase {
     }
 
     private DcMotor shooterMotor;
+
+    public static double lastOutput = 0.0;
+    public static double output = 0.0;
 
     private double kP = 0.000;
     private double kI = 0.000;
@@ -43,6 +50,11 @@ public class ShooterSubSystem extends SubsystemBase {
     }
 
     public void periodic() {
-        shooterMotor.setPower(pidf.calculate(shooterMotor.getCurrentPosition()));
+        lastOutput = output;
+        output = pidf.calculate(shooterMotor.getCurrentPosition());
+
+        if (lastOutput - output < SHOOTER_CACHETHRESHOLD) {
+            shooterMotor.setPower(output);
+        }
     }
 }
