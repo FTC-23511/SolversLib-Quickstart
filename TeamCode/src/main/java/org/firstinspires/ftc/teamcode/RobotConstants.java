@@ -8,6 +8,8 @@ public class RobotConstants {
 
     //SPINDEXER
     public static double SPINDEXER_CACHETHRESHOLD = 0.005;
+    public static double SPINDEXER_TICKS_PER_DEG = 0;
+
 
 
 }

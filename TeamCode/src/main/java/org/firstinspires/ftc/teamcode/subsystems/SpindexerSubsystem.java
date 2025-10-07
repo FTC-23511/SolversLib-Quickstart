@@ -49,7 +49,7 @@ public class SpindexerSubsystem extends SubsystemBase {
         lastOutput = output;
         output = pidf.calculate(spindexer.getCurrentPosition());
 
-        if (lastOutput - output < SPINDEXER_CACHETHRESHOLD) {
+        if (Math.abs(lastOutput - output) < SPINDEXER_CACHETHRESHOLD) {
             spindexer.setPower(output);
         }
     }
