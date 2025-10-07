@@ -53,7 +53,7 @@ public class ShooterSubSystem extends SubsystemBase {
         lastOutput = output;
         output = pidf.calculate(shooterMotor.getCurrentPosition());
 
-        if (lastOutput - output < SHOOTER_CACHETHRESHOLD) {
+        if (Math.abs(lastOutput - output) < SHOOTER_CACHETHRESHOLD) {
             shooterMotor.setPower(output);
         }
     }
