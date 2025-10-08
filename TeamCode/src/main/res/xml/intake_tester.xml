@@ -17,6 +17,11 @@
             <AnalogInput name="BR" port="2"/>
             <AnalogInput name="FR" port="3"/>
 
+            <ContinuousRotationServo name="FL" port="0"/>
+            <ContinuousRotationServo name="BR" port="2"/>
+            <ContinuousRotationServo name="BL" port="3"/>
+            <ContinuousRotationServo name="FR" port="5"/>
+
             <ControlHubImuBHI260AP name="imu" port="0" bus="0"/>
             <RevColorSensorV3 name="colorSensor" port="0" bus="1"/>
             <goBILDAPinpoint name="pinpoint" port="0" bus="2"/>\
