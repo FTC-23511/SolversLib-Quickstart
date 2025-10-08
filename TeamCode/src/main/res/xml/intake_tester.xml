@@ -4,9 +4,13 @@
 
     <LynxUsbDevice name="Control Hub Portal" serialNumber="(embedded)" parentModuleAddress="173">
         <LynxModule name="Control Hub" port="173">
-            <goBILDA5202SeriesMotor name="intakeMotor" port="2"/>
             <goBILDA5202SeriesMotor name="launchMotorTop" port="0"/>
             <goBILDA5202SeriesMotor name="launchMotorBottom" port="1"/>
+            <goBILDA5202SeriesMotor name="intakeMotor" port="2"/>
+
+            <Servo name="leftIntakePivot" port="0"/>
+            <Servo name="rightIntakePivot" port="1"/>
+            <Servo name="depositPivot" port="2"/>
 
             <AnalogInput name="BL" port="0"/>
             <AnalogInput name="FL" port="1"/>
@@ -16,11 +20,6 @@
             <ControlHubImuBHI260AP name="imu" port="0" bus="0"/>
             <RevColorSensorV3 name="colorSensor" port="0" bus="1"/>
             <goBILDAPinpoint name="pinpoint" port="0" bus="2"/>\
-
-            <ContinuousRotationServo name="FL" port="0"/>
-            <ContinuousRotationServo name="BR" port="2"/>
-            <ContinuousRotationServo name="BL" port="3"/>
-            <ContinuousRotationServo name="FR" port="5"/>
         </LynxModule>
 
 <!--        <ServoHub name="Servo Hub 3" port="3">-->
@@ -37,10 +36,6 @@
             <goBILDA5202SeriesMotor name="BL" port="1"/>
             <goBILDA5202SeriesMotor name="FR" port="2"/>
             <goBILDA5202SeriesMotor name="FL" port="3"/>
-
-            <Servo name="leftIntakePivot" port="0"/>
-            <Servo name="rightIntakePivot" port="1"/>
-            <Servo name="depositPivot" port="2"/>
         </LynxModule>
     </LynxUsbDevice>
 </Robot>

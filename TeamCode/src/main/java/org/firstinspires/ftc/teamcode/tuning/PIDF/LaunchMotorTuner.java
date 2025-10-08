@@ -28,8 +28,8 @@ public class LaunchMotorTuner extends CommandOpMode {
     public static double I = 0;
     public static double D = 0.000;
     public static double F = 0.000;
-    public static double targetVel;
-    public static double maxPowerConstant = 1.0;
+    public static double targetVel = 0.0;
+    public static double posTolerance = 0;
 
     private static final PIDFController launcherPIDF = new PIDFController(P, I, D, F);
 
@@ -41,7 +41,7 @@ public class LaunchMotorTuner extends CommandOpMode {
     public void initialize() {
         // Must have for all opModes
         Constants.OP_MODE_TYPE = Constants.OpModeType.TELEOP;
-        launcherPIDF.setTolerance(0, 10);
+        launcherPIDF.setTolerance(posTolerance, 0);
 
         // Resets the command scheduler
         super.reset();
@@ -65,9 +65,11 @@ public class LaunchMotorTuner extends CommandOpMode {
         launcherPIDF.setD(D);
         launcherPIDF.setF(F);
 
+        launcherPIDF.setTolerance(posTolerance, 0);
+
         launcherPIDF.setSetPoint(targetVel);
 
-        double maxPower = (F * motorVel) + maxPowerConstant;
+        double maxPower = (F * motorVel);
         double power = Range.clip(launcherPIDF.calculate(targetVel, motorVel), -maxPower, maxPower);
 
         robot.launchMotors.set(power);
@@ -92,6 +94,6 @@ public class LaunchMotorTuner extends CommandOpMode {
         Log.v("I", String.valueOf(I));
         Log.v("D", String.valueOf(D));
         Log.v("F", String.valueOf(F));
-        Log.v("maxPowerConstant", String.valueOf(maxPowerConstant));
+        Log.v("posTolerance", String.valueOf(posTolerance));
     }
 }
