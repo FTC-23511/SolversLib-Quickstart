@@ -21,28 +21,25 @@ public class SpindexerSubsystem extends SubsystemBase {
     public SpindexerState spindexerState = SpindexerState.ONE;
 
     private double lastOutput = -9999999;
-    private double output = 0;
+    private double output = SPINDEXER_INITPOS;
 
     public SpindexerSubsystem(final HardwareMap hm) {
         spindexer = hm.get(DcMotor.class, "spindexer");
         spindexer.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
     }
-    public void setSpindexerState(SpindexerState state){
-        switch (state) {
+    public void advanceSpindexer() {
+        pidf.setSetPoint(pidf.getSetPoint() + SPINDEXER_TICKS_PER_DEG * 120);
+        switch (spindexerState) {
             case ONE:
-                setPIDTarget(1);
+                spindexerState=SpindexerState.TWO;
                 break;
             case TWO:
-                setPIDTarget(2);
+                spindexerState=SpindexerState.THREE;
                 break;
             case THREE:
-                setPIDTarget(3);
+                spindexerState=SpindexerState.ONE;
                 break;
         }
-        spindexerState = state;
-    }
-    public void setPIDTarget(int num) {
-        pidf.setSetPoint(num);
     }
 
     public void periodic() {
