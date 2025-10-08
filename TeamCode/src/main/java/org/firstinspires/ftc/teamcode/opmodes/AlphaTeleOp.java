@@ -41,7 +41,9 @@ public class AlphaTeleOp extends CommandOpMode {
         driver1.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER).whenPressed(new InstantCommand(() -> intake.setSpeed(IntakeSubsystem.IntakeState.INTAKING)));
         driver1.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER).whenReleased(new InstantCommand(() -> intake.setSpeed(IntakeSubsystem.IntakeState.STILL)));
 
+        driver1.getGamepadButton(GamepadKeys.Button.CIRCLE).whenReleased(new InstantCommand(() -> spindexer.advanceSpindexer()));
         
+
     }
 
 
