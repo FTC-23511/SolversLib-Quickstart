@@ -35,17 +35,15 @@ public class ShooterSubSystem extends SubsystemBase {
     public void setShooterState(shooterMotorState state) {
         switch (state) {
             case STOPPED:
-                //shooterMotor.setPower(0.0); //replace with constants
-                setPIDTarget(0); //replace with constants
+                setPIDTarget(0);
                 break;
             case SHOOTING:
-                //shooterMotor.setPower(1.0); //replace with constants
-                setPIDTarget(0); //replace with constants
+                setPIDTarget(SHOOTER_ON);
                 break;
         }
     }
 
-    public void setPIDTarget(int num) {
+    public void setPIDTarget(double num) {
         pidf.setSetPoint(num);
     }
 
