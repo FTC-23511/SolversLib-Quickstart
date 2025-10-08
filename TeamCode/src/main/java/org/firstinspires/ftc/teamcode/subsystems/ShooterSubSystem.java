@@ -1,13 +1,13 @@
 package org.firstinspires.ftc.teamcode.subsystems;
 
 import static org.firstinspires.ftc.teamcode.RobotConstants.*;
-import static org.firstinspires.ftc.teamcode.RobotConstants.SPINDEXER_CACHETHRESHOLD;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.util.ElapsedTime;
 import com.seattlesolvers.solverslib.command.SubsystemBase;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.seattlesolvers.solverslib.controller.PIDFController;
-
+import com.seattlesolvers.solverslib.util.InterpLUT;
 
 public class ShooterSubSystem extends SubsystemBase {
 
@@ -24,32 +24,32 @@ public class ShooterSubSystem extends SubsystemBase {
     private double kI = 0.000;
     private double kD = 0.000;
     private double kF = 0.000;
+    ElapsedTime deltaTime = new ElapsedTime();
+    int lastPos = 0;
 
     PIDFController pidf = new PIDFController(kP, kI, kD, kF);
+    InterpLUT lut = new InterpLUT();
 
     public ShooterSubSystem(final HardwareMap hMap) {
         shooterMotor = hMap.get(DcMotor.class, "shooterMotor"); //replace with name of servo when you get it
         shooterMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+        lut.add(1.0,1.0);
+        lut.createLUT();
     }
 
-    public void setShooterState(shooterMotorState state) {
-        switch (state) {
-            case STOPPED:
-                setPIDTarget(0);
-                break;
-            case SHOOTING:
-                setPIDTarget(SHOOTER_ON);
-                break;
-        }
+    public void setTargetFromDistance(double distance) {
+        setTargetFromDistance(lut.get(distance));
     }
 
-    public void setPIDTarget(double num) {
+    public void setTargetVelocity(double num) {
         pidf.setSetPoint(num);
     }
 
     public void periodic() {
         lastOutput = output;
-        output = pidf.calculate(shooterMotor.getCurrentPosition());
+        int shooterPos = shooterMotor.getCurrentPosition();
+        output = pidf.calculate((lastPos - shooterPos) / deltaTime.time());
 
         if (Math.abs(lastOutput - output) < SHOOTER_CACHETHRESHOLD) {
             shooterMotor.setPower(output);
