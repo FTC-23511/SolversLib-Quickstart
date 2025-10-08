@@ -11,35 +11,23 @@ public class IntakeSubsystem extends SubsystemBase {
     }
     public IntakeState intakeState = IntakeState.STILL;
     private DcMotor intakeWheels;
-    private double kP = 0.000;
-    private double kI = 0.000;
-    private double kD = 0.000;
-    private double kF = 0.000;
-    PIDFController pidf = new PIDFController(kP, kI, kD, kF);
     public IntakeSubsystem(final HardwareMap hMap) {
         intakeWheels = hMap.get(DcMotor.class, "intakeWheels");
         intakeWheels.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
     }
 
-    public void setPIDTarget(int num) {
-        pidf.setSetPoint(num);
-    }
-
     public void setSpeed(IntakeState state) {
         switch(state) {
             case STILL:
-                setPIDTarget(0);
+                intakeWheels.setPower(0.0);
                 break;
             case INTAKING:
-                setPIDTarget(1);
+                intakeWheels.setPower(1.0);
                 break;
             case REVERSE:
-                setPIDTarget(-1);
+                intakeWheels.setPower(-1.0);
                 break;
         }
-    }
-
-    public void periodic() {
-        intakeWheels.setPower(pidf.calculate(intakeWheels.getCurrentPosition()));
+        intakeState = state;
     }
 }

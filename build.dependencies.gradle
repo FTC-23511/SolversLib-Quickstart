@@ -15,4 +15,5 @@ dependencies {
 
     //noinspection GradleDependency
     implementation 'androidx.appcompat:appcompat:1.2.0'
+    implementation 'com.acmerobotics.dashboard:dashboard:0.5.0'
 }
