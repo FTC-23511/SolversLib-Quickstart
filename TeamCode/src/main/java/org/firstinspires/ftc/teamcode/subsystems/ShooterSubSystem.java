@@ -34,8 +34,8 @@ public class ShooterSubSystem extends SubsystemBase {
         shooterMotor = hMap.get(DcMotor.class, "shooterMotor"); //replace with name of servo when you get it
         shooterMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
-        lut.add(1.0,1.0);
-        lut.createLUT();
+        //lut.add(1.0,1.0);
+        //lut.createLUT();
     }
 
     public void setTargetFromDistance(double distance) {
