@@ -89,6 +89,11 @@ public class LimeLightTest extends CommandOpMode {
                     } else {
                         telemetry.addData("MT2 Location", (Object) null);
                     }
+
+                    telemetryData.addData("txPixels", fiducial.getTargetXPixels());
+                    telemetryData.addData("tyPixels", fiducial.getTargetYPixels());
+                    telemetryData.addData("txDegrees", fiducial.getTargetXDegrees());
+                    telemetryData.addData("tyDegrees", fiducial.getTargetYDegrees());
                 }
                 else if (id == 21) {
                     telemetry.addData("Obelisk location:", "GPP");
