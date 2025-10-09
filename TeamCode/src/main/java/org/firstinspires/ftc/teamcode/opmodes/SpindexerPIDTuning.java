@@ -18,26 +18,27 @@ public class SpindexerPIDTuning extends OpMode {
 
     public static int target=0;
 
-    private DcMotor shooter;
+    private DcMotor spindexer;
     @Override
     public void init() {
         controller = new PIDController(p, i, d);
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
-        shooter = hardwareMap.get(DcMotor.class, "spindexer");
+        spindexer = hardwareMap.get(DcMotor.class, "spindexer");
+        spindexer.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
     }
 
     @Override
     public void loop() {
         controller.setPID(p, i, d);
-        int shooterPos = shooter.getCurrentPosition();
-        double pid = controller.calculate(shooterPos, target);
+        int spindexerPos = spindexer.getCurrentPosition();
+        double pid = controller.calculate(spindexerPos, target);
         double ff = 0.0;
 
         double power = pid + ff;
 
-        shooter.setPower(power);
-        telemetry.addData("pos ", shooterPos);
+        spindexer.setPower(power);
+        telemetry.addData("pos ", spindexerPos);
         telemetry.addData("target ", target);
         telemetry.update();
     }

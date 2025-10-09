@@ -30,6 +30,7 @@ public class ShooterPIDTuning extends OpMode {
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
         shooter = hardwareMap.get(DcMotor.class, "shooter");
+        shooter.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
     }
 
     @Override
@@ -37,7 +38,7 @@ public class ShooterPIDTuning extends OpMode {
         controller.setPID(p, i, d);
         int shooterPos = shooter.getCurrentPosition();
         double velocity = deltaTime.time() == 0 ? 0 : (lastPos - shooterPos) / deltaTime.time();
-        double pid = controller.calculate(shooterPos, target);
+        double pid = controller.calculate(velocity, target);
         double ff = 0.0;
 
         double power = pid + ff;

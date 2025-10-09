@@ -13,7 +13,7 @@ import org.firstinspires.ftc.teamcode.subsystems.IntakeSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.ShooterSubSystem;
 import org.firstinspires.ftc.teamcode.subsystems.SpindexerSubsystem;
 
-@TeleOp (name = "Very cool teleop", group = "idk")
+@TeleOp (name = "Alpha teleop", group = "OpModes")
 public class AlphaTeleOp extends CommandOpMode {
     private Follower follower;
     public static Pose startingPose = new Pose(0,0,0);
@@ -34,14 +34,26 @@ public class AlphaTeleOp extends CommandOpMode {
         super.reset();
 
         //pedro and gamepad wrapper
-        follower.startTeleopDrive();
+//        follower.startTeleopDrive();
         driver1 = new GamepadEx(gamepad1);
 
         //command binding
-        driver1.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER).whenPressed(new InstantCommand(() -> intake.setSpeed(IntakeSubsystem.IntakeState.INTAKING)));
-        driver1.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER).whenReleased(new InstantCommand(() -> intake.setSpeed(IntakeSubsystem.IntakeState.STILL)));
 
-        driver1.getGamepadButton(GamepadKeys.Button.CIRCLE).whenReleased(new InstantCommand(() -> spindexer.advanceSpindexer()));
+        driver1.getGamepadButton(GamepadKeys.Button.TRIANGLE).whenPressed(
+                new InstantCommand(() -> intake.setSpeed(IntakeSubsystem.IntakeState.INTAKING))
+        );
+        driver1.getGamepadButton(GamepadKeys.Button.TRIANGLE).whenReleased(
+                new InstantCommand(() -> intake.setSpeed(IntakeSubsystem.IntakeState.STILL))
+        );
+        driver1.getGamepadButton(GamepadKeys.Button.CIRCLE).whenPressed(
+                new InstantCommand(() -> spindexer.advanceSpindexer())
+        );
+        driver1.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER).whenPressed(
+                new InstantCommand(() -> shooter.setTargetVelocity(99))
+        );
+        driver1.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER).whenPressed(
+                new InstantCommand(() -> shooter.setTargetVelocity(0))
+        );
 
 
     }

@@ -12,7 +12,7 @@ import com.seattlesolvers.solverslib.controller.PIDFController;
 public class SpindexerSubsystem extends SubsystemBase {
     private DcMotor spindexer;
     private double kP = 0.000;
-    private double kI = 0.000;
+    private double kI = 0.005;
     private double kD = 0.000;
     private double kF = 0.000;
     PIDFController pidf = new PIDFController(kP, kI, kD, kF);

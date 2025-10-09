@@ -21,7 +21,7 @@ public class ShooterSubSystem extends SubsystemBase {
     public static double output = 0.0;
 
     private double kP = 0.000;
-    private double kI = 0.000;
+    private double kI = 0.005;
     private double kD = 0.000;
     private double kF = 0.000;
     ElapsedTime deltaTime = new ElapsedTime();
@@ -31,7 +31,7 @@ public class ShooterSubSystem extends SubsystemBase {
     InterpLUT lut = new InterpLUT();
 
     public ShooterSubSystem(final HardwareMap hMap) {
-        shooterMotor = hMap.get(DcMotor.class, "shooterMotor"); //replace with name of servo when you get it
+        shooterMotor = hMap.get(DcMotor.class, "shooter");
         shooterMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         //lut.add(1.0,1.0);
