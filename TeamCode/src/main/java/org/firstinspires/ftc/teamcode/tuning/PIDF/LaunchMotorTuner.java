@@ -7,7 +7,6 @@ import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
-import com.qualcomm.robotcore.util.Range;
 import com.seattlesolvers.solverslib.command.CommandOpMode;
 import com.seattlesolvers.solverslib.controller.PIDFController;
 import com.seattlesolvers.solverslib.util.TelemetryData;
@@ -28,8 +27,9 @@ public class LaunchMotorTuner extends CommandOpMode {
     public static double I = 0;
     public static double D = 0.000;
     public static double F = 0.000;
-    public static double targetVel = 0.0;
-    public static double posTolerance = 0;
+
+    public static double TARGET_VEL = 0.0;
+    public static double POS_TOLERANCE = 0;
 
     private static final PIDFController launcherPIDF = new PIDFController(P, I, D, F);
 
@@ -41,7 +41,7 @@ public class LaunchMotorTuner extends CommandOpMode {
     public void initialize() {
         // Must have for all opModes
         Constants.OP_MODE_TYPE = Constants.OpModeType.TELEOP;
-        launcherPIDF.setTolerance(posTolerance, 0);
+        launcherPIDF.setTolerance(POS_TOLERANCE, 0);
 
         // Resets the command scheduler
         super.reset();
@@ -60,17 +60,15 @@ public class LaunchMotorTuner extends CommandOpMode {
 
         double motorVel = robot.launchMotors.getVelocity();
 
-        launcherPIDF.setP(P);
-        launcherPIDF.setI(I);
-        launcherPIDF.setD(D);
-        launcherPIDF.setF(F);
+        launcherPIDF.setPIDF(P, I, D, F);
 
-        launcherPIDF.setTolerance(posTolerance, 0);
+        launcherPIDF.setTolerance(POS_TOLERANCE, 0);
 
-        launcherPIDF.setSetPoint(targetVel);
+        TARGET_VEL = Math.max(0, TARGET_VEL);
 
-        double maxPower = (F * motorVel);
-        double power = Range.clip(launcherPIDF.calculate(targetVel, motorVel), -maxPower, maxPower);
+        launcherPIDF.setSetPoint(TARGET_VEL);
+
+        double power = launcherPIDF.calculate(motorVel, TARGET_VEL);
 
         robot.launchMotors.set(power);
 
@@ -78,9 +76,9 @@ public class LaunchMotorTuner extends CommandOpMode {
         timer.reset();
 
         telemetryData.addData("power", power);
-        telemetryData.addData("target velocity", targetVel);
-        telemetryData.addData("target velocity", motorVel);
-        telemetryData.addData("encoder position", robot.launchMotors.getPositions());
+        telemetryData.addData("target velocity", TARGET_VEL);
+        telemetryData.addData("actual velocity", motorVel);
+        telemetryData.addData("encoder position", robot.launchMotors.getPositions().get(0));
 
         // DO NOT REMOVE ANY LINES BELOW! Runs the command scheduler and updates telemetry
         super.run();
@@ -94,6 +92,6 @@ public class LaunchMotorTuner extends CommandOpMode {
         Log.v("I", String.valueOf(I));
         Log.v("D", String.valueOf(D));
         Log.v("F", String.valueOf(F));
-        Log.v("posTolerance", String.valueOf(posTolerance));
+        Log.v("posTolerance", String.valueOf(POS_TOLERANCE));
     }
 }
