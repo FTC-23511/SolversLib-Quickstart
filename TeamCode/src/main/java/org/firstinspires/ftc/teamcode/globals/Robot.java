@@ -3,12 +3,17 @@ package org.firstinspires.ftc.teamcode.globals;
 import static org.firstinspires.ftc.teamcode.globals.Constants.*;
 
 import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
+import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.hardware.lynx.LynxModule;
-import com.qualcomm.hardware.rev.RevColorSensorV3;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.seattlesolvers.solverslib.geometry.Pose2d;
 import com.seattlesolvers.solverslib.hardware.AbsoluteAnalogEncoder;
-import com.seattlesolvers.solverslib.hardware.ServoEx;
+import com.seattlesolvers.solverslib.hardware.SensorDistanceEx;
+import com.seattlesolvers.solverslib.hardware.SensorRevTOFDistance;
+import com.seattlesolvers.solverslib.hardware.motors.Motor;
+import com.seattlesolvers.solverslib.hardware.servos.ServoEx;
 import com.seattlesolvers.solverslib.hardware.motors.CRServoEx;
 import com.seattlesolvers.solverslib.hardware.motors.MotorEx;
 import com.seattlesolvers.solverslib.hardware.motors.MotorGroup;
@@ -32,22 +37,24 @@ public class Robot extends com.seattlesolvers.solverslib.command.Robot {
     public MotorEx BRmotor;
 
     public MotorEx intakeMotor;
-    private MotorEx launchMotorTop;
-    private MotorEx launchMotorBottom;
 
     public MotorGroup launchMotors;
+    public MotorEx.Encoder launchEncoder;
 
     public CRServoEx FRswervo;
     public CRServoEx FLswervo;
     public CRServoEx BLswervo;
     public CRServoEx BRswervo;
 
-    public ServoEx leftIntakePivot;
-    public ServoEx rightIntakePivot;
-    public ServoEx depositPivot;
+    public CRServoEx leftTurretServo;
+    public CRServoEx rightTurretServo;
+    public AbsoluteAnalogEncoder turretEncoder;
 
-    public RevColorSensorV3 colorSensor;
-//    public Limelight3A limelight;
+    public ServoEx intakePivotServo;
+    public ServoEx hoodServo;
+    public ServoEx rampServo;
+
+    public Limelight3A limelight;
 
     public GoBildaPinpointDriver pinpoint;
 //    public IMU imu;
@@ -56,6 +63,9 @@ public class Robot extends com.seattlesolvers.solverslib.command.Robot {
     public Intake intake;
     public Launcher launcher;
 
+    public SensorDistanceEx.DistanceTarget distanceTarget;
+    public SensorRevTOFDistance distanceSensor;
+
     public void init(HardwareMap hwMap) {
         // Hardware
         FRmotor = new MotorEx(hwMap, "FR").setCachingTolerance(0.01);
@@ -63,13 +73,25 @@ public class Robot extends com.seattlesolvers.solverslib.command.Robot {
         BLmotor = new MotorEx(hwMap, "BL").setCachingTolerance(0.01);
         BRmotor = new MotorEx(hwMap, "BR").setCachingTolerance(0.01);
 
+        FRmotor.setRunMode(Motor.RunMode.RawPower);
+        FLmotor.setRunMode(Motor.RunMode.RawPower);
+        BLmotor.setRunMode(Motor.RunMode.RawPower);
+        BRmotor.setRunMode(Motor.RunMode.RawPower);
+
         intakeMotor = new MotorEx(hwMap, "intakeMotor").setCachingTolerance(0.01);
-        launchMotorTop = new MotorEx(hwMap, "launchMotorTop").setCachingTolerance(0.01);
-        launchMotorBottom = new MotorEx(hwMap, "launchMotorBottom").setCachingTolerance(0.01);
+        intakeMotor.setRunMode(Motor.RunMode.RawPower);
+        intakeMotor.setZeroPowerBehavior(Motor.ZeroPowerBehavior.BRAKE);
 
-        launchMotorBottom.setInverted(true);
+        launchMotors = new MotorGroup(
+                (new MotorEx(hwMap, "topLaunchMotor").setCachingTolerance(0.01)),
+                (new MotorEx(hwMap, "bottomLaunchMotor").setCachingTolerance(0.01))
+        );
 
-        launchMotors = new MotorGroup(launchMotorTop, launchMotorBottom);
+        launchMotors.setInverted(true);
+        launchMotors.setRunMode(Motor.RunMode.RawPower);
+        launchMotors.setZeroPowerBehavior(Motor.ZeroPowerBehavior.FLOAT);
+
+        launchEncoder = new MotorEx(hwMap, "topLaunchMotor").encoder;
 
         FRswervo = new CRServoEx(hwMap, "FR", new AbsoluteAnalogEncoder(hwMap, "FR")
                 .zero(FR_ENCODER_OFFSET), CRServoEx.RunMode.RawPower)
@@ -84,11 +106,16 @@ public class Robot extends com.seattlesolvers.solverslib.command.Robot {
                 .zero(BR_ENCODER_OFFSET), CRServoEx.RunMode.RawPower)
                 .setCachingTolerance(0.01);
 
-        leftIntakePivot = new ServoEx(hwMap, "leftIntakePivot").setCachingTolerance(0.01);
-        rightIntakePivot = new ServoEx(hwMap, "rightIntakePivot").setCachingTolerance(0.01);
-        depositPivot = new ServoEx(hwMap, "depositPivot").setCachingTolerance(0.01);
+        leftTurretServo = new CRServoEx(hwMap, "leftTurretServo").setCachingTolerance(0.01);
+        rightTurretServo = new CRServoEx(hwMap, "rightTurretServo").setCachingTolerance(0.01);
 
-        rightIntakePivot.setInverted(true);
+        turretEncoder = new AbsoluteAnalogEncoder(hwMap, "turretEncoder").zero(0);
+
+        intakePivotServo = new ServoEx(hwMap, "intakePivotServo").setCachingTolerance(0.01);
+        hoodServo = new ServoEx(hwMap, "hoodServo").setCachingTolerance(0.01);
+        rampServo = new ServoEx(hwMap, "rampServo").setCachingTolerance(0.01);
+
+        intakePivotServo.setInverted(true);
 
         pinpoint = hwMap.get(GoBildaPinpointDriver.class, "pinpoint");
         pinpoint.setOffsets(-76.32, 152.62, DistanceUnit.MM);
@@ -97,10 +124,11 @@ public class Robot extends com.seattlesolvers.solverslib.command.Robot {
         pinpoint.resetPosAndIMU();
         pinpoint.setPosition(Pose2d.convertToPose2D(END_POSE, DistanceUnit.INCH, AngleUnit.RADIANS));
 
-        colorSensor = (RevColorSensorV3) hwMap.colorSensor.get("colorSensor");
-        colorSensor.enableLed(true);
+//        distanceTarget = new SensorDistanceEx.DistanceTarget(DistanceUnit.CM, MIN_DISTANCE_THRESHOLD, MAX_DISTANCE_THRESHOLD);
+//        distanceSensor = new SensorRevTOFDistance(hwMap, "distanceSensor");
+//        distanceSensor.addTarget(distanceTarget);
 
-//        limelight = hardwareMap.get(Limelight3A.class, "limelight");
+        limelight = hwMap.get(Limelight3A.class, "limelight");
 
         // Subsystems
         drive = new Drive();

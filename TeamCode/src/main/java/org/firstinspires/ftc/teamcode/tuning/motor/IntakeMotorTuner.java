@@ -1,31 +1,35 @@
-package org.firstinspires.ftc.teamcode.opmode.TeleOp;
+package org.firstinspires.ftc.teamcode.tuning.motor;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
+import com.qualcomm.robotcore.util.Range;
 import com.seattlesolvers.solverslib.command.CommandOpMode;
+import com.seattlesolvers.solverslib.command.InstantCommand;
 import com.seattlesolvers.solverslib.gamepad.GamepadEx;
+import com.seattlesolvers.solverslib.gamepad.GamepadKeys;
+import com.seattlesolvers.solverslib.geometry.Pose2d;
 import com.seattlesolvers.solverslib.util.TelemetryData;
 
 import org.firstinspires.ftc.teamcode.globals.Constants;
 import org.firstinspires.ftc.teamcode.globals.Robot;
 
-//@Config
-@Disabled
-//@TeleOp
-public class ExampleTeleOp extends CommandOpMode {
+@Config
+@TeleOp
+public class IntakeMotorTuner extends CommandOpMode {
     public GamepadEx driver;
     public GamepadEx operator;
 
     public ElapsedTime timer;
 
+    public static double MOTOR_POWER = 0.0;
+
     TelemetryData telemetryData = new TelemetryData(new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry()));
 
     private final Robot robot = Robot.getInstance();
-
+    
     @Override
     public void initialize() {
         // Must have for all opModes
@@ -41,10 +45,10 @@ public class ExampleTeleOp extends CommandOpMode {
         operator = new GamepadEx(gamepad2);
 
         // Driver controls
-        // TODO: add controls here
-
-        // Operator controls
-        // TODO: add controls here
+        // Reset heading
+        driver.getGamepadButton(GamepadKeys.Button.DPAD_UP).whenPressed(
+                new InstantCommand(() -> robot.drive.setPose(new Pose2d()))
+        );
     }
 
     @Override
@@ -56,18 +60,16 @@ public class ExampleTeleOp extends CommandOpMode {
             timer = new ElapsedTime();
         }
 
-        // TODO: Add robot drive movement here
+            MOTOR_POWER = Range.clip(MOTOR_POWER, -1.0, 1.0);
+            robot.intakeMotor.set(MOTOR_POWER);
 
         telemetryData.addData("Loop Time", timer.milliseconds());
         timer.reset();
 
+        telemetryData.addData("MOTOR_POWER", MOTOR_POWER);
+
         // DO NOT REMOVE ANY LINES BELOW! Runs the command scheduler and updates telemetry
         super.run();
         telemetryData.update();
-    }
-
-    @Override
-    public void end() {
-//        Constants.END_POSE = robot.drive.getPose();
     }
 }

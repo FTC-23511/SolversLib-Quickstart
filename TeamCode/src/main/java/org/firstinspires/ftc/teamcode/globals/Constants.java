@@ -47,7 +47,10 @@ public class Constants {
     public static double INTAKE_HOLD_SPEED = 0.00;
 
     public static double MIN_DISTANCE_THRESHOLD = 0.00;
-    public static double MAX_DISTANCE_THRESHOLD = 0.00;
+    public static double MAX_DISTANCE_THRESHOLD = 1.00;
 
     // Launcher
+
+
+    // Turret
 }

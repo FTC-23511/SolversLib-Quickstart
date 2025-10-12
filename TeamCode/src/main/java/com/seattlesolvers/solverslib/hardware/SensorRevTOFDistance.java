@@ -89,7 +89,6 @@ public class SensorRevTOFDistance implements SensorDistanceEx {
 
     @Override
     public void addTargets(List<DistanceTarget> targets) {
-
         for (DistanceTarget target : targets) {
             if (!targetList.contains(target)) targetList.add(target);
         }

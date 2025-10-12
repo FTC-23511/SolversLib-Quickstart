@@ -4,7 +4,6 @@ import static org.firstinspires.ftc.teamcode.globals.Constants.*;
 
 import com.seattlesolvers.solverslib.command.SubsystemBase;
 
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.globals.Robot;
 
 public class Intake extends SubsystemBase {
@@ -29,24 +28,20 @@ public class Intake extends SubsystemBase {
 
     public void init() {
         setPivot(PivotState.INTAKE);
-        robot.colorSensor.enableLed(true);
     }
 
     public void setPivot(PivotState pivotState) {
         switch (pivotState) {
             case TRANSFER:
-                robot.leftIntakePivot.set(INTAKE_PIVOT_TRANSFER_POS);
-                robot.rightIntakePivot.set(INTAKE_PIVOT_TRANSFER_POS);
+                robot.intakePivotServo.set(INTAKE_PIVOT_TRANSFER_POS);
                 break;
 
             case INTAKE:
-                robot.leftIntakePivot.set(INTAKE_PIVOT_INTAKE_POS);
-                robot.rightIntakePivot.set(INTAKE_PIVOT_INTAKE_POS);
+                robot.intakePivotServo.set(INTAKE_PIVOT_INTAKE_POS);
                 break;
 
             case INTAKE_READY:
-                robot.leftIntakePivot.set(INTAKE_PIVOT_READY_INTAKE_POS);
-                robot.rightIntakePivot.set(INTAKE_PIVOT_READY_INTAKE_POS);
+                robot.intakePivotServo.set(INTAKE_PIVOT_READY_INTAKE_POS);
                 break;
         }
 
@@ -105,35 +100,7 @@ public class Intake extends SubsystemBase {
     }
 
     public boolean hasArtifact() {
-        /* Color thresholding (not used)
-        int red = robot.colorSensor.red();
-        int green = robot.colorSensor.green();
-        int blue = robot.colorSensor.blue();
-
-        SampleColorDetected sampleColor = sampleColorDetected(red, green, blue);
-
-        switch (sampleColor) {
-            case YELLOW:
-                if (green > YELLOW_EDGE_CASE_THRESHOLD) {
-                    return false;
-                }
-                break;
-            case RED:
-                if (red > RED_EDGE_CASE_THRESHOLD) {
-                    return false;
-                }
-                break;
-            case BLUE:
-                if (blue > BLUE_EDGE_CASE_THRESHOLD) {
-                    return false;
-                }
-                break;
-        }
-         */
-
-        double distance = robot.colorSensor.getDistance(DistanceUnit.CM);
-
-        return distance > MIN_DISTANCE_THRESHOLD && distance < MAX_DISTANCE_THRESHOLD;
+        return robot.distanceSensor.targetReached(robot.distanceTarget);
     }
 
     @Override

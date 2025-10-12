@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.opmode.TeleOp;
+package org.firstinspires.ftc.teamcode.tuning.motor;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
@@ -7,19 +7,17 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.seattlesolvers.solverslib.command.CommandOpMode;
 import com.seattlesolvers.solverslib.command.InstantCommand;
-import com.seattlesolvers.solverslib.drivebase.swerve.coaxial.CoaxialSwerveModule;
 import com.seattlesolvers.solverslib.gamepad.GamepadEx;
 import com.seattlesolvers.solverslib.gamepad.GamepadKeys;
 import com.seattlesolvers.solverslib.geometry.Pose2d;
-import com.seattlesolvers.solverslib.kinematics.wpilibkinematics.ChassisSpeeds;
 import com.seattlesolvers.solverslib.util.TelemetryData;
 
 import org.firstinspires.ftc.teamcode.globals.Constants;
 import org.firstinspires.ftc.teamcode.globals.Robot;
 
 @Config
-@TeleOp(name = "SwerveTeleOp")
-public class SwerveOpMode extends CommandOpMode {
+@TeleOp(name = "LaunchMotorEncoders")
+public class LaunchMotorEncoders extends CommandOpMode {
     public GamepadEx driver;
     public GamepadEx operator;
 
@@ -28,6 +26,8 @@ public class SwerveOpMode extends CommandOpMode {
     TelemetryData telemetryData = new TelemetryData(new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry()));
 
     private final Robot robot = Robot.getInstance();
+
+    public static double launchPower = 0.0;
 
     @Override
     public void initialize() {
@@ -55,41 +55,29 @@ public class SwerveOpMode extends CommandOpMode {
         // Keep all the has movement init for until when TeleOp starts
         // This is like the init but when the program is actually started
         if (timer == null) {
-            robot.initHasMovement();
+//            robot.initHasMovement();
             timer = new ElapsedTime();
         }
 
-        // Update any constants that are being updated by FTCDash
-        for (CoaxialSwerveModule module : robot.drive.swerve.getModules()) {
-            module.setSwervoPIDF(Constants.SWERVO_PIDF_COEFFICIENTS);
-        }
-
-        // Drive the robot
-        double minSpeed = 0.3; // As a fraction of the max speed of the robot
-        double speedMultiplier = minSpeed + (1 - minSpeed) * driver.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER);
-        robot.drive.swerve.updateWithTargetVelocity(
-                ChassisSpeeds.fromFieldRelativeSpeeds(
-                        driver.getLeftY() * Constants.MAX_VELOCITY * speedMultiplier,
-                        -driver.getLeftX() * Constants.MAX_VELOCITY * speedMultiplier,
-                        -driver.getRightX() * Constants.MAX_ANGULAR_VELOCITY * speedMultiplier,
-                        robot.drive.getPose().getRotation()
-                )
-        );
+        robot.launchMotors.set(launchPower);
 
         telemetryData.addData("Loop Time", timer.milliseconds());
         timer.reset();
 
-        telemetryData.addData("Heading", robot.drive.getPose().getHeading());
-        telemetryData.addData("Robot Pose", robot.drive.getPose());
+//        telemetryData.addData("Heading", robot.drive.getPose().getHeading());
+//        telemetryData.addData("Robot Pose", robot.drive.getPose());
 
-        telemetryData.addData("Target Chassis Velocity", robot.drive.swerve.getTargetVelocity());
-        telemetryData.addData("FR Module", robot.drive.swerve.getModules()[0].getTargetVelocity() + " | " + robot.drive.swerve.getModules()[0].getPowerTelemetry());
-        telemetryData.addData("FL Module", robot.drive.swerve.getModules()[1].getTargetVelocity() + " | " + robot.drive.swerve.getModules()[1].getPowerTelemetry());
-        telemetryData.addData("BL Module", robot.drive.swerve.getModules()[2].getTargetVelocity() + " | " + robot.drive.swerve.getModules()[2].getPowerTelemetry());
-        telemetryData.addData("BR Module", robot.drive.swerve.getModules()[3].getTargetVelocity() + " | " + robot.drive.swerve.getModules()[3].getPowerTelemetry());
+//        telemetryData.addData("Target Chassis Velocity", robot.drive.swerve.getTargetVelocity());
+//        telemetryData.addData("FR Module", robot.drive.swerve.getModules()[0].getTargetVelocity() + " | " + robot.drive.swerve.getModules()[0].getPowerTelemetry());
+//        telemetryData.addData("FL Module", robot.drive.swerve.getModules()[1].getTargetVelocity() + " | " + robot.drive.swerve.getModules()[1].getPowerTelemetry());
+//        telemetryData.addData("BL Module", robot.drive.swerve.getModules()[2].getTargetVelocity() + " | " + robot.drive.swerve.getModules()[2].getPowerTelemetry());
+//        telemetryData.addData("BR Module", robot.drive.swerve.getModules()[3].getTargetVelocity() + " | " + robot.drive.swerve.getModules()[3].getPowerTelemetry());
+
+        telemetryData.addData("Launch Motor Position", robot.launchEncoder.getPosition());
 
         // DO NOT REMOVE ANY LINES BELOW! Runs the command scheduler and updates telemetry
         super.run();
+        robot.pinpoint.update();
         telemetryData.update();
     }
 
@@ -97,5 +85,6 @@ public class SwerveOpMode extends CommandOpMode {
     public void end() {
         Constants.END_POSE = robot.drive.getPose();
     }
+
 
 }
