@@ -17,15 +17,15 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 @Config
 @TeleOp(name = "Distance Sensor", group = "Sensor")
 public class DistanceSensorTest extends LinearOpMode {
-    public static double target = 10.0;
-    public static double threshold = 2.0;
+    public static double MIN_THRESHOLD = 2.0;
+    public static double MAX_THRESHOLD = 4.0;
 
     TelemetryData telemetryData = new TelemetryData(new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry()));
 
     @SuppressLint("DefaultLocale")
     @Override
     public void runOpMode() {
-        SensorDistanceEx.DistanceTarget distanceTarget = new SensorDistanceEx.DistanceTarget(DistanceUnit.CM, target, threshold);
+        SensorDistanceEx.DistanceTarget distanceTarget = new SensorDistanceEx.DistanceTarget(DistanceUnit.CM, MIN_THRESHOLD, MAX_THRESHOLD);
         SensorRevTOFDistance sensorDistance = new SensorRevTOFDistance(hardwareMap, "distance");
 
         sensorDistance.addTarget(distanceTarget);
@@ -33,13 +33,10 @@ public class DistanceSensorTest extends LinearOpMode {
         waitForStart();
 
         while(opModeIsActive()) {
-            distanceTarget.setTarget(target);
-            distanceTarget.setThreshold(threshold);
-
             telemetryData.addData("Distance (CM)", sensorDistance.getDistance(DistanceUnit.CM));
-            telemetryData.addData("Target", target);
             telemetryData.addData("At Target", sensorDistance.targetReached(distanceTarget));
-            telemetryData.addData("Threshold", threshold);
+            telemetryData.addData("Minimum Threshold", MIN_THRESHOLD);
+            telemetryData.addData("Maximum Threshold", MAX_THRESHOLD);
 
             telemetryData.update();
         }
