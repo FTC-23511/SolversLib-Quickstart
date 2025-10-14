@@ -1,9 +1,8 @@
-package org.firstinspires.ftc.teamcode.tuning.servo;
+package org.firstinspires.ftc.teamcode.tuning.subsystem;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
@@ -17,21 +16,22 @@ import com.seattlesolvers.solverslib.util.TelemetryData;
 import org.firstinspires.ftc.teamcode.globals.Constants;
 import org.firstinspires.ftc.teamcode.globals.Robot;
 
-@Disabled
 @Config
 @TeleOp
-public class IntakeServoTuner extends CommandOpMode {
+public class FullLaunchTuner extends CommandOpMode {
     public GamepadEx driver;
     public GamepadEx operator;
 
     public ElapsedTime timer;
 
     public static double SERVO_POS = 0.0;
+    public static double INTAKE_MOTOR_POWER = 0.0;
+    public static double LAUNCHER_MOTOR_POWER = 0.0;
 
     TelemetryData telemetryData = new TelemetryData(new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry()));
 
     private final Robot robot = Robot.getInstance();
-    
+
     @Override
     public void initialize() {
         // Must have for all opModes
@@ -65,10 +65,20 @@ public class IntakeServoTuner extends CommandOpMode {
         SERVO_POS = Range.clip(SERVO_POS, 0.0, 1.0);
         robot.intakePivotServo.set(SERVO_POS);
 
+        INTAKE_MOTOR_POWER = Range.clip(INTAKE_MOTOR_POWER, -1.0, 1.0);
+        robot.intakeMotor.set(INTAKE_MOTOR_POWER);
+
+        LAUNCHER_MOTOR_POWER = Range.clip(LAUNCHER_MOTOR_POWER, -1.0, 1.0);
+        robot.launchMotors.set(LAUNCHER_MOTOR_POWER);
+
         telemetryData.addData("Loop Time", timer.milliseconds());
         timer.reset();
 
         telemetryData.addData("SERVO_POS", SERVO_POS);
+        telemetryData.addData("INTAKE_MOTOR_POWER", INTAKE_MOTOR_POWER);
+        telemetryData.addData("LAUNCHER_MOTOR_POWER", LAUNCHER_MOTOR_POWER);
+        telemetryData.addData("Launch Encoder Position", robot.launchMotors.getPositions().get(0));
+        telemetryData.addData("Launch Velocity", robot.launchMotors.getVelocity());
 
         // DO NOT REMOVE ANY LINES BELOW! Runs the command scheduler and updates telemetry
         super.run();
