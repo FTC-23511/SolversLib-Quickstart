@@ -117,8 +117,9 @@ public class Robot extends com.seattlesolvers.solverslib.command.Robot {
         intakePivotServo.setInverted(true);
 
         pinpoint = hwMap.get(GoBildaPinpointDriver.class, "pinpoint");
-        pinpoint.setOffsets(-75.96, 152.62, DistanceUnit.MM);
+        pinpoint.setOffsets(-76.32, 152.62, DistanceUnit.MM);
         pinpoint.setEncoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_SWINGARM_POD);
+        pinpoint.setEncoderDirections(GoBildaPinpointDriver.EncoderDirection.REVERSED, GoBildaPinpointDriver.EncoderDirection.REVERSED);
         pinpoint.resetPosAndIMU();
         pinpoint.setPosition(Pose2d.convertToPose2D(END_POSE, DistanceUnit.INCH, AngleUnit.RADIANS));
 

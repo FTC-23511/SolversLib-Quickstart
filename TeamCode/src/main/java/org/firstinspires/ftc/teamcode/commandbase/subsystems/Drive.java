@@ -5,6 +5,7 @@ import static org.firstinspires.ftc.teamcode.globals.Constants.*;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.seattlesolvers.solverslib.command.SubsystemBase;
 import com.seattlesolvers.solverslib.controller.PIDFController;
+import com.seattlesolvers.solverslib.controller.SquIDFController;
 import com.seattlesolvers.solverslib.drivebase.swerve.coaxial.CoaxialSwerveDrivetrain;
 import com.seattlesolvers.solverslib.geometry.Pose2d;
 import com.seattlesolvers.solverslib.hardware.motors.CRServoEx;
@@ -46,9 +47,9 @@ public class Drive extends SubsystemBase {
         ).setCachingTolerance(0.01, 0.01);
 
         follower = new P2PController(
-                new PIDFController(XY_COEFFICIENTS),
-                new PIDFController(XY_COEFFICIENTS),
-                new PIDFController(HEADING_COEFFICIENTS),
+                new PIDFController(XY_COEFFICIENTS).setMinimumOutput(XY_MIN_OUTPUT),
+                new PIDFController(XY_COEFFICIENTS).setMinimumOutput(XY_MIN_OUTPUT),
+                new PIDFController(HEADING_COEFFICIENTS).setMinimumOutput(HEADING_MIN_OUTPUT),
                 ANGLE_UNIT,
                 XY_TOLERANCE,
                 HEADING_TOLERANCE
@@ -64,7 +65,7 @@ public class Drive extends SubsystemBase {
 
             timer.reset();
             lastPose = new Pose2d(robot.pinpoint.getPosition(), DISTANCE_UNIT, ANGLE_UNIT);
-            lastPose = new Pose2d(-lastPose.getX(), -lastPose.getY(), lastPose.getRotation()); // TODO: actually fix pinpoint giving flipped xy values instead of this hotfix
+            lastPose = new Pose2d(lastPose.getX(), lastPose.getY(), lastPose.getRotation());
         }
 
         return lastPose;

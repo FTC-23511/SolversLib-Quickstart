@@ -9,29 +9,24 @@ import com.qualcomm.robotcore.hardware.PIDFCoefficients;
  * to properly utilize these calculations.
  * <p>
  * The equation we will use is:
- * u(t) = kP * sqrt(e(t)) + kI * int(0,t)[e(t')dt'] + kD * e'(t) + kF
+ * u(t) = kP * sqrt(e(t)) + kI * int(0,t)[e(t')dt'] + kD * e'(t) + kF * r(t)
  * where e(t) = r(t) - y(t) and r(t) is the setpoint and y(t) is the
  * measured value. If we consider e(t) the positional error, then
  * int(0,t)[e(t')dt'] is the total error and e'(t) is the velocity error.
  */
-public class SquIDFController extends Controller {
-    private double kP, kI, kD, kF;
-    private double minIntegral, maxIntegral;
-
-    private double totalError;
-
+public class SquIDFController extends PIDFController {
     /**
      * The base constructor for the PIDF controller
      */
     public SquIDFController(double kp, double ki, double kd, double kf) {
-        this(kp, ki, kd, kf, 0, 0);
+        super(kp, ki, kd, kf);
     }
 
     /**
      * Constructor for the PIDF controller with PIDFCoefficients
      */
     public SquIDFController(PIDFCoefficients coefficients) {
-        this(coefficients.p, coefficients.i, coefficients.d, coefficients.f);
+        super(coefficients);
     }
 
     /**
@@ -44,40 +39,11 @@ public class SquIDFController extends Controller {
      *           such that sp - pv, or e(t) < tolerance.
      */
     public SquIDFController(double kp, double ki, double kd, double kf, double sp, double pv) {
-        kP = kp;
-        kI = ki;
-        kD = kd;
-        kF = kf;
-
-        setPoint = sp;
-        measuredValue = pv;
-
-        minIntegral = -1.0;
-        maxIntegral = 1.0;
-
-        errorVal_p = setPoint - measuredValue;
+        super(kp, ki, kd, kf, sp, pv);
     }
 
     @Override
-    public void reset() {
-        totalError = 0;
-        super.reset();
-    }
-
-    /**
-     * @return the PIDF coefficients
-     */
-    public double[] getCoefficients() {
-        return new double[]{kP, kI, kD, kF};
-    }
-
-    /**
-     * Calculates the control value, u(t).
-     *
-     * @param pv The current measurement of the process variable.
-     * @return the value produced by u(t).
-     */
-    public double calculate(double pv) {
+    public double calculateOutput(double pv) {
         prevErrorVal = errorVal_p;
 
         double currentTimeStamp = (double) System.nanoTime() / 1E9;
@@ -108,53 +74,4 @@ public class SquIDFController extends Controller {
         // returns u(t)
         return kP * Math.sqrt(errorVal_p) + kI * totalError + kD * errorVal_v + kF * setPoint;
     }
-
-    public void setPIDF(double kp, double ki, double kd, double kf) {
-        kP = kp;
-        kI = ki;
-        kD = kd;
-        kF = kf;
-    }
-
-    public void setIntegrationBounds(double integralMin, double integralMax) {
-        minIntegral = integralMin;
-        maxIntegral = integralMax;
-    }
-
-    public void clearTotalError() {
-        totalError = 0;
-    }
-
-    public void setP(double kp) {
-        kP = kp;
-    }
-
-    public void setI(double ki) {
-        kI = ki;
-    }
-
-    public void setD(double kd) {
-        kD = kd;
-    }
-
-    public void setF(double kf) {
-        kF = kf;
-    }
-
-    public double getP() {
-        return kP;
-    }
-
-    public double getI() {
-        return kI;
-    }
-
-    public double getD() {
-        return kD;
-    }
-
-    public double getF() {
-        return kF;
-    }
-
 }

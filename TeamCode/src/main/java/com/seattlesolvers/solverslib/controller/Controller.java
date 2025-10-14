@@ -1,6 +1,7 @@
 package com.seattlesolvers.solverslib.controller;
 
 public abstract class Controller {
+    private double minOutput = 0;
     protected double setPoint;
     protected double measuredValue;
 
@@ -27,19 +28,39 @@ public abstract class Controller {
     }
 
     /**
-     * Calculates the control value, u(t).
+     * Calculates the control value, u(t). <br>
+     *
+     * NOTE: Is not used publicly and is instead wrapped in
+     * {@link #calculate(double)} before being visible to user to allow for
+     * other features such as {@link #setMinimumOutput(double)}
      *
      * @param pv The given measured value.
      * @return the value produced by u(t).
      */
-    public abstract double calculate(double pv);
+    protected abstract double calculateOutput(double pv);
+
+    /**
+     * Calculates the control value, u(t). Also follows the minimum output
+     * (see: {@link #setMinimumOutput(double)}) if set.
+     *
+     * @param pv The given measured value.
+     * @return the value produced by u(t).
+     */
+    public double calculate(double pv) {
+        double rawOutput = calculateOutput(pv);
+        if (atSetPoint()) {
+            return rawOutput;
+        } else {
+            return Math.max(Math.abs(rawOutput), minOutput) * Math.signum(rawOutput);
+        }
+    }
 
     /**
      * Calculates the next output of the controller.
      *
      * @param pv The given measured value.
      * @param sp The given setpoint.
-     * @return the next output using the given measurd value via
+     * @return the next output using the given measured value via
      * {@link #calculate(double)}.
      */
     public double calculate(double pv, double sp) {
@@ -133,5 +154,14 @@ public abstract class Controller {
         return period;
     }
 
-
+    /**
+     * An option to enforce a minimum (magnitude of the / absolute value of the) output from
+     * subsequent calculations from the controller if the controller is not {@link #atSetPoint()}
+     * @param minOutput the minimum (magnitude of the / absolute value of the) output for the controller
+     * @return this object for chaining purposes
+     */
+    public Controller setMinimumOutput(double minOutput) {
+        this.minOutput = Math.abs(minOutput);
+        return this;
+    }
 }
