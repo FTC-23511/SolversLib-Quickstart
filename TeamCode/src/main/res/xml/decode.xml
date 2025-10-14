@@ -28,9 +28,7 @@
             <ContinuousRotationServo name="leftTurretServo" port="4"/>
             <ContinuousRotationServo name="FR" port="5"/>
         </ServoHub>
-    </LynxUsbDevice>
 
-    <LynxUsbDevice name="Expansion Hub Portal 1" serialNumber="DQ81DA4Y" parentModuleAddress="2">
         <LynxModule name="Expansion Hub 2" port="2">
             <goBILDA5202SeriesMotor name="topLaunchMotor" port="0"/>
             <goBILDA5202SeriesMotor name="bottomLaunchMotor" port="1"/>

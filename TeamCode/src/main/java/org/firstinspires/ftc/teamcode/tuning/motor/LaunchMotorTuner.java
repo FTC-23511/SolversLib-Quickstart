@@ -11,6 +11,7 @@ import com.seattlesolvers.solverslib.command.CommandOpMode;
 import com.seattlesolvers.solverslib.controller.PIDFController;
 import com.seattlesolvers.solverslib.util.TelemetryData;
 
+import org.firstinspires.ftc.teamcode.globals.Constants;
 import org.firstinspires.ftc.teamcode.globals.Robot;
 
 @Config
@@ -32,6 +33,9 @@ public class LaunchMotorTuner extends CommandOpMode {
 
     @Override
     public void initialize() {
+        // Must have for all opModes
+        Constants.OP_MODE_TYPE = Constants.OpModeType.TELEOP;
+
         launcherPIDF.setTolerance(POS_TOLERANCE, 0);
 
         // Resets the command scheduler

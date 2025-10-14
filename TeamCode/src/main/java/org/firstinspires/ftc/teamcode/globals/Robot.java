@@ -83,11 +83,10 @@ public class Robot extends com.seattlesolvers.solverslib.command.Robot {
         intakeMotor.setZeroPowerBehavior(Motor.ZeroPowerBehavior.BRAKE);
 
         launchMotors = new MotorGroup(
-                (new MotorEx(hwMap, "topLaunchMotor").setCachingTolerance(0.01)),
-                (new MotorEx(hwMap, "bottomLaunchMotor").setCachingTolerance(0.01))
+                new MotorEx(hwMap, "topLaunchMotor").setCachingTolerance(0.01).setInverted(true),
+                new MotorEx(hwMap, "bottomLaunchMotor").setCachingTolerance(0.01)
         );
 
-        launchMotors.setInverted(true);
         launchMotors.setRunMode(Motor.RunMode.RawPower);
         launchMotors.setZeroPowerBehavior(Motor.ZeroPowerBehavior.FLOAT);
 

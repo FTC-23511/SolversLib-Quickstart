@@ -174,12 +174,14 @@ public class MotorGroup extends Motor implements Iterable<Motor> {
      * This directly affects the speed rather than the direction.
      *
      * @param isInverted The state of inversion true is inverted.
+     * @return This object for chaining purposes.
      */
     @Override
-    public void setInverted(boolean isInverted) {
+    public MotorGroup setInverted(boolean isInverted) {
         for (Motor motor : group) {
             motor.setInverted(isInverted);
         }
+        return this;
     }
 
     /**
