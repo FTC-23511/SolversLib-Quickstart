@@ -64,7 +64,7 @@ public class CoaxialSwerveDrivetrain extends RobotDrive {
     }
 
     /**
-     * @param targetVelocity the target velocity the drivetrain should move at
+     * @param targetVelocity the target velocity the drivetrain should move at (robot-centric)
      */
     public void setTargetVelocity(ChassisSpeeds targetVelocity) {
         this.targetVelocity = targetVelocity;
@@ -96,7 +96,7 @@ public class CoaxialSwerveDrivetrain extends RobotDrive {
     }
 
     /**
-     * Updates the modules/drivetrain to follow a target velocity
+     * Updates the modules/drivetrain to follow a target velocity (robot-centric)
      * @param targetVelocity the target velocity for the drivetrain
      */
     public void updateWithTargetVelocity(ChassisSpeeds targetVelocity) {

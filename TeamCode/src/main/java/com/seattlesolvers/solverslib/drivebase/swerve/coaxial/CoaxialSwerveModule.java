@@ -77,9 +77,9 @@ public class CoaxialSwerveModule {
 
         // Set wheel speed
         if (wheelFlipped) {
-            motor.set(-targetVelocity.magnitude() / maxSpeed);
+            motor.set(-targetVelocity.magnitude() / maxSpeed * Math.cos(angleError));
         } else {
-            motor.set(targetVelocity.magnitude() / maxSpeed);
+            motor.set(targetVelocity.magnitude() / maxSpeed * Math.cos(angleError));
         }
 
         // Set swervo speed for pod rotation

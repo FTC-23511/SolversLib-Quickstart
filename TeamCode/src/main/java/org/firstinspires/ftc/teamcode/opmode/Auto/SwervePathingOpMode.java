@@ -8,7 +8,9 @@ import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.seattlesolvers.solverslib.command.CommandOpMode;
+import com.seattlesolvers.solverslib.command.ConditionalCommand;
 import com.seattlesolvers.solverslib.command.RunCommand;
+import com.seattlesolvers.solverslib.command.SequentialCommandGroup;
 import com.seattlesolvers.solverslib.controller.PIDFController;
 import com.seattlesolvers.solverslib.drivebase.swerve.coaxial.CoaxialSwerveModule;
 import com.seattlesolvers.solverslib.geometry.Pose2d;
@@ -18,6 +20,8 @@ import com.seattlesolvers.solverslib.util.TelemetryData;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.commandbase.commands.DriveTo;
 import org.firstinspires.ftc.teamcode.globals.Robot;
+
+import java.util.ArrayList;
 
 @Config
 @Autonomous(name = "SwervePathingOpMode")
@@ -29,12 +33,21 @@ public class SwervePathingOpMode extends CommandOpMode {
     );
 
     private final Robot robot = Robot.getInstance();
+    public static boolean FOLLOW_PREPROGRAMMED_PATHS = false;
     public static double xTarget = 0;
     public static double yTarget = 0;
     public static double headingTarget = 0;
 
+    public ArrayList<Pose2d> pathPoses;
+    public void generatePath() {
+        pathPoses.add(new Pose2d(0, 0, 0)); // Starting Pose
+        pathPoses.add(new Pose2d(24, 24, Math.PI/2)); // Line 1
+        pathPoses.add(new Pose2d(0, 0, 0)); // Line 2
+    }
+
     @Override
     public void initialize() {
+        generatePath();
         timer = new ElapsedTime();
 
         // Must have for all opModes
@@ -47,11 +60,18 @@ public class SwervePathingOpMode extends CommandOpMode {
         robot.init(hardwareMap);
 
         // Schedule the full auto
-        robot.drive.setPose(new Pose2d(0, 0, new Rotation2d(0)));
+        robot.drive.setPose(pathPoses.get(0));
 
         schedule(
-                new RunCommand(
-                        () -> schedule(new DriveTo(new Pose2d(xTarget, yTarget, new Rotation2d(headingTarget))))
+                new ConditionalCommand(
+                        new SequentialCommandGroup(
+                                new DriveTo(pathPoses.get(1)),
+                                new DriveTo(pathPoses.get(2))
+                        ),
+                        new RunCommand(
+                                () -> schedule(new DriveTo(new Pose2d(xTarget, yTarget, new Rotation2d(headingTarget))))
+                        ),
+                        () -> FOLLOW_PREPROGRAMMED_PATHS
                 )
         );
     }
@@ -61,7 +81,7 @@ public class SwervePathingOpMode extends CommandOpMode {
         // DO NOT REMOVE
         super.run();
 
-        // Update any constants that are being updated by FTCDash
+        // Update any constants that are being updated by FTCDash - used for tuning
         for (CoaxialSwerveModule module : robot.drive.swerve.getModules()) {
             module.setSwervoPIDF(SWERVO_PIDF_COEFFICIENTS);
         }

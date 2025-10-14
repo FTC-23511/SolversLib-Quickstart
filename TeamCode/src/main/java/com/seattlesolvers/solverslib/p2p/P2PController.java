@@ -58,7 +58,7 @@ public class P2PController {
     /**
      * The main method to calculate and return an output for robot movement
      * @param pv the last known position of the robot
-     * @return field-centric chassis speeds/power (depending on your controller scaling)
+     * @return field-centric chassis speeds/power
      */
     public ChassisSpeeds calculate(Pose2d pv) {
         // Update internal variables
