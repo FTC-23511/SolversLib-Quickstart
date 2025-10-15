@@ -49,6 +49,8 @@ public class RedAuto extends CommandOpMode {
     //subsytems and pedro
 
     private Follower follower;
+
+    //update starting pose
     public static Pose startingPose = new Pose(0,0,0);
     private IntakeSubsystem intake;
     private ShooterSubSystem shooter;
@@ -191,6 +193,7 @@ public class RedAuto extends CommandOpMode {
                         ),
                         new FollowPathCommand(follower, paths.get(2)),
                         shootArtifacts,
+
                         //cycle two
                         new FollowPathCommand(follower, paths.get(3)),
                         new ParallelCommandGroup(
@@ -199,6 +202,7 @@ public class RedAuto extends CommandOpMode {
                         ),
                         new FollowPathCommand(follower, paths.get(5)),
                         shootArtifacts,
+                        
                         //cycle three
                         new FollowPathCommand(follower, paths.get(6)),
                         new ParallelCommandGroup(
