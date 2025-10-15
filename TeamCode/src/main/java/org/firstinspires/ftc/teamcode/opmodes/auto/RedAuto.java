@@ -1,0 +1,216 @@
+package org.firstinspires.ftc.teamcode.opmodes.auto;
+
+import com.pedropathing.follower.Follower;
+import com.pedropathing.geometry.BezierLine;
+import com.pedropathing.geometry.Pose;
+import com.pedropathing.paths.PathChain;
+import com.qualcomm.robotcore.util.ElapsedTime;
+import com.seattlesolvers.solverslib.command.CommandOpMode;
+import com.seattlesolvers.solverslib.command.InstantCommand;
+import com.seattlesolvers.solverslib.command.ParallelCommandGroup;
+import com.seattlesolvers.solverslib.command.ParallelRaceGroup;
+import com.seattlesolvers.solverslib.command.RunCommand;
+import com.seattlesolvers.solverslib.command.SequentialCommandGroup;
+import com.seattlesolvers.solverslib.command.WaitCommand;
+import com.seattlesolvers.solverslib.pedroCommand.FollowPathCommand;
+
+import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
+import org.firstinspires.ftc.teamcode.subsystems.IntakeSubsystem;
+import org.firstinspires.ftc.teamcode.subsystems.ShooterSubSystem;
+import org.firstinspires.ftc.teamcode.subsystems.SpindexerSubsystem;
+
+import java.util.ArrayList;
+
+public class RedAuto extends CommandOpMode {
+    //paths
+    /*
+    public PathChain Path1;
+    public PathChain Path2;
+    public PathChain Path3;
+    public PathChain Path4;
+    public PathChain Path5;
+    public PathChain Path6;
+    public PathChain Path7;
+    public PathChain Path8;
+    public PathChain Path9;
+     */
+
+
+    private final ArrayList<PathChain> paths = new ArrayList<>();
+
+    //stuff
+
+    private ElapsedTime timer;
+
+    //private final ArrayList<PathChain> paths = new ArrayList<>();
+
+    //private DashboardPoseTracker dashboardPoseTracker; they had this in github code and I thought it might be useful later
+
+    //subsytems and pedro
+
+    private Follower follower;
+    public static Pose startingPose = new Pose(0,0,0);
+    private IntakeSubsystem intake;
+    private ShooterSubSystem shooter;
+    private SpindexerSubsystem spindexer;
+
+
+
+
+    public void buildPaths(Follower follower) {
+        follower.setStartingPose(startingPose);
+
+        paths.add(follower
+                .pathBuilder()
+                .addPath(
+                        new BezierLine(new Pose(108.000, 108.000), new Pose(99.000, 84.000))
+                )
+                .setLinearHeadingInterpolation(Math.toRadians(45), Math.toRadians(0))
+                .build());
+
+        paths.add(follower
+                .pathBuilder()
+                .addPath(
+                        new BezierLine(new Pose(99.000, 84.000), new Pose(125.000, 84.000))
+                )
+                .setTangentHeadingInterpolation()
+                .build());
+
+        paths.add(follower
+                .pathBuilder()
+                .addPath(
+                        new BezierLine(new Pose(125.000, 84.000), new Pose(108.000, 108.000))
+                )
+                .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(45))
+                .build());
+
+        paths.add(follower
+                .pathBuilder()
+                .addPath(
+                        new BezierLine(new Pose(108.000, 108.000), new Pose(99.000, 60.000))
+                )
+                .setLinearHeadingInterpolation(Math.toRadians(45), Math.toRadians(0))
+                .build());
+
+        paths.add(follower
+                .pathBuilder()
+                .addPath(
+                        new BezierLine(new Pose(99.000, 60.000), new Pose(125.000, 60.000))
+                )
+                .setTangentHeadingInterpolation()
+                .build());
+
+        paths.add(follower
+                .pathBuilder()
+                .addPath(
+                        new BezierLine(new Pose(125.000, 60.000), new Pose(108.000, 108.000))
+                )
+                .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(45))
+                .build());
+
+        paths.add(follower
+                .pathBuilder()
+                .addPath(
+                        new BezierLine(new Pose(108.000, 108.000), new Pose(99.000, 35.000))
+                )
+                .setLinearHeadingInterpolation(Math.toRadians(45), Math.toRadians(0))
+                .build());
+
+        paths.add(follower
+                .pathBuilder()
+                .addPath(
+                        new BezierLine(new Pose(99.000, 35.000), new Pose(125.000, 35.000))
+                )
+                .setTangentHeadingInterpolation()
+                .build());
+
+        paths.add(follower
+                .pathBuilder()
+                .addPath(
+                        new BezierLine(new Pose(125.000, 35.000), new Pose(108.000, 108.000))
+                )
+                .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(45))
+                .build());
+    }
+
+    @Override
+    public void initialize() {
+        timer = new ElapsedTime();
+        timer.reset();
+
+        //systems and pedro
+        follower = Constants.createFollower(hardwareMap);
+        intake = new IntakeSubsystem(hardwareMap);
+        shooter = new ShooterSubSystem(hardwareMap);
+        spindexer = new SpindexerSubsystem(hardwareMap);
+
+        // DO NOT REMOVE! Resetting FTCLib Command Scheduler
+        //Idk what this is but I think it's important it was from the github code
+        super.reset();
+
+        //init paths
+        buildPaths(follower);
+
+        //preset commands
+        SequentialCommandGroup intakeArtifacts = new SequentialCommandGroup(
+                //set spindexer state to ready for one ball
+                //continuous spindexer movement to intake multiple balls or power spindexer off
+
+                //snap spindexer to nearest 120
+                new InstantCommand(() -> spindexer.killSpindexerPower()), //this is not truly shutting off the power so it might not work
+                new InstantCommand(() -> intake.setSpeed(IntakeSubsystem.IntakeState.INTAKING)),
+                new WaitCommand(2000),
+                new InstantCommand(() -> intake.setSpeed(IntakeSubsystem.IntakeState.STILL))
+                //power spindexer again
+        );
+
+        SequentialCommandGroup shootArtifacts = new SequentialCommandGroup(
+                new WaitCommand(2000)
+
+        );
+
+
+
+        //schedule commands
+        //one cycle = 3 balls + shoot given starting position is right at the shooting spot
+        //pp file is editable but you have to update the buildPath
+
+        schedule(
+                // DO NOT REMOVE: updates follower to follow path
+                new RunCommand(() -> follower.update()),
+
+                new SequentialCommandGroup(
+                        //starting shoot
+                        shootArtifacts,
+
+                        //cycle one
+                        new FollowPathCommand(follower, paths.get(0)),
+                        new ParallelCommandGroup(
+                            intakeArtifacts,
+                            new FollowPathCommand(follower, paths.get(1))
+                        ),
+                        new FollowPathCommand(follower, paths.get(2)),
+                        shootArtifacts,
+                        //cycle two
+                        new FollowPathCommand(follower, paths.get(3)),
+                        new ParallelCommandGroup(
+                                intakeArtifacts,
+                                new FollowPathCommand(follower, paths.get(4))
+                        ),
+                        new FollowPathCommand(follower, paths.get(5)),
+                        shootArtifacts,
+                        //cycle three
+                        new FollowPathCommand(follower, paths.get(6)),
+                        new ParallelCommandGroup(
+                                intakeArtifacts,
+                                new FollowPathCommand(follower, paths.get(7))
+                        ),
+                        new FollowPathCommand(follower, paths.get(8)),
+                        shootArtifacts
+                )
+        );
+
+
+
+    }
+}

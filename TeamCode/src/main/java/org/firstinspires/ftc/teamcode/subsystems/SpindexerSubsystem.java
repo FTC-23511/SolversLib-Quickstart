@@ -75,4 +75,9 @@ public class SpindexerSubsystem extends SubsystemBase {
     public double getPIDSetpoint() {
         return targetPosition;
     }
+
+    //kinda useless
+    public void killSpindexerPower() {
+        spindexer.setPower(0.0);
+    }
 }
