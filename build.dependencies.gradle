@@ -14,7 +14,7 @@ dependencies {
     implementation 'org.firstinspires.ftc:Hardware:11.0.0'
     implementation 'org.firstinspires.ftc:FtcCommon:11.0.0'
     implementation 'org.firstinspires.ftc:Vision:11.0.0'
-    implementation 'com.acmerobotics.dashboard:dashboard:0.5.0'
+//    implementation 'com.acmerobotics.dashboard:dashboard:0.5.0'
     //noinspection GradleDependency
     implementation 'androidx.appcompat:appcompat:1.2.0'
 
