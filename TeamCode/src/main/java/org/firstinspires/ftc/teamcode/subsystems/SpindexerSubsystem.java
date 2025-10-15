@@ -7,6 +7,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.seattlesolvers.solverslib.command.SubsystemBase;
+import com.seattlesolvers.solverslib.controller.PIDController;
 import com.seattlesolvers.solverslib.controller.PIDFController;
 
 public class SpindexerSubsystem extends SubsystemBase {
@@ -30,7 +31,7 @@ public class SpindexerSubsystem extends SubsystemBase {
     private double targetPosition = SPINDEXER_INITPOS;
 
     // PIDF Controller
-    private final PIDFController pidf = new PIDFController(kP, kI, kD, kF);
+    private final PIDController pid = new PIDController(kP, kI, kD);
 
     public enum SpindexerState { ONE, TWO, THREE }
     public SpindexerState spindexerState = SpindexerState.ONE;
@@ -58,7 +59,7 @@ public class SpindexerSubsystem extends SubsystemBase {
     public void periodic() {
         lastOutput = output;
         currentPosition = spindexer.getCurrentPosition();
-        output = pidf.calculate(currentPosition, targetPosition);
+        output = pid.calculate(currentPosition, targetPosition);
 //
 //        if (Math.abs(lastOutput - output) > SPINDEXER_CACHETHRESHOLD) {
             spindexer.setPower(clamp(output, -CLAMP_LIMIT, CLAMP_LIMIT));
