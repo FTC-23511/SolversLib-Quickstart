@@ -50,4 +50,9 @@ public class SpindexerSubsystem extends SubsystemBase {
             spindexer.setPower(output);
         }
     }
+
+    //kinda useless
+    public void killSpindexerPower() {
+        spindexer.setPower(0.0);
+    }
 }
