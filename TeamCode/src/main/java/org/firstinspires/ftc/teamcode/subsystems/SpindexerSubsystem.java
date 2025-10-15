@@ -19,11 +19,11 @@ public class SpindexerSubsystem extends SubsystemBase {
     private final double kD = 0.000001;
     private final double kF = 0.000;
 
-    public double getCurrentPosition() {
+    public int getCurrentPosition() {
         return currentPosition;
     }
 
-    private double currentPosition = 0;
+    private int currentPosition = 0;
 
     private static final double CLAMP_LIMIT = 0.4;
 
