@@ -24,6 +24,7 @@ public class ShooterSubSystem extends SubsystemBase {
     private double kI = 0.005;
     private double kD = 0.000;
     private double kF = 0.000;
+    public double targetVelocity = 0;
     ElapsedTime deltaTime = new ElapsedTime();
     int lastPos = 0;
 
@@ -39,19 +40,19 @@ public class ShooterSubSystem extends SubsystemBase {
     }
 
     public void setTargetFromDistance(double distance) {
-        setTargetFromDistance(lut.get(distance));
+        targetVelocity = (lut.get(distance));
     }
 
     public void setTargetVelocity(double num) {
-        pidf.setSetPoint(num);
+        targetVelocity = num;
     }
 
     public void periodic() {
         lastOutput = output;
         int shooterPos = shooterMotor.getCurrentPosition();
-        output = pidf.calculate((lastPos - shooterPos) / deltaTime.time());
+        output = pidf.calculate((lastPos - shooterPos) / deltaTime.time(), targetVelocity);
 
-        if (Math.abs(lastOutput - output) < SHOOTER_CACHETHRESHOLD) {
+        if (Math.abs(lastOutput - output) > SHOOTER_CACHETHRESHOLD) {
             shooterMotor.setPower(output);
         }
     }

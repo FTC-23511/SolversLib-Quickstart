@@ -1,11 +1,14 @@
 package org.firstinspires.ftc.teamcode.opmodes;
 
+import static com.seattlesolvers.solverslib.util.MathUtils.clamp;
+
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.seattlesolvers.solverslib.controller.PIDController;
 
 @Config
@@ -13,9 +16,9 @@ import com.seattlesolvers.solverslib.controller.PIDController;
 public class SpindexerPIDTuning extends OpMode {
     private PIDController controller;
 
-    public static double p=0, i=0, d=0;
+    public static double p=-0.0005, i=0.000002, d=0.000001;
     public static double f=0;
-
+    public static double clamp = 0.4;
     public static int target=0;
 
     private DcMotor spindexer;
@@ -26,6 +29,7 @@ public class SpindexerPIDTuning extends OpMode {
 
         spindexer = hardwareMap.get(DcMotor.class, "spindexer");
         spindexer.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        spindexer.setDirection(DcMotorSimple.Direction.REVERSE);
     }
 
     @Override
@@ -37,7 +41,7 @@ public class SpindexerPIDTuning extends OpMode {
 
         double power = pid + ff;
 
-        spindexer.setPower(power);
+        spindexer.setPower(clamp(power, -clamp, clamp));
         telemetry.addData("pos ", spindexerPos);
         telemetry.addData("target ", target);
         telemetry.update();
