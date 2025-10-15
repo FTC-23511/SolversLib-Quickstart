@@ -14,17 +14,23 @@ buildscript {
     repositories {
         mavenCentral()
         maven {
-            url "https://repo.dairy.foundation/snapshots"
+            url "https://repo.dairy.foundation/releases"
         }
     }
     dependencies {
-        classpath "dev.frozenmilk.sinister.sloth:Load:0.0.0"
+        classpath "dev.frozenmilk:Load:0.2.4"
+    }
+}
+repositories {
+    maven {
+        url = "https://repo.dairy.foundation/releases"
     }
 }
 // Include common definitions from above.
 apply from: '../build.common.gradle'
 apply from: '../build.dependencies.gradle'
 apply plugin: 'dev.frozenmilk.sinister.sloth.Load'
+
 
 android {
     namespace = 'org.firstinspires.ftc.teamcode'
@@ -55,6 +61,7 @@ repositories {
         url "https://repo.dairy.foundation/snapshots"
     }
 
+
 }
 
 dependencies {
@@ -68,9 +75,16 @@ dependencies {
 //    implementation "com.acmerobotics.dashboard:dashboard:0.5.0" // FTC Dashboard
 
     // Pedro Pathing
-    implementation 'com.pedropathing:ftc:2.0.1'
+    implementation 'com.pedropathing:ftc:2.0.1' {
+        exclude group: "com.acmerobotics.dashboard"
+    }
     implementation 'com.pedropathing:telemetry:0.0.6'
 
     // Panels Dashboard
     implementation "com.bylazar:fullpanels:1.0.5"
+    implementation("dev.frozenmilk.sinister:Sloth:0.2.4")
+    implementation("dev.frozenmilk.dairy:Core:2.2.4")
+    implementation("com.acmerobotics.slothboard:dashboard:0.2.4+0.4.17")
+
+
 }
