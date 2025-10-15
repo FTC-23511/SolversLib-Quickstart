@@ -10,10 +10,22 @@
 
 
 // Custom definitions may go here
-
+buildscript {
+    repositories {
+        mavenCentral()
+        maven {
+            url "https://repo.dairy.foundation/releases"
+        }
+    }
+    dependencies {
+        classpath "dev.frozenmilk:Load:0.2.4"
+    }
+}
 // Include common definitions from above.
 apply from: '../build.common.gradle'
 apply from: '../build.dependencies.gradle'
+// there should be 2 or 3 more lines that start with 'apply plugin:' here
+apply plugin: 'dev.frozenmilk.sinister.sloth.load'
 
 android {
     namespace = 'org.firstinspires.ftc.teamcode'
@@ -44,22 +56,30 @@ repositories {
         url "https://repo.dairy.foundation/snapshots"
     }
 
+
 }
 
 dependencies {
     implementation project(':FtcRobotController')
     annotationProcessor files('lib/OpModeAnnotationProcessor.jar')
 
-    // SolversLib
-    implementation "org.solverslib:core:SNAPSHOT-7cdcc66" // core
-    implementation "org.solverslib:pedroPathing:SNAPSHOT-7cdcc66" // pedroPathing
+    implementation "org.solverslib:core:SNAPSHOT-7cdcc66"
+    implementation "org.solverslib:pedroPathing:SNAPSHOT-7cdcc66"
 
-//    implementation "com.acmerobotics.dashboard:dashboard:0.5.0" // FTC Dashboard
+    // REMOVE any dashboard line like this if still uncommented:
+    // implementation "com.acmerobotics.dashboard:dashboard:0.5.0"
 
-    // Pedro Pathing
-    implementation 'com.pedropathing:ftc:2.0.1'
+    implementation ('com.pedropathing:ftc:2.0.1') {
+        exclude group: "com.acmerobotics.dashboard"
+    }
     implementation 'com.pedropathing:telemetry:0.0.6'
 
-    // Panels Dashboard
     implementation "com.bylazar:fullpanels:1.0.5"
+
+    implementation("dev.frozenmilk.sinister:Sloth:0.2.4")
+
+    implementation("com.acmerobotics.slothboard:dashboard:0.2.4+0.4.17") {
+        exclude group: "com.acmerobotics.dashboard" // ✅ Remove duplicate classes
+    }
 }
+
