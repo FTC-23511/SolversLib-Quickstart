@@ -22,7 +22,6 @@ public class AlphaTeleOp extends CommandOpMode {
     private SpindexerSubsystem spindexer;
 
     public GamepadEx driver1;
-    private boolean isSpindexerAdvancing=false;
 
     @Override
     public void initialize () {
@@ -31,7 +30,10 @@ public class AlphaTeleOp extends CommandOpMode {
         intake = new IntakeSubsystem(hardwareMap);
         shooter = new ShooterSubSystem(hardwareMap);
         spindexer = new SpindexerSubsystem(hardwareMap);
+
         super.reset();
+        register(intake, shooter, spindexer);
+
 
         //pedro and gamepad wrapper
 //        follower.startTeleopDrive();
@@ -46,10 +48,7 @@ public class AlphaTeleOp extends CommandOpMode {
                 new InstantCommand(() -> intake.setSpeed(IntakeSubsystem.IntakeState.STILL))
         );
         driver1.getGamepadButton(GamepadKeys.Button.CIRCLE).whenPressed(
-                new InstantCommand(() -> isSpindexerAdvancing=true)
-        );
-        driver1.getGamepadButton(GamepadKeys.Button.CIRCLE).whenReleased(
-                new InstantCommand(() -> isSpindexerAdvancing=false)
+                new InstantCommand(() -> spindexer.advanceSpindexer())
         );
         driver1.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER).whenPressed(
                 new InstantCommand(() -> shooter.setTargetVelocity(99))
@@ -68,14 +67,14 @@ public class AlphaTeleOp extends CommandOpMode {
 //        follower.setTeleOpDrive(driver1.getLeftY(), driver1.getLeftX(), driver1.getRightX(), true);
 //        follower.update() ;
 
-        if (isSpindexerAdvancing) {
-            spindexer.advanceSpindexer();
-        }
 
-        super.run();
+
+
         telemetry.addData("spindexer output", spindexer.getOutput());
         telemetry.addData("spindexer setpoint", spindexer.getPIDSetpoint());
         telemetry.addData("spindexer pos", spindexer.getCurrentPosition());
         telemetry.update();
+        super.run();
+
     }
 }

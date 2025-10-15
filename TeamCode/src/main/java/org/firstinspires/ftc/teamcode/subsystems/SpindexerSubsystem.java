@@ -3,6 +3,8 @@ package org.firstinspires.ftc.teamcode.subsystems;
 import static com.seattlesolvers.solverslib.util.MathUtils.clamp;
 import static org.firstinspires.ftc.teamcode.RobotConstants.*;
 
+import android.util.Log;
+
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -15,7 +17,7 @@ public class SpindexerSubsystem extends SubsystemBase {
 
     // PIDF Coefficients
     private final double kP = -0.0005;
-    private final double kI = 0.000002;
+    private final double kI = 0.000000;
     private final double kD = 0.000001;
     private final double kF = 0.000;
 
@@ -23,7 +25,7 @@ public class SpindexerSubsystem extends SubsystemBase {
         return currentPosition;
     }
 
-    private int currentPosition = 0;
+    public int currentPosition = 0;
 
     private static final double CLAMP_LIMIT = 0.4;
 
@@ -41,7 +43,7 @@ public class SpindexerSubsystem extends SubsystemBase {
 
     public SpindexerSubsystem(final HardwareMap hm) {
         spindexer = hm.get(DcMotor.class, "spindexer");
-        spindexer.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        spindexer.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         spindexer.setDirection(DcMotorSimple.Direction.REVERSE);
     }
 
