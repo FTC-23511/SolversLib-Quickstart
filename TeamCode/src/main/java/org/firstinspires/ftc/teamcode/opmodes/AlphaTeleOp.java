@@ -12,7 +12,7 @@ import org.firstinspires.ftc.teamcode.subsystems.IntakeSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.ShooterSubSystem;
 import org.firstinspires.ftc.teamcode.subsystems.SpindexerSubsystem;
 
-@TeleOp (name = "Alpha teleop", group = "OpModes")
+@TeleOp (name = "Alpha Teleop", group = "OpModes")
 public class AlphaTeleOp extends CommandOpMode {
     private Follower follower;
     public static Pose startingPose = new Pose(0,0,0);

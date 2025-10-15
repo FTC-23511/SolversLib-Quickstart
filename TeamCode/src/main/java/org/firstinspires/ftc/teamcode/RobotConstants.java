@@ -11,7 +11,7 @@ public class RobotConstants {
     public static double SPINDEXER_CACHETHRESHOLD = 0.001;
     public static double SPINDEXER_COUNTS_PER_REVOLUTION = 8192;
     public static double SPINDEXER_TICKS_PER_DEG = SPINDEXER_COUNTS_PER_REVOLUTION / 360.0; // CPR 8192
-    public static int SPINDEXER_INITPOS = 0;
+    public static int SPINDEXER_INITPOS = -(int) SPINDEXER_TICKS_PER_DEG * 10;
 
 
 

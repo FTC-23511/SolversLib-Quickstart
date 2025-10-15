@@ -33,7 +33,7 @@ public class SpindexerSubsystem extends SubsystemBase {
     private double targetPosition = SPINDEXER_INITPOS;
 
     // PIDF Controller
-    private final PIDController pid = new PIDController(kP, kI, kD);
+    private final PIDController pid;
 
     public enum SpindexerState { ONE, TWO, THREE }
     public SpindexerState spindexerState = SpindexerState.ONE;
@@ -43,7 +43,9 @@ public class SpindexerSubsystem extends SubsystemBase {
 
     public SpindexerSubsystem(final HardwareMap hm) {
         spindexer = hm.get(DcMotor.class, "spindexer");
-        spindexer.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        pid = new PIDController(kP, kI, kD);
+        pid.setPID(kP, kI, kD);
+        spindexer.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         spindexer.setDirection(DcMotorSimple.Direction.REVERSE);
     }
 
@@ -59,18 +61,23 @@ public class SpindexerSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
-        lastOutput = output;
+
+//        currentPosition = spindexer.getCurrentPosition();
+//        output = pid.calculate(currentPosition, targetPosition);
+//        double clipped = clamp(output, -CLAMP_LIMIT, CLAMP_LIMIT);
+////
+//        if (Math.abs(lastOutput - clipped) > SPINDEXER_CACHETHRESHOLD) {
+//            spindexer.setPower(clipped);
+//            lastOutput = output;
+//        }
         currentPosition = spindexer.getCurrentPosition();
         output = pid.calculate(currentPosition, targetPosition);
-//
-//        if (Math.abs(lastOutput - output) > SPINDEXER_CACHETHRESHOLD) {
-            spindexer.setPower(clamp(output, -CLAMP_LIMIT, CLAMP_LIMIT));
-//        }
+        spindexer.setPower(clamp(output, -CLAMP_LIMIT, CLAMP_LIMIT));
     }
 
     // Get current PID output
-    public double getOutput() {
-        return output;
+    public String getOutput() {
+        return output + " | " + clamp(output, -CLAMP_LIMIT, CLAMP_LIMIT);
     }
 
 
