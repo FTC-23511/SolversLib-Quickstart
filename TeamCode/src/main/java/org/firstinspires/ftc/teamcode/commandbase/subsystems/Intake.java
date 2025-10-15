@@ -33,15 +33,15 @@ public class Intake extends SubsystemBase {
     public void setPivot(PivotState pivotState) {
         switch (pivotState) {
             case TRANSFER:
-                robot.intakePivotServo.set(INTAKE_PIVOT_TRANSFER_POS);
+                robot.intakePivotServo.set(INTAKE_PIVOT_TRANSFER);
                 break;
 
             case INTAKE:
-                robot.intakePivotServo.set(INTAKE_PIVOT_INTAKE_POS);
+                robot.intakePivotServo.set(INTAKE_PIVOT_INTAKE);
                 break;
 
             case INTAKE_READY:
-                robot.intakePivotServo.set(INTAKE_PIVOT_READY_INTAKE_POS);
+                robot.intakePivotServo.set(INTAKE_PIVOT_READY_INTAKE);
                 break;
         }
 

@@ -111,8 +111,8 @@ public class Robot extends com.seattlesolvers.solverslib.command.Robot {
         turretEncoder = new AbsoluteAnalogEncoder(hwMap, "turretEncoder").zero(0);
 
         intakePivotServo = new ServoEx(hwMap, "intakePivotServo").setCachingTolerance(0.01);
-        hoodServo = new ServoEx(hwMap, "hoodServo").setCachingTolerance(0.01);
-        rampServo = new ServoEx(hwMap, "rampServo").setCachingTolerance(0.01);
+        hoodServo = new ServoEx(hwMap, "hoodServo").setCachingTolerance(0.00);
+        rampServo = new ServoEx(hwMap, "rampServo").setCachingTolerance(0.00);
 
         intakePivotServo.setInverted(true);
 

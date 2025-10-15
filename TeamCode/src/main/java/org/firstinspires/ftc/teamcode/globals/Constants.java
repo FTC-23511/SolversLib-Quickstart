@@ -38,19 +38,29 @@ public class Constants {
     public static double HEADING_MIN_OUTPUT = 0.15; // Radians/second
 
     // Intake
-    public static double INTAKE_PIVOT_TRANSFER_POS = 0.00;
-    public static double INTAKE_PIVOT_INTAKE_POS = 0.00;
-    public static double INTAKE_PIVOT_READY_INTAKE_POS = 0.00;
+    public static double INTAKE_PIVOT_INTAKE = 0.54;
+    public static double INTAKE_PIVOT_READY_INTAKE = 0.00; // unused
+    public static double INTAKE_PIVOT_HIGH = 0.85;
+    public static double INTAKE_PIVOT_HOLD = 0.45;
+    public static double INTAKE_PIVOT_TRANSFER = 0.5;
 
-    public static double INTAKE_FORWARD_SPEED = 0.00;
-    public static double INTAKE_REVERSE_SPEED = 0.00;
+    public static double INTAKE_FORWARD_SPEED = 1.00;
+    public static double INTAKE_REVERSE_SPEED = 0.00; // unused
     public static double INTAKE_HOLD_SPEED = 0.00;
 
     public static double MIN_DISTANCE_THRESHOLD = 0.00;
     public static double MAX_DISTANCE_THRESHOLD = 1.00;
 
     // Launcher
+    public static double RAMP_ENGAGED = 0.545;
+    public static double RAMP_DISENGAGED = 0.455;
 
+    public static double LAUNCHER_FAR_VELOCITY = 0.00;
+    public static double LAUNCHER_CLOSE_VELOCITY = 0.00;
+    public static double LAUNCHER_HOLD_VELOCITY = 0.00;
+
+    public static double HOOD_FAR = 0.0;
+    public static double HOOD_CLOSE = 1.0;
 
     // Turret
 }
