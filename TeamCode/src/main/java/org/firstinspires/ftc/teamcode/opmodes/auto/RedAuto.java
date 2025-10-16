@@ -202,7 +202,7 @@ public class RedAuto extends CommandOpMode {
                         ),
                         new FollowPathCommand(follower, paths.get(5)),
                         shootArtifacts,
-                        
+
                         //cycle three
                         new FollowPathCommand(follower, paths.get(6)),
                         new ParallelCommandGroup(
