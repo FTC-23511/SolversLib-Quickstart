@@ -24,11 +24,7 @@ public class TurretServosTuner extends CommandOpMode {
 
     public ElapsedTime timer;
 
-    public static double LEFT_SERVO_POS = 0.0;
-    public static double RIGHT_SERVO_POS = 0.0;
-    public static double BOTH_SERVO_POS = 0.0;
-
-    public static boolean MOVE_BOTH = false;
+    public static double SERVO_POWER = 0; // TODO: Replace with an actual PIDF to be tuned
 
     TelemetryData telemetryData = new TelemetryData(new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry()));
 
@@ -64,23 +60,12 @@ public class TurretServosTuner extends CommandOpMode {
             timer = new ElapsedTime();
         }
 
-        BOTH_SERVO_POS = Range.clip(BOTH_SERVO_POS, 0.0, 1.0);
-        LEFT_SERVO_POS = Range.clip(LEFT_SERVO_POS, 0.0, 1.0);
-        RIGHT_SERVO_POS = Range.clip(RIGHT_SERVO_POS, 0.0, 1.0);
-
-        if (MOVE_BOTH) {
-            robot.leftTurretServo.set(BOTH_SERVO_POS);
-            robot.rightTurretServo.set(BOTH_SERVO_POS);
-        } else {
-            robot.leftTurretServo.set(LEFT_SERVO_POS);
-            robot.rightTurretServo.set(RIGHT_SERVO_POS);
-        }
+        robot.turretServos.set(SERVO_POWER);
 
         telemetryData.addData("Loop Time", timer.milliseconds());
         timer.reset();
 
-        telemetryData.addData("LEFT_SERVO_POS", LEFT_SERVO_POS);
-        telemetryData.addData("RIGHT_SERVO_POS", RIGHT_SERVO_POS);
+        telemetryData.addData("SERVO_POWER", SERVO_POWER);
 
         // DO NOT REMOVE ANY LINES BELOW! Runs the command scheduler and updates telemetry
         super.run();

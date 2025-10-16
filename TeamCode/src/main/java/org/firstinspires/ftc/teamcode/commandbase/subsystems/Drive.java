@@ -18,8 +18,6 @@ import org.firstinspires.ftc.teamcode.globals.Constants;
 import org.firstinspires.ftc.teamcode.globals.Robot;
 
 public class Drive extends SubsystemBase {
-    public final DistanceUnit DISTANCE_UNIT = DistanceUnit.INCH;
-    public final AngleUnit ANGLE_UNIT = AngleUnit.RADIANS;
     public final P2PController follower;
     private final Robot robot = Robot.getInstance();
     public final CoaxialSwerveDrivetrain swerve;
@@ -65,7 +63,6 @@ public class Drive extends SubsystemBase {
 
             timer.reset();
             lastPose = new Pose2d(robot.pinpoint.getPosition(), DISTANCE_UNIT, ANGLE_UNIT);
-            lastPose = new Pose2d(lastPose.getX(), lastPose.getY(), lastPose.getRotation());
         }
 
         return lastPose;

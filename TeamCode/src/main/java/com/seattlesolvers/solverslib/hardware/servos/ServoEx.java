@@ -95,9 +95,11 @@ public class ServoEx implements HardwareDevice {
 
     /**
      * @param inverted whether the servo should be inverted/reversed
+     * @return this object for chaining purposes
      */
-    public void setInverted(boolean inverted) {
+    public ServoEx setInverted(boolean inverted) {
         servo.setDirection(inverted ? Servo.Direction.REVERSE : Servo.Direction.FORWARD);
+        return this;
     }
 
     /**

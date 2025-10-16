@@ -8,6 +8,8 @@ import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.configuration.LynxConstants;
+import com.qualcomm.robotcore.util.ElapsedTime;
 import com.seattlesolvers.solverslib.geometry.Pose2d;
 import com.seattlesolvers.solverslib.hardware.AbsoluteAnalogEncoder;
 import com.seattlesolvers.solverslib.hardware.SensorDistanceEx;
@@ -20,9 +22,11 @@ import com.seattlesolvers.solverslib.hardware.motors.MotorGroup;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.VoltageUnit;
 import org.firstinspires.ftc.teamcode.commandbase.subsystems.Drive;
 import org.firstinspires.ftc.teamcode.commandbase.subsystems.Intake;
 import org.firstinspires.ftc.teamcode.commandbase.subsystems.Launcher;
+import org.firstinspires.ftc.teamcode.commandbase.subsystems.Turret;
 
 
 public class Robot extends com.seattlesolvers.solverslib.command.Robot {
@@ -30,6 +34,10 @@ public class Robot extends com.seattlesolvers.solverslib.command.Robot {
     public static Robot getInstance() {
         return instance;
     }
+
+    public LynxModule chub;
+    private double cachedVoltage;
+    private ElapsedTime voltageTimer;
 
     public MotorEx FRmotor;
     public MotorEx FLmotor;
@@ -46,8 +54,7 @@ public class Robot extends com.seattlesolvers.solverslib.command.Robot {
     public CRServoEx BLswervo;
     public CRServoEx BRswervo;
 
-    public CRServoEx leftTurretServo;
-    public CRServoEx rightTurretServo;
+    public MotorGroup turretServos;
     public AbsoluteAnalogEncoder turretEncoder;
 
     public ServoEx intakePivotServo;
@@ -62,6 +69,7 @@ public class Robot extends com.seattlesolvers.solverslib.command.Robot {
     public Drive drive;
     public Intake intake;
     public Launcher launcher;
+    public Turret turret;
 
     public SensorDistanceEx.DistanceTarget distanceTarget;
     public SensorRevTOFDistance distanceSensor;
@@ -105,14 +113,16 @@ public class Robot extends com.seattlesolvers.solverslib.command.Robot {
                 .zero(BR_ENCODER_OFFSET), CRServoEx.RunMode.RawPower)
                 .setCachingTolerance(0.01);
 
-        leftTurretServo = new CRServoEx(hwMap, "leftTurretServo").setCachingTolerance(0.01);
-        rightTurretServo = new CRServoEx(hwMap, "rightTurretServo").setCachingTolerance(0.01);
+        turretServos = new MotorGroup(
+                new CRServoEx(hwMap, "leftTurretServo").setCachingTolerance(0.01),
+                new CRServoEx(hwMap, "rightTurretServo").setCachingTolerance(0.01)
+        );
 
-        turretEncoder = new AbsoluteAnalogEncoder(hwMap, "turretEncoder").zero(0);
+        turretEncoder = new AbsoluteAnalogEncoder(hwMap, "turretEncoder").zero(TURRET_ENCODER_OFFSET);
 
         intakePivotServo = new ServoEx(hwMap, "intakePivotServo").setCachingTolerance(0.01);
-        hoodServo = new ServoEx(hwMap, "hoodServo").setCachingTolerance(0.00);
-        rampServo = new ServoEx(hwMap, "rampServo").setCachingTolerance(0.00);
+        hoodServo = new ServoEx(hwMap, "hoodServo").setCachingTolerance(-0.01).setInverted(true);
+        rampServo = new ServoEx(hwMap, "rampServo").setCachingTolerance(-0.01);
 
         intakePivotServo.setInverted(true);
 
@@ -133,9 +143,18 @@ public class Robot extends com.seattlesolvers.solverslib.command.Robot {
         drive = new Drive();
         intake = new Intake();
         launcher = new Launcher();
+        turret = new Turret();
 
         // Robot/CommandScheduler configurations
         setBulkReading(hwMap, LynxModule.BulkCachingMode.MANUAL);
+
+        for (LynxModule hub : hwMap.getAll(LynxModule.class)) {
+            hub.setBulkCachingMode(LynxModule.BulkCachingMode.MANUAL);
+            if (hub.isParent() && LynxConstants.isEmbeddedSerialNumber(hub.getSerialNumber())) {
+                chub = hub;
+            }
+        }
+
         register(drive, intake, launcher);
 
         if (OP_MODE_TYPE.equals(OpModeType.AUTO)) {
@@ -145,6 +164,16 @@ public class Robot extends com.seattlesolvers.solverslib.command.Robot {
 
     public void initHasMovement() {
 
+    }
+    
+    public double getVoltage() {
+        if (voltageTimer == null) {
+            voltageTimer = new ElapsedTime();
+            cachedVoltage = chub.getInputVoltage(VoltageUnit.VOLTS);
+        } else if (voltageTimer.milliseconds() > (1 / VOLTAGE_SENSOR_POLLING_RATE) * 1000) {
+            cachedVoltage = chub.getInputVoltage(VoltageUnit.VOLTS);
+        }
+        return cachedVoltage;
     }
 
     /* Not needed now that we have pinpoint

@@ -1,54 +1,73 @@
 package org.firstinspires.ftc.teamcode.commandbase.subsystems;
 
-import static org.firstinspires.ftc.teamcode.globals.Constants.INTAKE_FORWARD_SPEED;
-import static org.firstinspires.ftc.teamcode.globals.Constants.INTAKE_HOLD_SPEED;
-import static org.firstinspires.ftc.teamcode.globals.Constants.INTAKE_REVERSE_SPEED;
+import static org.firstinspires.ftc.teamcode.globals.Constants.FLYWHEEL_PIDF_COEFFICIENTS;
+import static org.firstinspires.ftc.teamcode.globals.Constants.GOAL_POSE;
+import static org.firstinspires.ftc.teamcode.globals.Constants.MAX_TURRET_ANGLE;
 
 import com.seattlesolvers.solverslib.command.SubsystemBase;
+import com.seattlesolvers.solverslib.controller.PIDFController;
+import com.seattlesolvers.solverslib.geometry.Pose2d;
+import com.seattlesolvers.solverslib.geometry.Vector2d;
+import com.seattlesolvers.solverslib.util.MathUtils;
 
 import org.firstinspires.ftc.teamcode.globals.Robot;
 
 public class Turret extends SubsystemBase {
     private final Robot robot = Robot.getInstance();
-
-    public enum MotorState {
-        REVERSE,
-        STOP,
-        FORWARD,
-        HOLD
-    }
-
-    public static MotorState motorState = MotorState.STOP;
+    public static PIDFController turretController = new PIDFController(FLYWHEEL_PIDF_COEFFICIENTS);
 
     public void init() {
 
     }
 
-    public void setLauncher(MotorState motorState) {
-        if (motorState.equals(MotorState.HOLD)) {
-            robot.intakeMotor.set(INTAKE_HOLD_SPEED);
-        } else {
-            switch (motorState) {
-                case FORWARD:
-                    robot.launchMotors.set(INTAKE_FORWARD_SPEED);
-                    break;
-                case REVERSE:
-                    robot.launchMotors.set(INTAKE_REVERSE_SPEED);
-                    break;
-                case STOP:
-                    robot.launchMotors.set(0);
-                    break;
-            }
-        }
-        Turret.motorState = motorState;
+    public void setTarget(double target) {
+        turretController.setSetPoint(target);
     }
 
-    public void updateLauncher() {
-        // TODO: Add this
+    public void update() {
+        robot.turretServos.set(
+                turretController.calculate(
+                        MathUtils.normalizeRadians(robot.turretEncoder.getCurrentPosition(), false)
+                )
+        );
+    }
+
+    public boolean readyToLaunch() {
+        return turretController.atSetPoint();
     }
 
     @Override
     public void periodic() {
-        updateLauncher();
+        update();
     }
+
+    /**
+     * @param pose what the goal pose is being compared to
+     * @return angle in radians, field-centric, normalized to 0-2pi
+     */
+    public static double angleToGoal(Pose2d pose) {
+        return MathUtils.normalizeRadians(
+                new Vector2d(GOAL_POSE()).minus(new Vector2d(pose)).angle(),
+                true
+        );
+    }
+
+    /**
+     * Converts an angle in radians, field-centric, normalized to 0-2pi to two separate angles, one for drivetrain and one for the turret
+     * @param angle the angle to be converted
+     * @return a two-item list of angles for the drivetrain and turret error in that specific order (robot-centric)
+     */
+    public static double[] angleToDriveTurretErrors(double angle) {
+        final double MAX_TURRET_BUFFER = 0.1; // Buffer angle from max angle of turret in radians
+        final double MAX_USABLE_TURRET_ANGLE = MAX_TURRET_ANGLE - MAX_TURRET_BUFFER;
+        double robotAngle = Robot.getInstance().drive.getPose().getHeading();
+
+        double error = MathUtils.normalizeRadians(angle - robotAngle, false);
+        if (Math.abs(error) < MAX_USABLE_TURRET_ANGLE) {
+            return new double[]{0, error};
+        } else {
+            return new double[]{robotAngle + (Math.abs(error) - MAX_USABLE_TURRET_ANGLE) * Math.signum(error), MAX_USABLE_TURRET_ANGLE * Math.signum(error)};
+        }
+    }
+
 }

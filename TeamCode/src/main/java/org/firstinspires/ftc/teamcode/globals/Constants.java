@@ -4,8 +4,12 @@ import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.seattlesolvers.solverslib.geometry.Pose2d;
 
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+
 @Config
 public class Constants {
+    // General
     public enum OpModeType {
         AUTO,
         TELEOP
@@ -15,21 +19,27 @@ public class Constants {
         BLUE
     }
 
-    // Drive
     public static OpModeType OP_MODE_TYPE;
     public static AllianceColor ALLIANCE_COLOR = AllianceColor.BLUE;
+    public static double VOLTAGE_SENSOR_POLLING_RATE = 10; // Hertz
+
+    // Drive
     public static Pose2d END_POSE = new Pose2d();
+    public static DistanceUnit DISTANCE_UNIT = DistanceUnit.INCH;
+    public static AngleUnit ANGLE_UNIT = AngleUnit.RADIANS;
 
     public static double TRACK_WIDTH = 11.27362; // Inches
     public static double WHEEL_BASE = 11.50976; // Inches
     public static double MAX_VELOCITY = 7.75 * 12; // Inches/second
     public static double MAX_ANGULAR_VELOCITY = MAX_VELOCITY / Math.hypot(TRACK_WIDTH/2, WHEEL_BASE/2);
     public static double PINPOINT_TELEOP_POLLING_RATE = 20; // Hertz
+
     public static PIDFCoefficients SWERVO_PIDF_COEFFICIENTS = new PIDFCoefficients(0.6, 0, 0.2, 0);
     public static double FR_ENCODER_OFFSET = 3.602; // Radians
     public static double FL_ENCODER_OFFSET = 3.753; // Radians
     public static double BL_ENCODER_OFFSET = 0.619; // Radians
     public static double BR_ENCODER_OFFSET = 2.149; // Radians
+
     public static PIDFCoefficients XY_COEFFICIENTS = new PIDFCoefficients(6, 0, 0.2, 0); // Coefficients for inches
     public static PIDFCoefficients HEADING_COEFFICIENTS = new PIDFCoefficients(5, 0, 0, 0); // Coefficients for radians
     public static double XY_TOLERANCE = 0.25; // Inches
@@ -39,28 +49,35 @@ public class Constants {
 
     // Intake
     public static double INTAKE_PIVOT_INTAKE = 0.54;
-    public static double INTAKE_PIVOT_READY_INTAKE = 0.00; // unused
     public static double INTAKE_PIVOT_HIGH = 0.85;
     public static double INTAKE_PIVOT_HOLD = 0.45;
     public static double INTAKE_PIVOT_TRANSFER = 0.5;
 
     public static double INTAKE_FORWARD_SPEED = 1.00;
-    public static double INTAKE_REVERSE_SPEED = 0.00; // unused
-    public static double INTAKE_HOLD_SPEED = 0.00;
+    public static double INTAKE_REVERSE_SPEED = 0.00; // unused atm
+    public static double INTAKE_TRANSFER_SPEED = 1.00; // TODO: needs to be tuned
 
-    public static double MIN_DISTANCE_THRESHOLD = 0.00;
-    public static double MAX_DISTANCE_THRESHOLD = 1.00;
+    public static double MIN_DISTANCE_THRESHOLD = 0.00; // TODO: needs to be tuned
+    public static double MAX_DISTANCE_THRESHOLD = 1.00; // TODO: needs to be tuned
 
     // Launcher
     public static double RAMP_ENGAGED = 0.545;
     public static double RAMP_DISENGAGED = 0.455;
 
-    public static double LAUNCHER_FAR_VELOCITY = 0.00;
-    public static double LAUNCHER_CLOSE_VELOCITY = 0.00;
-    public static double LAUNCHER_HOLD_VELOCITY = 0.00;
+    public static PIDFCoefficients FLYWHEEL_PIDF_COEFFICIENTS = new PIDFCoefficients(0, 0, 0, 0); // Coefficients for ticks
+    public static double TICKS_TO_M_S = 1.0; // Conversion factor for launcher encoder ticks to ball velocity in meters/second // TODO: needs to be tuned
 
-    public static double HOOD_FAR = 0.0;
-    public static double HOOD_CLOSE = 1.0;
+    public static double LAUNCHER_FAR_VELOCITY = 0.00; // Meters/second // TODO: needs to be tuned
+    public static double LAUNCHER_CLOSE_VELOCITY = 0.00; // Meters/second // TODO: needs to be tuned
+
+    public static double MIN_HOOD_ANGLE = 12; // Degrees from horizontal
+    public static double MIN_HOOD_SERVO_POS = 0.0; // MUST MATCH WITH VALUE ABOVE // TODO: needs to be tuned
+    public static double MAX_HOOD_ANGLE = 50; // Degrees from horizontal
+    public static double MAX_HOOD_SERVO_POS = 1.0; // MUST MATCH WITH VALUE ABOVE // TODO: needs to be tuned
 
     // Turret
+    public static PIDFCoefficients TURRET_PIDF_COEFFICIENTS = new PIDFCoefficients(0, 0, 0, 0); // Coefficients for radians // TODO: needs to be tuned
+    public static double TURRET_ENCODER_OFFSET = 0; // Radians // TODO: needs to be tuned
+    public static double MAX_TURRET_ANGLE = (110 / 360.0) * 2 * Math.PI; // Radians (only for one side of the turret, should be doubled for total range)
+    public static Pose2d GOAL_POSE() { return new Pose2d((ALLIANCE_COLOR.equals(AllianceColor.BLUE) ? 72 : -72), 72, 0); } // Inches
 }

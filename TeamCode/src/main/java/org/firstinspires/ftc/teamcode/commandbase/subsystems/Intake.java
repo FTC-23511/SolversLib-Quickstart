@@ -13,13 +13,12 @@ public class Intake extends SubsystemBase {
         REVERSE,
         STOP,
         FORWARD,
-        HOLD
+        TRANSFER
     }
 
     public enum PivotState {
         INTAKE,
         TRANSFER,
-        INTAKE_READY,
         HOLD
     }
 
@@ -32,16 +31,14 @@ public class Intake extends SubsystemBase {
 
     public void setPivot(PivotState pivotState) {
         switch (pivotState) {
+            case HOLD:
+                robot.intakePivotServo.set(INTAKE_PIVOT_HOLD);
+                break;
             case TRANSFER:
                 robot.intakePivotServo.set(INTAKE_PIVOT_TRANSFER);
                 break;
-
             case INTAKE:
                 robot.intakePivotServo.set(INTAKE_PIVOT_INTAKE);
-                break;
-
-            case INTAKE_READY:
-                robot.intakePivotServo.set(INTAKE_PIVOT_READY_INTAKE);
                 break;
         }
 
@@ -49,37 +46,34 @@ public class Intake extends SubsystemBase {
     }
 
     public void setIntake(MotorState motorState) {
-        if (motorState.equals(MotorState.HOLD)) {
-            robot.intakeMotor.set(INTAKE_HOLD_SPEED);
-            Intake.motorState = motorState;
-        } else if (pivotState.equals(PivotState.INTAKE) || pivotState.equals(PivotState.INTAKE_READY)) {
-            switch (motorState) {
-                case FORWARD:
-                    robot.intakeMotor.set(INTAKE_FORWARD_SPEED);
-                    break;
-                case REVERSE:
-                    robot.intakeMotor.set(INTAKE_REVERSE_SPEED);
-                    break;
-                case STOP:
-                    robot.intakeMotor.set(0);
-                    break;
-            }
-            Intake.motorState = motorState;
+        switch (motorState) {
+            case STOP:
+                robot.intakeMotor.set(0);
+                break;
+            case TRANSFER:
+                robot.intakeMotor.set(INTAKE_TRANSFER_SPEED);
+                break;
+            case FORWARD:
+                robot.intakeMotor.set(INTAKE_FORWARD_SPEED);
+                break;
+            case REVERSE:
+                robot.intakeMotor.set(INTAKE_REVERSE_SPEED);
+                break;
         }
     }
 
     public void toggleIntake() {
-        if (pivotState.equals(PivotState.INTAKE) || pivotState.equals(PivotState.INTAKE_READY)) {
+        if (pivotState.equals(PivotState.INTAKE)) {
             if (motorState.equals(MotorState.FORWARD)) {
                 setIntake(MotorState.STOP);
-            } else if (motorState.equals(MotorState.STOP) || motorState.equals(MotorState.HOLD)) {
+            } else if (motorState.equals(MotorState.STOP)) {
                 setIntake(MotorState.FORWARD);
             }
         }
     }
 
     public void updateIntake() {
-        if (pivotState.equals(PivotState.INTAKE) || pivotState.equals(PivotState.INTAKE_READY)) {
+        if (pivotState.equals(PivotState.INTAKE)) {
             switch (motorState) {
                 case FORWARD:
                     if (hasArtifact()) {
@@ -89,13 +83,10 @@ public class Intake extends SubsystemBase {
                 case REVERSE:
                     // ..
                     break;
-                case HOLD:
-                    // ...
-                    break;
                 // No point of setting intakeMotor to 0 again
             }
-        } else if (pivotState.equals(PivotState.TRANSFER) || pivotState.equals(PivotState.HOLD)) {
-            setIntake(MotorState.HOLD);
+        } else if (pivotState.equals(PivotState.HOLD)) {
+            setIntake(MotorState.STOP);
         }
     }
 

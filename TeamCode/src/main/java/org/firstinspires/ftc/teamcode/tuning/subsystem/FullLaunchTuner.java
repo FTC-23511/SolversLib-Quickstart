@@ -27,10 +27,10 @@ public class FullLaunchTuner extends CommandOpMode {
     public ElapsedTime timer;
 
     public static double INTAKE_SERVO_POS = INTAKE_PIVOT_INTAKE;
-    public static double HOOD_SERVO_POS = HOOD_FAR;
+    public static double HOOD_SERVO_POS = MAX_HOOD_SERVO_POS;
     public static double RAMP_SERVO_POS = RAMP_ENGAGED;
-    public static double INTAKE_MOTOR_POWER = INTAKE_HOLD_SPEED;
-    public static double LAUNCHER_MOTOR_POWER = LAUNCHER_HOLD_VELOCITY;
+    public static double INTAKE_MOTOR_POWER = 0;
+    public static double LAUNCHER_MOTOR_POWER = 0;
 
     TelemetryData telemetryData = new TelemetryData(new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry()));
 

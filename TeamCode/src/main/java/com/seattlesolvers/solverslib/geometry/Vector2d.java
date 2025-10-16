@@ -31,6 +31,14 @@ public class Vector2d {
         m_y = y;
     }
 
+    /**
+     * Constructor to convert Pose2d objects to Vector2d objects (by dropping the rotation value).
+     * @param pose2d the Pose2d object to be converted
+     */
+    public Vector2d(Pose2d pose2d) {
+        this(pose2d.getX(), pose2d.getY());
+    }
+
     public Vector2d(Vector2d other) {
         m_x = other.getX();
         m_y = other.getY();
