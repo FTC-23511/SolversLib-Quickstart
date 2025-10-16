@@ -37,7 +37,7 @@ public class ShooterPIDTuning extends OpMode {
     public void loop() {
         controller.setPID(p, i, d);
         int shooterPos = shooter.getCurrentPosition();
-        double velocity = deltaTime.time() == 0 ? 0 : (lastPos - shooterPos) / deltaTime.time();
+        double velocity = deltaTime.time() == 0 ? -1 : (lastPos - shooterPos) / deltaTime.time();
         double pid = controller.calculate(velocity, target);
         double ff = 0.0;
 
