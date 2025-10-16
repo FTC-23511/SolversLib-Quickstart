@@ -58,6 +58,15 @@ public class SpindexerSubsystem extends SubsystemBase {
             case THREE: spindexerState = SpindexerState.ONE;   break;
         }
     }
+    public void reverseSpindexer() {
+        targetPosition -= SPINDEXER_TICKS_PER_DEG * 120;
+
+        switch (spindexerState) {
+            case ONE:   spindexerState = SpindexerState.THREE;   break;
+            case TWO:   spindexerState = SpindexerState.ONE; break;
+            case THREE: spindexerState = SpindexerState.TWO;   break;
+        }
+    }
 
     @Override
     public void periodic() {

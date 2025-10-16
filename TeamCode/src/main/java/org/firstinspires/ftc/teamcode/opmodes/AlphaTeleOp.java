@@ -5,6 +5,7 @@ import com.pedropathing.geometry.Pose;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.seattlesolvers.solverslib.command.CommandOpMode;
 import com.seattlesolvers.solverslib.command.InstantCommand;
+import com.seattlesolvers.solverslib.command.button.Trigger;
 import com.seattlesolvers.solverslib.gamepad.GamepadEx;
 import com.seattlesolvers.solverslib.gamepad.GamepadKeys;
 
@@ -41,21 +42,22 @@ public class AlphaTeleOp extends CommandOpMode {
 
         //command binding
 
-        driver1.getGamepadButton(GamepadKeys.Button.TRIANGLE).whenPressed(
-                new InstantCommand(() -> intake.setSpeed(IntakeSubsystem.IntakeState.INTAKING))
-        );
-        driver1.getGamepadButton(GamepadKeys.Button.TRIANGLE).whenReleased(
+        driver1.getGamepadButton(GamepadKeys.Button.TRIANGLE).toggleWhenActive(
+                new InstantCommand(() -> intake.setSpeed(IntakeSubsystem.IntakeState.INTAKING)),
                 new InstantCommand(() -> intake.setSpeed(IntakeSubsystem.IntakeState.STILL))
         );
         driver1.getGamepadButton(GamepadKeys.Button.CIRCLE).whenPressed(
                 new InstantCommand(() -> spindexer.advanceSpindexer())
         );
-        driver1.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER).whenPressed(
-                new InstantCommand(() -> shooter.setTargetVelocity(99))
+        driver1.getGamepadButton(GamepadKeys.Button.SQUARE).whenPressed(
+                new InstantCommand(() -> spindexer.reverseSpindexer())
         );
-        driver1.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER).whenPressed(
-                new InstantCommand(() -> shooter.setTargetVelocity(0))
-        );
+        new Trigger(
+                () -> driver1.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) > 0.5)
+                .whenActive(new InstantCommand(() -> shooter.setTargetVelocity(99)));
+        new Trigger(
+                () -> driver1.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) > 0.5)
+                .whenActive(new InstantCommand(() -> shooter.setTargetVelocity(0)));
 
 
     }
