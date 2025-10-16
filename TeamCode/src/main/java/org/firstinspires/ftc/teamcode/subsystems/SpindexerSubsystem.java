@@ -27,7 +27,6 @@ public class SpindexerSubsystem extends SubsystemBase {
 
     public int currentPosition = 0;
 
-    private static final double CLAMP_LIMIT = 0.4;
 
     // Target position for PIDF
     private double targetPosition = SPINDEXER_INITPOS;
@@ -81,12 +80,12 @@ public class SpindexerSubsystem extends SubsystemBase {
 //        }
         currentPosition = spindexer.getCurrentPosition();
         output = pid.calculate(currentPosition, targetPosition);
-        spindexer.setPower(clamp(output, -CLAMP_LIMIT, CLAMP_LIMIT));
+        spindexer.setPower(clamp(output, -SPINDEXER_CLAMP, SPINDEXER_CLAMP));
     }
 
     // Get current PID output
     public String getOutput() {
-        return output + " | " + clamp(output, -CLAMP_LIMIT, CLAMP_LIMIT);
+        return output + " | " + clamp(output, -SPINDEXER_CLAMP, SPINDEXER_CLAMP);
     }
 
 

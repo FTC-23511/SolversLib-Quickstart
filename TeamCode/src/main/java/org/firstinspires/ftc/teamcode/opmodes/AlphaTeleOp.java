@@ -54,7 +54,7 @@ public class AlphaTeleOp extends CommandOpMode {
         );
         new Trigger(
                 () -> driver1.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) > 0.5)
-                .whenActive(new InstantCommand(() -> shooter.setTargetVelocity(99)));
+                .whenActive(new InstantCommand(() -> shooter.setTargetVelocity(0.8)));
         new Trigger(
                 () -> driver1.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) > 0.5)
                 .whenActive(new InstantCommand(() -> shooter.setTargetVelocity(0)));
@@ -77,6 +77,7 @@ public class AlphaTeleOp extends CommandOpMode {
         telemetry.addData("spindexer pos", spindexer.getCurrentPosition());
         telemetry.addData("shooter output", shooter.getShooterOutput());
         telemetry.addData("shooter pos", shooter.getShooterPosition());
+        telemetry.addData("shooter target velocity", shooter.getTargetVelocity());
         telemetry.update();
         super.run();
 

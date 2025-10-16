@@ -4,6 +4,7 @@ import static com.seattlesolvers.solverslib.util.MathUtils.clamp;
 import static org.firstinspires.ftc.teamcode.RobotConstants.*;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.seattlesolvers.solverslib.command.SubsystemBase;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -17,14 +18,17 @@ public class ShooterSubSystem extends SubsystemBase {
     public static double lastOutput = 0.0;
     public double output = 0.0;
 
-    private double kP = 0.000;
-    private double kI = 0.005;
+    private double kP = 0.0007;
+    private double kI = -0.0001;
     private double kD = 0.000;
     private double kF = 0.000;
     public int getShooterPosition() {
         return shooterPos;
     }
-    int shooterPos;
+    public double getTargetVelocity() {
+        return targetVelocity;
+    }
+    int shooterPos = 0;
     public double targetVelocity = 0;
     ElapsedTime deltaTime = new ElapsedTime();
     int lastPos = 0;
@@ -34,7 +38,8 @@ public class ShooterSubSystem extends SubsystemBase {
 
     public ShooterSubSystem(final HardwareMap hMap) {
         shooterMotor = hMap.get(DcMotor.class, "shooter");
-        shooterMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        shooterMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        shooterMotor.setDirection(DcMotorSimple.Direction.FORWARD);
 
         //lut.add(1.0,1.0);
         //lut.createLUT();
@@ -49,9 +54,9 @@ public class ShooterSubSystem extends SubsystemBase {
     }
 
     public void periodic() {
-        shooterPos = shooterMotor.getCurrentPosition();
-        output = pidf.calculate((lastPos - shooterPos) / deltaTime.time(), targetVelocity);
-        shooterMotor.setPower(output);
+//        shooterPos = shooterMotor.getCurrentPosition();
+//        output = pidf.calculate((shooterPos - lastPos) / deltaTime.time(), targetVelocity);
+        shooterMotor.setPower(targetVelocity);
 
 //        if (Math.abs(lastOutput - output) > SHOOTER_CACHETHRESHOLD) {
 //            shooterMotor.setPower(output);
