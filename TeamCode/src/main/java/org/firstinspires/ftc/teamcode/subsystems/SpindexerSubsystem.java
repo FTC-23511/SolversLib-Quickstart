@@ -35,6 +35,11 @@ public class SpindexerSubsystem extends SubsystemBase {
     private final PIDController pid;
 
     public enum SpindexerState { ONE, TWO, THREE }
+
+    public SpindexerState getSpindexerState() {
+        return spindexerState;
+    }
+
     public SpindexerState spindexerState = SpindexerState.ONE;
 
     private double lastOutput = -9999999;
