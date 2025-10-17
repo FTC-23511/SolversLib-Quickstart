@@ -6,28 +6,24 @@ import static org.firstinspires.ftc.teamcode.RobotConstants.*;
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.seattlesolvers.solverslib.command.SubsystemBase;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.seattlesolvers.solverslib.controller.PIDFController;
 import com.seattlesolvers.solverslib.hardware.motors.Motor;
 import com.seattlesolvers.solverslib.util.InterpLUT;
 
 public class ShooterSubSystem extends SubsystemBase {
 
-    private DcMotor shooterMotor;
-
     public static double lastOutput = 0.0;
     public double output = 0.0;
 
-    private double kP = 0.0007;
-    private double kI = -0.0001;
-    private double kD = 0.000;
-    private double kS = 0.000;
-    private double kV = 0.000;
+    private double kP = 0.00002;
+    private double kI = 0.000;
+    private double kD = 0.0002;
+    private double kS = 500.0;
+    private double kV = 0.0005;
     private double kA = 0.000;
-    Motor shooter;
+    Motor shooterMotor;
     public int getShooterPosition() {
         return shooterPos;
     }
@@ -42,16 +38,15 @@ public class ShooterSubSystem extends SubsystemBase {
     InterpLUT lut = new InterpLUT();
 
     public ShooterSubSystem(final HardwareMap hMap) {
-        shooter = new Motor(hardwareMap, "shooter", Motor.GoBILDA.RPM_312);
-        shooterMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        shooterMotor = new Motor(hMap, "shooter", Motor.GoBILDA.RPM_312);
+
+        shooterMotor.setRunMode(Motor.RunMode.VelocityControl);
+        shooterMotor.setVeloCoefficients(kP, kI, kD);
+        shooterMotor.setFeedforwardCoefficients(kS, kV, kA);
+        shooterMotor.set(0.0);
+
+
         shooterMotor.setZeroPowerBehavior(Motor.ZeroPowerBehavior.FLOAT);
-
-        telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
-
-        shooter.setRunMode(Motor.RunMode.VelocityControl);
-        shooter.setVeloCoefficients(kP, kI, kD);
-        shooter.setFeedforwardCoefficients(kS, kV, kA);
-        shooter.set(0.0);
 
         //lut.add(1.0,1.0);
         //lut.createLUT();
@@ -66,14 +61,7 @@ public class ShooterSubSystem extends SubsystemBase {
     }
 
     public void periodic() {
-//        shooterPos = shooterMotor.getCurrentPosition();
-//        output = pidf.calculate((shooterPos - lastPos) / deltaTime.time(), targetVelocity);
-        shooterMotor.setPower(targetVelocity);
-
-//        if (Math.abs(lastOutput - output) > SHOOTER_CACHETHRESHOLD) {
-//            shooterMotor.setPower(output);
-//            lastOutput = output;
-//        }
+        shooterMotor.set(targetVelocity);
     }
 
     public String getShooterOutput() {
