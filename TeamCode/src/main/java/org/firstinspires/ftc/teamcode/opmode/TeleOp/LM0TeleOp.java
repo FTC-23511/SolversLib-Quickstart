@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.opmode.TeleOp;
 
+import static org.firstinspires.ftc.teamcode.globals.Constants.*;
+
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
@@ -7,21 +9,24 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.seattlesolvers.solverslib.command.CommandOpMode;
 import com.seattlesolvers.solverslib.command.InstantCommand;
-import com.seattlesolvers.solverslib.drivebase.swerve.coaxial.CoaxialSwerveModule;
+import com.seattlesolvers.solverslib.command.SequentialCommandGroup;
+import com.seattlesolvers.solverslib.command.WaitCommand;
 import com.seattlesolvers.solverslib.gamepad.GamepadEx;
 import com.seattlesolvers.solverslib.gamepad.GamepadKeys;
 import com.seattlesolvers.solverslib.geometry.Pose2d;
 import com.seattlesolvers.solverslib.kinematics.wpilibkinematics.ChassisSpeeds;
 import com.seattlesolvers.solverslib.util.TelemetryData;
 
-import org.firstinspires.ftc.teamcode.commandbase.commands.*;
+import org.firstinspires.ftc.teamcode.commandbase.commands.ClearLaunch;
+import org.firstinspires.ftc.teamcode.commandbase.commands.SetIntake;
+import org.firstinspires.ftc.teamcode.commandbase.commands.StationaryAimbotFullLaunch;
 import org.firstinspires.ftc.teamcode.commandbase.subsystems.Intake;
 import org.firstinspires.ftc.teamcode.globals.Constants;
 import org.firstinspires.ftc.teamcode.globals.Robot;
 
 @Config
-@TeleOp(name = "SwerveTeleOp")
-public class SwerveOpMode extends CommandOpMode {
+@TeleOp(name = "LM0TeleOp")
+public class LM0TeleOp extends CommandOpMode {
     public GamepadEx driver;
     public GamepadEx operator;
 
@@ -50,6 +55,42 @@ public class SwerveOpMode extends CommandOpMode {
         driver.getGamepadButton(GamepadKeys.Button.DPAD_UP).whenPressed(
                 new InstantCommand(() -> robot.drive.setPose(new Pose2d()))
         );
+
+        driver.getGamepadButton(GamepadKeys.Button.DPAD_DOWN).whenPressed(
+                new InstantCommand(() -> robot.launcher.setFlywheel(0))
+        );
+
+        driver.getGamepadButton(GamepadKeys.Button.CIRCLE).whenPressed(
+                new SequentialCommandGroup(
+                        new InstantCommand(() -> robot.launcher.setRamp(false)),
+                        new InstantCommand(() -> robot.intake.setPivot(Intake.PivotState.INTAKE)),
+                        new InstantCommand(() -> robot.intake.toggleIntake()),
+                        new InstantCommand(() -> robot.launcher.setFlywheel(0))
+                )
+        );
+
+        driver.getGamepadButton(GamepadKeys.Button.SQUARE).whenPressed(
+                new SetIntake(Intake.MotorState.STOP, Intake.PivotState.HOLD)
+        );
+
+        driver.getGamepadButton(GamepadKeys.Button.CROSS).whenPressed(
+                new SequentialCommandGroup(
+                        new InstantCommand(() -> robot.launcher.setRamp(true)).andThen(new WaitCommand(200)),
+                        new ClearLaunch()
+                )
+        );
+
+        driver.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER).whenPressed(
+                new InstantCommand(() -> robot.launcher.setFlywheel(LAUNCHER_CLOSE_VELOCITY)).alongWith(
+                        new InstantCommand(() -> robot.launcher.setFlywheel(MIN_HOOD_ANGLE))
+                )
+        );
+
+        driver.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER).whenPressed(
+                new InstantCommand(() -> robot.launcher.setFlywheel(LAUNCHER_FAR_VELOCITY)).alongWith(
+                        new InstantCommand(() -> robot.launcher.setFlywheel(MAX_HOOD_ANGLE))
+                )
+        );
     }
 
     @Override
@@ -59,11 +100,6 @@ public class SwerveOpMode extends CommandOpMode {
         if (timer == null) {
             robot.initHasMovement();
             timer = new ElapsedTime();
-        }
-
-        // Update any constants that are being updated by FTCDash
-        for (CoaxialSwerveModule module : robot.drive.swerve.getModules()) {
-            module.setSwervoPIDF(Constants.SWERVO_PIDF_COEFFICIENTS);
         }
 
         // Drive the robot
@@ -84,11 +120,19 @@ public class SwerveOpMode extends CommandOpMode {
         telemetryData.addData("Heading", robot.drive.getPose().getHeading());
         telemetryData.addData("Robot Pose", robot.drive.getPose());
 
+        telemetryData.addData("Turret Target", robot.turret.getTarget());
+        telemetryData.addData("Turret Position", robot.turretEncoder.getCurrentPosition());
+
+        telemetryData.addData("Flywheel Target", robot.launcher.getFlywheelTarget());
+        telemetryData.addData("Flywheel Velocity", robot.launchEncoder.getCorrectedVelocity());
+
         telemetryData.addData("Target Chassis Velocity", robot.drive.swerve.getTargetVelocity());
         telemetryData.addData("FR Module", robot.drive.swerve.getModules()[0].getTargetVelocity() + " | " + robot.drive.swerve.getModules()[0].getPowerTelemetry());
         telemetryData.addData("FL Module", robot.drive.swerve.getModules()[1].getTargetVelocity() + " | " + robot.drive.swerve.getModules()[1].getPowerTelemetry());
         telemetryData.addData("BL Module", robot.drive.swerve.getModules()[2].getTargetVelocity() + " | " + robot.drive.swerve.getModules()[2].getPowerTelemetry());
         telemetryData.addData("BR Module", robot.drive.swerve.getModules()[3].getTargetVelocity() + " | " + robot.drive.swerve.getModules()[3].getPowerTelemetry());
+
+        telemetryData.addData("Sigma", "Devyn");
 
         // DO NOT REMOVE ANY LINES BELOW! Runs the command scheduler and updates telemetry
         super.run();

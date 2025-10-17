@@ -15,11 +15,15 @@ public class Turret extends SubsystemBase {
     public static PIDFController turretController = new PIDFController(TURRET_PIDF_COEFFICIENTS);
 
     public void init() {
-
+        setTarget(0);
     }
 
     public void setTarget(double target) {
         turretController.setSetPoint(target);
+    }
+
+    public double getTarget() {
+        return turretController.getSetPoint();
     }
 
     public void update() {
@@ -67,5 +71,4 @@ public class Turret extends SubsystemBase {
             return new double[]{robotAngle + (Math.abs(error) - MAX_USABLE_TURRET_ANGLE) * Math.signum(error), MAX_USABLE_TURRET_ANGLE * Math.signum(error)};
         }
     }
-
 }

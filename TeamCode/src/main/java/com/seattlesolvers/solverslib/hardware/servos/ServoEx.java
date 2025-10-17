@@ -20,6 +20,7 @@ public class ServoEx implements HardwareDevice {
     private double min = 0.0;
     private double max = 1.0;
     private double cachingTolerance = 0.0001;
+    private double lastPos = Double.NaN;
 
     /**
      * The main constructor for the ServoEx object.
@@ -77,8 +78,9 @@ public class ServoEx implements HardwareDevice {
      * @param pos position requested to be written to the servo
      */
     private void setPosition(double pos) {
-        if (Math.abs(pos - getRawPosition()) > cachingTolerance) {
+        if (Double.isNaN(lastPos) || Math.abs(pos - lastPos) > cachingTolerance) {
             servo.setPosition(pos);
+            lastPos = pos;
         }
     }
 

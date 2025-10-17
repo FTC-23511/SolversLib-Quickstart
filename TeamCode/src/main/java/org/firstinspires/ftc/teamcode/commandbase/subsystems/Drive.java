@@ -77,4 +77,8 @@ public class Drive extends SubsystemBase {
 //        swerve.update(); // Not needed as we are using updateWithTargetVelocity() in the opModes
         robot.pinpoint.update();
     }
+
+    public void init() {
+
+    }
 }

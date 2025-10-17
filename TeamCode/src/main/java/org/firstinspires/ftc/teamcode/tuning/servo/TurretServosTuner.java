@@ -66,7 +66,8 @@ public class TurretServosTuner extends CommandOpMode {
         timer.reset();
 
         telemetryData.addData("power", power);
-        telemetryData.addData("target velocity", TARGET_POS);
+        telemetryData.addData("true power", robot.turretServos.getSpeeds().get(0));
+        telemetryData.addData("target pos", TARGET_POS);
         telemetryData.addData("encoder position", servoPos);
 
         // DO NOT REMOVE ANY LINES BELOW! Runs the command scheduler and updates telemetry

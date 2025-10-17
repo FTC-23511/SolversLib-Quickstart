@@ -5,7 +5,6 @@ import static org.firstinspires.ftc.teamcode.globals.Constants.*;
 import com.seattlesolvers.solverslib.command.SubsystemBase;
 import com.seattlesolvers.solverslib.controller.PIDFController;
 
-import org.firstinspires.ftc.robotcore.external.navigation.VoltageUnit;
 import org.firstinspires.ftc.teamcode.globals.Robot;
 
 public class Launcher extends SubsystemBase {
@@ -14,18 +13,28 @@ public class Launcher extends SubsystemBase {
     public static PIDFController flywheelController = new PIDFController(FLYWHEEL_PIDF_COEFFICIENTS);
 
     public void init() {
-
+        setRamp(false);
+        setHood(MIN_HOOD_ANGLE);
+        setFlywheel(0);
     }
 
     public void setFlywheel(double vel) {
-        flywheelController.setSetPoint(vel * 1/TICKS_TO_M_S);
+        flywheelController.setSetPoint(vel * M_S_TO_TICKS);
+    }
+
+    public double getFlywheelTarget() {
+        return flywheelController.getSetPoint();
     }
 
     private void updateFlywheel() {
-        flywheelController.setF(FLYWHEEL_PIDF_COEFFICIENTS.f / (robot.getVoltage() / 12));
-        robot.launchMotors.set(
-                flywheelController.calculate(robot.launchEncoder.getCorrectedVelocity())
-        );
+        if (getFlywheelTarget() == 0) { // Don't unnecessarily decelerate to a stop (just causes current spike)
+            robot.launchMotors.set(0);
+        } else {
+            flywheelController.setF(FLYWHEEL_PIDF_COEFFICIENTS.f / (robot.getVoltage() / 12));
+            robot.launchMotors.set(
+                    flywheelController.calculate(robot.launchEncoder.getCorrectedVelocity())
+            );
+        }
     }
 
     public void setRamp(boolean engaged) {

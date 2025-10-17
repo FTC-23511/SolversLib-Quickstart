@@ -14,27 +14,26 @@ public class SetIntake extends CommandBase {
 
     private ElapsedTime timer;
 
-    public SetIntake(Robot robot, Intake.MotorState motorState, Intake.PivotState pivotState) {
-        this(robot, motorState, pivotState, false);
+    public SetIntake(Intake.MotorState motorState, Intake.PivotState pivotState) {
+        this(motorState, pivotState, false);
     }
 
-    public SetIntake(Robot robot, Intake.MotorState motorState, Intake.PivotState pivotState, boolean waitForArtifacts) {
-        this.robot = robot;
+    public SetIntake(Intake.MotorState motorState, Intake.PivotState pivotState, boolean waitForArtifacts) {
+        robot = Robot.getInstance();
         this.motorState = motorState;
         this.pivotState = pivotState;
         this.waitForArtifacts = waitForArtifacts;
 
         timer = new ElapsedTime();
 
-        robot = Robot.getInstance();
         addRequirements(robot.intake);
     }
 
     @Override
     public void initialize() {
         timer.reset();
-        robot.intake.setIntake(motorState);
         robot.intake.setPivot(pivotState);
+        robot.intake.setIntake(motorState);
     }
 
     @Override

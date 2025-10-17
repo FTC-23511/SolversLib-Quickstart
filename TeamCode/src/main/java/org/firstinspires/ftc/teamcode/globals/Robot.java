@@ -116,7 +116,7 @@ public class Robot extends com.seattlesolvers.solverslib.command.Robot {
         turretServos = new MotorGroup(
                 new CRServoEx(hwMap, "leftTurretServo").setCachingTolerance(0.01),
                 new CRServoEx(hwMap, "rightTurretServo").setCachingTolerance(0.01)
-        );
+        ).setInverted(true);
 
         turretEncoder = new AbsoluteAnalogEncoder(hwMap, "turretEncoder")
                 .zero(TURRET_ENCODER_OFFSET)
@@ -155,7 +155,7 @@ public class Robot extends com.seattlesolvers.solverslib.command.Robot {
             }
         }
 
-        register(drive, intake, launcher);
+        register(drive, intake, launcher, turret);
 
         if (OP_MODE_TYPE.equals(OpModeType.AUTO)) {
             initHasMovement();
@@ -163,7 +163,10 @@ public class Robot extends com.seattlesolvers.solverslib.command.Robot {
     }
 
     public void initHasMovement() {
-
+        drive.init();
+        intake.init();
+        launcher.init();
+        turret.init();
     }
     
     public double getVoltage() {
