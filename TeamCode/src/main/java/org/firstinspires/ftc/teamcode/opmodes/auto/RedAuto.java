@@ -1,9 +1,11 @@
 package org.firstinspires.ftc.teamcode.opmodes.auto;
 
+import com.acmerobotics.dashboard.config.Config;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.geometry.BezierLine;
 import com.pedropathing.geometry.Pose;
 import com.pedropathing.paths.PathChain;
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.seattlesolvers.solverslib.command.CommandOpMode;
 import com.seattlesolvers.solverslib.command.InstantCommand;
@@ -21,6 +23,8 @@ import org.firstinspires.ftc.teamcode.subsystems.SpindexerSubsystem;
 
 import java.util.ArrayList;
 
+@Config
+@Autonomous(name = "techniqueReversal (RedAuto)", group = "limitless")
 public class RedAuto extends CommandOpMode {
     //paths
     /*
@@ -55,8 +59,6 @@ public class RedAuto extends CommandOpMode {
     private IntakeSubsystem intake;
     private ShooterSubSystem shooter;
     private SpindexerSubsystem spindexer;
-
-
 
 
     public void buildPaths(Follower follower) {
