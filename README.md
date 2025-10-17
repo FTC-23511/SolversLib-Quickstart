@@ -226,7 +226,7 @@ The readme.md file located in the [/TeamCode/src/main/java/org/firstinspires/ftc
   * Adds Blocks samples SensorHubIMUOrthogonal (replaces SensorIMU) and SensorHubIMUNonOrthogonal.
 * Updates EasyOpenCV, AprilTag, OpenCV, and `libjpeg-turbo` versions
 * Adds Blocks for max and min that take two numbers.
-* Adds Blocks OpModes ConceptRevSPARKMini, RobotAutoDriveByEncoder, RobotAutoDriveByGyro, RobotAutoDriveByTime, RobotAutoDriveToAprilTagOmni, and RobotAutoDriveToAprilTagTank.
+* Adds Blocks OpModes ConceptRevSPARKMini, RobotAutoDriveByEncoder, RobotAutoDriveByGyro, RobotAutoDriveByTime, org.firstinspires.ftc.teamcode.opmodes.RobotAutoDriveToAprilTagOmni, and RobotAutoDriveToAprilTagTank.
 * Two OpModes with the same name now automatically get renamed with the name followed by a "-" and the class name allowing them to both be on the device.
 * Shows the name of the active configuration on the Manage page of the Robot Controller Console
 * Updated AprilTag Library for INTO THE DEEP. Notably, `getCurrentGameTagLibrary()` now returns INTO THE DEEP tags.
