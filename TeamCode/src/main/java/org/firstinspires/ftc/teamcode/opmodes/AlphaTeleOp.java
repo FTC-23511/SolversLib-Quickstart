@@ -52,12 +52,18 @@ public class AlphaTeleOp extends CommandOpMode {
         driver1.getGamepadButton(GamepadKeys.Button.SQUARE).whenPressed(
                 new InstantCommand(() -> spindexer.reverseSpindexer())
         );
-        new Trigger(
-                () -> driver1.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) > 0.5)
-                .whenActive(new InstantCommand(() -> shooter.setTargetVelocity(0.8)));
-        new Trigger(
-                () -> driver1.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) > 0.5)
-                .whenActive(new InstantCommand(() -> shooter.setTargetVelocity(0)));
+        driver1.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER).whenPressed(
+                new InstantCommand(() -> shooter.setTargetVelocity(1500.0))
+        );
+        driver1.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER).whenPressed(
+                new InstantCommand(() -> shooter.setTargetVelocity(0.0))
+        );
+//        new Trigger(
+//                () -> driver1.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) > 0.5)
+//                .whenActive(new InstantCommand(() -> shooter.setTargetVelocity(1500)));
+//        new Trigger(
+//                () -> driver1.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) > 0.5)
+//                .whenActive(new InstantCommand(() -> shooter.setTargetVelocity(0)));
 
 
     }
@@ -78,7 +84,6 @@ public class AlphaTeleOp extends CommandOpMode {
 
         telemetry.addData("------------------",null);
 
-        telemetry.addData("shooter pos", shooter.getShooterPosition());
         telemetry.addData("shooter target velocity", shooter.getTargetVelocity());
         telemetry.update();
         super.run();

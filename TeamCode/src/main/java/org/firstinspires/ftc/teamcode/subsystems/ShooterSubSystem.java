@@ -10,17 +10,13 @@ import com.seattlesolvers.solverslib.util.InterpLUT;
 public class ShooterSubSystem extends SubsystemBase {
 
 
-    public static double p = 0.0, i = 0.0, d = 0.0;
-    public static double s = 0.0, v = 0.0, a = 0.0;
+    public static double p = 0.00002, i = 0.0, d = 0.0002;
+    public static double s = 500, v = 0.0005, a = 0.0;
     Motor shooter;
-    public int getShooterPosition() {
-        return shooterPos;
-    }
     public double getTargetVelocity() {
         return targetVelocity;
     }
-    int shooterPos = 0;
-    public double targetVelocity = 0;
+    public double targetVelocity = 0.0;
 
     InterpLUT lut = new InterpLUT();
 
@@ -45,6 +41,7 @@ public class ShooterSubSystem extends SubsystemBase {
     }
 
     public void setTargetVelocity(double num) {
+        targetVelocity = num;
         shooter.set(targetVelocity);
     }
 
