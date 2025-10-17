@@ -1,12 +1,7 @@
 package org.firstinspires.ftc.teamcode.subsystems;
 
 import static com.seattlesolvers.solverslib.util.MathUtils.clamp;
-import static org.firstinspires.ftc.teamcode.RobotConstants.*;
 
-import com.acmerobotics.dashboard.FtcDashboard;
-import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.util.ElapsedTime;
 import com.seattlesolvers.solverslib.command.SubsystemBase;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.seattlesolvers.solverslib.hardware.motors.Motor;
@@ -14,16 +9,10 @@ import com.seattlesolvers.solverslib.util.InterpLUT;
 
 public class ShooterSubSystem extends SubsystemBase {
 
-    public static double lastOutput = 0.0;
-    public double output = 0.0;
 
-    private double kP = 0.00002;
-    private double kI = 0.000;
-    private double kD = 0.0002;
-    private double kS = 500.0;
-    private double kV = 0.0005;
-    private double kA = 0.000;
-    Motor shooterMotor;
+    public static double p = 0.0, i = 0.0, d = 0.0;
+    public static double s = 0.0, v = 0.0, a = 0.0;
+    Motor shooter;
     public int getShooterPosition() {
         return shooterPos;
     }
@@ -32,21 +21,20 @@ public class ShooterSubSystem extends SubsystemBase {
     }
     int shooterPos = 0;
     public double targetVelocity = 0;
-    ElapsedTime deltaTime = new ElapsedTime();
-    int lastPos = 0;
 
     InterpLUT lut = new InterpLUT();
 
     public ShooterSubSystem(final HardwareMap hMap) {
-        shooterMotor = new Motor(hMap, "shooter", Motor.GoBILDA.RPM_312);
+        shooter = new Motor(hMap, "shooter", Motor.GoBILDA.RPM_312);
 
-        shooterMotor.setRunMode(Motor.RunMode.VelocityControl);
-        shooterMotor.setVeloCoefficients(kP, kI, kD);
-        shooterMotor.setFeedforwardCoefficients(kS, kV, kA);
-        shooterMotor.set(0.0);
+        shooter.setRunMode(Motor.RunMode.VelocityControl);
+        shooter.setVeloCoefficients(p, i, d);
+        shooter.setFeedforwardCoefficients(s, v, a);
+        shooter.set(0.0);
+
+        shooter.setZeroPowerBehavior(Motor.ZeroPowerBehavior.FLOAT);
 
 
-        shooterMotor.setZeroPowerBehavior(Motor.ZeroPowerBehavior.FLOAT);
 
         //lut.add(1.0,1.0);
         //lut.createLUT();
@@ -57,14 +45,11 @@ public class ShooterSubSystem extends SubsystemBase {
     }
 
     public void setTargetVelocity(double num) {
-        targetVelocity = num;
+        shooter.set(targetVelocity);
     }
 
     public void periodic() {
-        shooterMotor.set(targetVelocity);
+//        shooter.set(targetVelocity);
     }
 
-    public String getShooterOutput() {
-        return " " + output;
-    }
 }

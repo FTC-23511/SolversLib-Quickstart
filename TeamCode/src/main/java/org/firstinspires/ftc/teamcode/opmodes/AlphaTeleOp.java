@@ -75,7 +75,9 @@ public class AlphaTeleOp extends CommandOpMode {
         telemetry.addData("spindexer output", spindexer.getOutput());
         telemetry.addData("spindexer setpoint", spindexer.getPIDSetpoint());
         telemetry.addData("spindexer pos", spindexer.getCurrentPosition());
-        telemetry.addData("shooter output", shooter.getShooterOutput());
+
+        telemetry.addData("------------------",null);
+
         telemetry.addData("shooter pos", shooter.getShooterPosition());
         telemetry.addData("shooter target velocity", shooter.getTargetVelocity());
         telemetry.update();
