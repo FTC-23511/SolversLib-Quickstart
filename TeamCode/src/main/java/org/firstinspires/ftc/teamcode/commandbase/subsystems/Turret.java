@@ -1,8 +1,6 @@
 package org.firstinspires.ftc.teamcode.commandbase.subsystems;
 
-import static org.firstinspires.ftc.teamcode.globals.Constants.FLYWHEEL_PIDF_COEFFICIENTS;
-import static org.firstinspires.ftc.teamcode.globals.Constants.GOAL_POSE;
-import static org.firstinspires.ftc.teamcode.globals.Constants.MAX_TURRET_ANGLE;
+import static org.firstinspires.ftc.teamcode.globals.Constants.*;
 
 import com.seattlesolvers.solverslib.command.SubsystemBase;
 import com.seattlesolvers.solverslib.controller.PIDFController;
@@ -14,7 +12,7 @@ import org.firstinspires.ftc.teamcode.globals.Robot;
 
 public class Turret extends SubsystemBase {
     private final Robot robot = Robot.getInstance();
-    public static PIDFController turretController = new PIDFController(FLYWHEEL_PIDF_COEFFICIENTS);
+    public static PIDFController turretController = new PIDFController(TURRET_PIDF_COEFFICIENTS);
 
     public void init() {
 

@@ -5,6 +5,7 @@ import static org.firstinspires.ftc.teamcode.globals.Constants.*;
 import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.hardware.lynx.LynxModule;
+import com.qualcomm.robotcore.hardware.AnalogInput;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -71,8 +72,7 @@ public class Robot extends com.seattlesolvers.solverslib.command.Robot {
     public Launcher launcher;
     public Turret turret;
 
-    public SensorDistanceEx.DistanceTarget distanceTarget;
-    public SensorRevTOFDistance distanceSensor;
+    public AnalogInput distanceSensor;
 
     public void init(HardwareMap hwMap) {
         // Hardware
@@ -118,7 +118,9 @@ public class Robot extends com.seattlesolvers.solverslib.command.Robot {
                 new CRServoEx(hwMap, "rightTurretServo").setCachingTolerance(0.01)
         );
 
-        turretEncoder = new AbsoluteAnalogEncoder(hwMap, "turretEncoder").zero(TURRET_ENCODER_OFFSET);
+        turretEncoder = new AbsoluteAnalogEncoder(hwMap, "turretEncoder")
+                .zero(TURRET_ENCODER_OFFSET)
+                .setReversed(true);
 
         intakePivotServo = new ServoEx(hwMap, "intakePivotServo").setCachingTolerance(0.01);
         hoodServo = new ServoEx(hwMap, "hoodServo").setCachingTolerance(-0.01).setInverted(true);
@@ -133,9 +135,7 @@ public class Robot extends com.seattlesolvers.solverslib.command.Robot {
         pinpoint.resetPosAndIMU();
         pinpoint.setPosition(Pose2d.convertToPose2D(END_POSE, DistanceUnit.INCH, AngleUnit.RADIANS));
 
-//        distanceTarget = new SensorDistanceEx.DistanceTarget(DistanceUnit.CM, MIN_DISTANCE_THRESHOLD, MAX_DISTANCE_THRESHOLD);
-//        distanceSensor = new SensorRevTOFDistance(hwMap, "distanceSensor");
-//        distanceSensor.addTarget(distanceTarget);
+        distanceSensor = hwMap.get(AnalogInput.class, "distanceSensor");
 
         limelight = hwMap.get(Limelight3A.class, "limelight");
 

@@ -284,7 +284,7 @@ public class Trigger {
     }
 
     /**
-     * Toggles between two commands when the trigger becomes active (commadOne then commandTwo
+     * Toggles between two commands when the trigger becomes active (commandOne then commandTwo
      * then commandOne).
      *
      * @param commandOne    the command to toggle

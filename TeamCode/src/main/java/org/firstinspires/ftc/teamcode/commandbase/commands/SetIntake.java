@@ -10,13 +10,21 @@ public class SetIntake extends CommandBase {
     private final Robot robot;
     private final Intake.MotorState motorState;
     private final Intake.PivotState pivotState;
+    private boolean waitForArtifacts;
+
+    private ElapsedTime timer;
 
     public SetIntake(Robot robot, Intake.MotorState motorState, Intake.PivotState pivotState) {
+        this(robot, motorState, pivotState, false);
+    }
+
+    public SetIntake(Robot robot, Intake.MotorState motorState, Intake.PivotState pivotState, boolean waitForArtifacts) {
         this.robot = robot;
         this.motorState = motorState;
         this.pivotState = pivotState;
+        this.waitForArtifacts = waitForArtifacts;
 
-        ElapsedTime timer;
+        timer = new ElapsedTime();
 
         robot = Robot.getInstance();
         addRequirements(robot.intake);
@@ -24,7 +32,9 @@ public class SetIntake extends CommandBase {
 
     @Override
     public void initialize() {
-
+        timer.reset();
+        robot.intake.setIntake(motorState);
+        robot.intake.setPivot(pivotState);
     }
 
     @Override
@@ -39,6 +49,10 @@ public class SetIntake extends CommandBase {
 
     @Override
     public boolean isFinished() {
-        return true; // TODO: replace with end condition of the command
+        if (waitForArtifacts && robot.intake.transferFull()) {
+            return true;
+        }
+
+        return !waitForArtifacts && timer.milliseconds() > 200;
     }
 }

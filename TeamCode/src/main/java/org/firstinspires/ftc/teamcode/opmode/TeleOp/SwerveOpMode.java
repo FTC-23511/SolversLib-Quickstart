@@ -14,6 +14,8 @@ import com.seattlesolvers.solverslib.geometry.Pose2d;
 import com.seattlesolvers.solverslib.kinematics.wpilibkinematics.ChassisSpeeds;
 import com.seattlesolvers.solverslib.util.TelemetryData;
 
+import org.firstinspires.ftc.teamcode.commandbase.commands.*;
+import org.firstinspires.ftc.teamcode.commandbase.subsystems.Intake;
 import org.firstinspires.ftc.teamcode.globals.Constants;
 import org.firstinspires.ftc.teamcode.globals.Robot;
 
@@ -48,6 +50,24 @@ public class SwerveOpMode extends CommandOpMode {
         driver.getGamepadButton(GamepadKeys.Button.DPAD_UP).whenPressed(
                 new InstantCommand(() -> robot.drive.setPose(new Pose2d()))
         );
+
+        driver.getGamepadButton(GamepadKeys.Button.CIRCLE).whenPressed(
+                new InstantCommand(() -> robot.intake.toggleIntake()).alongWith(
+                        new InstantCommand(() -> robot.intake.setPivot(Intake.PivotState.INTAKE))
+                )
+        );
+
+        driver.getGamepadButton(GamepadKeys.Button.SQUARE).whenPressed(
+                new InstantCommand(() -> robot.intake.setIntake(Intake.MotorState.STOP)).alongWith(
+                        new InstantCommand(() -> robot.intake.setPivot(Intake.PivotState.HIGH))
+                )
+        );
+
+        driver.getGamepadButton(GamepadKeys.Button.TRIANGLE).whenPressed(
+                new StationaryAimbotFullLaunch(robot)
+        );
+
+
     }
 
     @Override

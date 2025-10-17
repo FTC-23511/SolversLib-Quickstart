@@ -16,8 +16,8 @@ import org.firstinspires.ftc.teamcode.globals.Constants;
 import org.firstinspires.ftc.teamcode.globals.Robot;
 
 @Config
-@TeleOp(name = "LaunchMotorEncoders")
-public class LaunchMotorEncoders extends CommandOpMode {
+@TeleOp(name = "LaunchMotorEncoder")
+public class LaunchMotorEncoder extends CommandOpMode {
     public GamepadEx driver;
     public GamepadEx operator;
 
@@ -63,15 +63,6 @@ public class LaunchMotorEncoders extends CommandOpMode {
 
         telemetryData.addData("Loop Time", timer.milliseconds());
         timer.reset();
-
-//        telemetryData.addData("Heading", robot.drive.getPose().getHeading());
-//        telemetryData.addData("Robot Pose", robot.drive.getPose());
-
-//        telemetryData.addData("Target Chassis Velocity", robot.drive.swerve.getTargetVelocity());
-//        telemetryData.addData("FR Module", robot.drive.swerve.getModules()[0].getTargetVelocity() + " | " + robot.drive.swerve.getModules()[0].getPowerTelemetry());
-//        telemetryData.addData("FL Module", robot.drive.swerve.getModules()[1].getTargetVelocity() + " | " + robot.drive.swerve.getModules()[1].getPowerTelemetry());
-//        telemetryData.addData("BL Module", robot.drive.swerve.getModules()[2].getTargetVelocity() + " | " + robot.drive.swerve.getModules()[2].getPowerTelemetry());
-//        telemetryData.addData("BR Module", robot.drive.swerve.getModules()[3].getTargetVelocity() + " | " + robot.drive.swerve.getModules()[3].getPowerTelemetry());
 
         telemetryData.addData("Launch Motor Position", robot.launchEncoder.getPosition());
 

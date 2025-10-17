@@ -77,7 +77,7 @@ public class Constants {
 
     // Turret
     public static PIDFCoefficients TURRET_PIDF_COEFFICIENTS = new PIDFCoefficients(0, 0, 0, 0); // Coefficients for radians // TODO: needs to be tuned
-    public static double TURRET_ENCODER_OFFSET = 0; // Radians // TODO: needs to be tuned
+    public static double TURRET_ENCODER_OFFSET = 0.735; // Radians
     public static double MAX_TURRET_ANGLE = (110 / 360.0) * 2 * Math.PI; // Radians (only for one side of the turret, should be doubled for total range)
     public static Pose2d GOAL_POSE() { return new Pose2d((ALLIANCE_COLOR.equals(AllianceColor.BLUE) ? 72 : -72), 72, 0); } // Inches
 }

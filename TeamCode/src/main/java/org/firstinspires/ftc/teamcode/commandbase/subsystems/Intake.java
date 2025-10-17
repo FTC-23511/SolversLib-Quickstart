@@ -19,11 +19,19 @@ public class Intake extends SubsystemBase {
     public enum PivotState {
         INTAKE,
         TRANSFER,
-        HOLD
+        HOLD,
+        HIGH
+    }
+
+    public enum DistanceState {
+        FOV_15,
+        FOV_20,
+        FOV_27
     }
 
     public static MotorState motorState = MotorState.STOP;
     public static PivotState pivotState = PivotState.HOLD;
+    public static DistanceState distanceState = DistanceState.FOV_15;
 
     public void init() {
         setPivot(PivotState.INTAKE);
@@ -36,6 +44,9 @@ public class Intake extends SubsystemBase {
                 break;
             case TRANSFER:
                 robot.intakePivotServo.set(INTAKE_PIVOT_TRANSFER);
+                break;
+            case HIGH:
+                robot.intakePivotServo.set(INTAKE_PIVOT_HIGH);
                 break;
             case INTAKE:
                 robot.intakePivotServo.set(INTAKE_PIVOT_INTAKE);
@@ -76,8 +87,9 @@ public class Intake extends SubsystemBase {
         if (pivotState.equals(PivotState.INTAKE)) {
             switch (motorState) {
                 case FORWARD:
-                    if (hasArtifact()) {
-                        // TODO: add code for forward
+                    if (transferFull()) {
+                        setPivot(PivotState.HOLD);
+                        setIntake(MotorState.STOP);
                     }
                     break;
                 case REVERSE:
@@ -90,8 +102,30 @@ public class Intake extends SubsystemBase {
         }
     }
 
-    public boolean hasArtifact() {
-        return robot.distanceSensor.targetReached(robot.distanceTarget);
+    public boolean transferFull() {
+        // TODO: Fix logic
+
+        return (getDistance(distanceState) < MAX_DISTANCE_THRESHOLD)
+            && (getDistance(distanceState) > MIN_DISTANCE_THRESHOLD);
+    }
+
+    public double getDistance(DistanceState distanceState){
+        double distance = 0;
+
+        switch (distanceState) {
+            case FOV_15:
+                distance = robot.distanceSensor.getVoltage() * 32.05 - 2.6;
+                break;
+            case FOV_20:
+                distance =  robot.distanceSensor.getVoltage() * 48.70 - 4.9;
+                break;
+            case FOV_27:
+                distance =  robot.distanceSensor.getVoltage() * 78.1 - 10.2;
+                break;
+        }
+
+        Intake.distanceState = distanceState;
+        return distance;
     }
 
     @Override
