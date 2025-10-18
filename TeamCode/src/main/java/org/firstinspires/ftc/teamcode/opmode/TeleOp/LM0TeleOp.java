@@ -63,13 +63,16 @@ public class LM0TeleOp extends CommandOpMode {
                 new SequentialCommandGroup(
                         new InstantCommand(() -> robot.launcher.setRamp(false)),
                         new InstantCommand(() -> robot.intake.setPivot(Intake.PivotState.INTAKE)),
-                        new InstantCommand(() -> robot.intake.toggleIntake()),
-                        new InstantCommand(() -> robot.launcher.setFlywheel(0))
+                        new InstantCommand(() -> robot.intake.toggleIntake())
                 )
         );
 
         driver.getGamepadButton(GamepadKeys.Button.SQUARE).whenPressed(
                 new SetIntake(Intake.MotorState.STOP, Intake.PivotState.HOLD)
+        );
+
+        driver.getGamepadButton(GamepadKeys.Button.TRIANGLE).whileActiveContinuous(
+                new InstantCommand(() -> robot.intake.setIntake(Intake.MotorState.REVERSE))
         );
 
         driver.getGamepadButton(GamepadKeys.Button.CROSS).whenPressed(
@@ -81,13 +84,13 @@ public class LM0TeleOp extends CommandOpMode {
 
         driver.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER).whenPressed(
                 new InstantCommand(() -> robot.launcher.setFlywheel(LAUNCHER_CLOSE_VELOCITY)).alongWith(
-                        new InstantCommand(() -> robot.launcher.setFlywheel(MIN_HOOD_ANGLE))
+                        new InstantCommand(() -> robot.launcher.setHood(MIN_HOOD_ANGLE))
                 )
         );
 
         driver.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER).whenPressed(
                 new InstantCommand(() -> robot.launcher.setFlywheel(LAUNCHER_FAR_VELOCITY)).alongWith(
-                        new InstantCommand(() -> robot.launcher.setFlywheel(MAX_HOOD_ANGLE))
+                        new InstantCommand(() -> robot.launcher.setHood(MAX_HOOD_ANGLE))
                 )
         );
     }
@@ -102,16 +105,20 @@ public class LM0TeleOp extends CommandOpMode {
         }
 
         // Drive the robot
-        double minSpeed = 0.3; // As a fraction of the max speed of the robot
-        double speedMultiplier = minSpeed + (1 - minSpeed) * driver.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER);
-        robot.drive.swerve.updateWithTargetVelocity(
-                ChassisSpeeds.fromFieldRelativeSpeeds(
-                        driver.getLeftY() * Constants.MAX_VELOCITY * speedMultiplier,
-                        -driver.getLeftX() * Constants.MAX_VELOCITY * speedMultiplier,
-                        -driver.getRightX() * Constants.MAX_ANGULAR_VELOCITY * speedMultiplier,
-                        robot.drive.getPose().getRotation()
-                )
-        );
+        if (gamepad1.start) {
+            robot.drive.swerve.updateWithXLock();
+        } else {
+            double minSpeed = 0.3; // As a fraction of the max speed of the robot
+            double speedMultiplier = minSpeed + (1 - minSpeed) * driver.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER);
+            robot.drive.swerve.updateWithTargetVelocity(
+                    ChassisSpeeds.fromFieldRelativeSpeeds(
+                            driver.getLeftY() * Constants.MAX_VELOCITY * speedMultiplier,
+                            -driver.getLeftX() * Constants.MAX_VELOCITY * speedMultiplier,
+                            -driver.getRightX() * Constants.MAX_ANGULAR_VELOCITY * speedMultiplier,
+                            robot.drive.getPose().getRotation()
+                    )
+            );
+        }
 
         telemetryData.addData("Loop Time", timer.milliseconds());
         timer.reset();

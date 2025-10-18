@@ -56,15 +56,15 @@ public class Constants {
     public static double INTAKE_PIVOT_TRANSFER = 0.46;
 
     public static double INTAKE_FORWARD_SPEED = 0.75;
-    public static double INTAKE_REVERSE_SPEED = -0.5;
+    public static double INTAKE_REVERSE_SPEED = -0.75;
     public static double INTAKE_TRANSFER_SPEED = 1.0; // TODO: needs to be tuned
 
     public static double MIN_DISTANCE_THRESHOLD = 0.00; // TODO: needs to be tuned
     public static double MAX_DISTANCE_THRESHOLD = 1.00; // TODO: needs to be tuned
 
     // Launcher
-    public static double RAMP_ENGAGED = 0.545;
-    public static double RAMP_DISENGAGED = 0.455;
+    public static double RAMP_ENGAGED = 0.3;
+    public static double RAMP_DISENGAGED = 0.067;
 
     public static PIDFCoefficients FLYWHEEL_PIDF_COEFFICIENTS = new PIDFCoefficients(0.004, 0, 0, 0.00055); // Coefficients for ticks
     public static double M_S_TO_TICKS = 275; // Conversion factor for ball velocity in meters/second to launcher encoder ticks // TODO: needs to be tuned
@@ -73,7 +73,7 @@ public class Constants {
     public static double LAUNCHER_CLOSE_VELOCITY = 6.0; // Meters/second // TODO: needs to be tuned
 
     public static double MIN_HOOD_ANGLE = 16; // Degrees from horizontal // TODO: needs to be checked off CAD
-    public static double MIN_HOOD_SERVO_POS = 0.02; // MUST MATCH WITH VALUE ABOVE // TODO: needs to be tuned
+    public static double MIN_HOOD_SERVO_POS = 0.08; // MUST MATCH WITH VALUE ABOVE // TODO: needs to be tuned
     public static double MAX_HOOD_ANGLE = 50; // Degrees from horizontal
     public static double MAX_HOOD_SERVO_POS = 1.0; // MUST MATCH WITH VALUE ABOVE // TODO: needs to be tuned
 
@@ -83,7 +83,7 @@ public class Constants {
     public static double TURRET_OFF_CENTER_FRONT_BACK = 0.0; // Inches // TODO: needs to be checked off CAD
     public static PIDFCoefficients TURRET_PIDF_COEFFICIENTS = new PIDFCoefficients(1.5, 0, 0.015, 0); // Coefficients for radians
     public static double TURRET_MIN_OUTPUT = 0.15; // Power
-    public static double TURRET_POS_TOLERANCE = 0.03; // Power
+    public static double TURRET_POS_TOLERANCE = 0.03; // Radians
     public static double TURRET_ENCODER_OFFSET = 0.735; // Radians
     public static double MAX_TURRET_ANGLE = (110 / 360.0) * 2 * Math.PI; // Radians (only for one side of the turret, should be doubled for total range)
     public static Pose2d GOAL_POSE() { return new Pose2d((ALLIANCE_COLOR.equals(AllianceColor.BLUE) ? 72 : -72), 72, 0); } // Inches
