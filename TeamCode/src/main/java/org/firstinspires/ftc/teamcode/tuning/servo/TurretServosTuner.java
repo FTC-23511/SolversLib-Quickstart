@@ -22,9 +22,10 @@ public class TurretServosTuner extends CommandOpMode {
     public static double I = 0;
     public static double D = 0.000;
     public static double F = 0.000;
+    public static double MIN_OUTPUT = 0.15;
 
     public static double TARGET_POS = 0.0;
-    public static double POS_TOLERANCE = 0;
+    public static double POS_TOLERANCE = 0.03;
 
     private static final PIDFController turretPIDF = new PIDFController(P, I, D, F);
 
@@ -52,10 +53,11 @@ public class TurretServosTuner extends CommandOpMode {
             timer = new ElapsedTime();
         }
 
-        double servoPos = MathUtils.normalizeRadians(robot.turretEncoder.getCurrentPosition(), false);
+        double servoPos = robot.turret.getPosition();
 
         turretPIDF.setPIDF(P, I, D, F);
-        turretPIDF.setTolerance(POS_TOLERANCE, 0);
+        turretPIDF.setTolerance(POS_TOLERANCE);
+        turretPIDF.setMinimumOutput(MIN_OUTPUT);
         turretPIDF.setSetPoint(TARGET_POS);
 
         double power = turretPIDF.calculate(servoPos, TARGET_POS);
@@ -65,10 +67,11 @@ public class TurretServosTuner extends CommandOpMode {
         telemetryData.addData("Loop Time", timer.milliseconds());
         timer.reset();
 
-        telemetryData.addData("power", power);
-        telemetryData.addData("true power", robot.turretServos.getSpeeds().get(0));
-        telemetryData.addData("target pos", TARGET_POS);
-        telemetryData.addData("encoder position", servoPos);
+        telemetryData.addData("Actual Pos", servoPos);
+        telemetryData.addData("Target Pos", TARGET_POS);
+
+        telemetryData.addData("Set Power", power);
+        telemetryData.addData("Get Power", robot.turretServos.getSpeeds().toString());
 
         // DO NOT REMOVE ANY LINES BELOW! Runs the command scheduler and updates telemetry
         super.run();

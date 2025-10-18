@@ -13,8 +13,14 @@ public class Launcher extends SubsystemBase {
     public static PIDFController flywheelController = new PIDFController(FLYWHEEL_PIDF_COEFFICIENTS);
 
     public void init() {
-        setRamp(false);
-        setHood(MIN_HOOD_ANGLE);
+        if (OP_MODE_TYPE == OpModeType.AUTO) {
+            setRamp(true);
+            setHood(AUTONOMOUS_HOOD_ANGLE);
+        } else {
+            setRamp(false);
+            setHood(MIN_HOOD_ANGLE);
+        }
+
         setFlywheel(0);
     }
 

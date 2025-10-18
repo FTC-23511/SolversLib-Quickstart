@@ -13,8 +13,7 @@ import com.qualcomm.robotcore.hardware.configuration.LynxConstants;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.seattlesolvers.solverslib.geometry.Pose2d;
 import com.seattlesolvers.solverslib.hardware.AbsoluteAnalogEncoder;
-import com.seattlesolvers.solverslib.hardware.SensorDistanceEx;
-import com.seattlesolvers.solverslib.hardware.SensorRevTOFDistance;
+import com.seattlesolvers.solverslib.hardware.motors.CRServoGroup;
 import com.seattlesolvers.solverslib.hardware.motors.Motor;
 import com.seattlesolvers.solverslib.hardware.servos.ServoEx;
 import com.seattlesolvers.solverslib.hardware.motors.CRServoEx;
@@ -55,7 +54,7 @@ public class Robot extends com.seattlesolvers.solverslib.command.Robot {
     public CRServoEx BLswervo;
     public CRServoEx BRswervo;
 
-    public MotorGroup turretServos;
+    public CRServoGroup turretServos;
     public AbsoluteAnalogEncoder turretEncoder;
 
     public ServoEx intakePivotServo;
@@ -113,20 +112,26 @@ public class Robot extends com.seattlesolvers.solverslib.command.Robot {
                 .zero(BR_ENCODER_OFFSET), CRServoEx.RunMode.RawPower)
                 .setCachingTolerance(0.01);
 
-        turretServos = new MotorGroup(
-                new CRServoEx(hwMap, "leftTurretServo").setCachingTolerance(0.01),
-                new CRServoEx(hwMap, "rightTurretServo").setCachingTolerance(0.01)
+        turretServos = new CRServoGroup(
+                new CRServoEx(hwMap, "leftTurretServo")
+                        .setCachingTolerance(0.01)
+                        .setRunMode(CRServoEx.RunMode.RawPower),
+                new CRServoEx(hwMap, "rightTurretServo")
+                        .setCachingTolerance(0.01)
+                        .setRunMode(CRServoEx.RunMode.RawPower)
         ).setInverted(true);
 
         turretEncoder = new AbsoluteAnalogEncoder(hwMap, "turretEncoder")
                 .zero(TURRET_ENCODER_OFFSET)
                 .setReversed(true);
 
-        intakePivotServo = new ServoEx(hwMap, "intakePivotServo").setCachingTolerance(0.01);
-        hoodServo = new ServoEx(hwMap, "hoodServo").setCachingTolerance(-0.01).setInverted(true);
-        rampServo = new ServoEx(hwMap, "rampServo").setCachingTolerance(-0.01);
-
-        intakePivotServo.setInverted(true);
+        intakePivotServo = new ServoEx(hwMap, "intakePivotServo")
+                .setInverted(true)
+                .setCachingTolerance(0.01);
+        hoodServo = new ServoEx(hwMap, "hoodServo").setCachingTolerance(-0.01)
+                .setInverted(true);
+        rampServo = new ServoEx(hwMap, "rampServo").setCachingTolerance(-0.01)
+                .setInverted(false);;
 
         pinpoint = hwMap.get(GoBildaPinpointDriver.class, "pinpoint");
         pinpoint.setOffsets(-76.32, 152.62, DistanceUnit.MM);

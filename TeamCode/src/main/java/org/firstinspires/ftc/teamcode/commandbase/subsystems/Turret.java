@@ -14,6 +14,11 @@ public class Turret extends SubsystemBase {
     private final Robot robot = Robot.getInstance();
     public static PIDFController turretController = new PIDFController(TURRET_PIDF_COEFFICIENTS);
 
+    public Turret() {
+        turretController.setMinimumOutput(TURRET_MIN_OUTPUT);
+        turretController.setTolerance(TURRET_POS_TOLERANCE);
+    }
+
     public void init() {
         setTarget(0);
     }
@@ -26,10 +31,14 @@ public class Turret extends SubsystemBase {
         return turretController.getSetPoint();
     }
 
+    public double getPosition() {
+        return MathUtils.normalizeRadians(robot.turretEncoder.getCurrentPosition(), false);
+    }
+
     public void update() {
         robot.turretServos.set(
                 turretController.calculate(
-                        MathUtils.normalizeRadians(robot.turretEncoder.getCurrentPosition(), false)
+                        getPosition()
                 )
         );
     }

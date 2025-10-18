@@ -14,14 +14,12 @@ import com.seattlesolvers.solverslib.geometry.Pose2d;
 import com.seattlesolvers.solverslib.kinematics.wpilibkinematics.ChassisSpeeds;
 import com.seattlesolvers.solverslib.util.TelemetryData;
 
-import org.firstinspires.ftc.teamcode.commandbase.commands.*;
-import org.firstinspires.ftc.teamcode.commandbase.subsystems.Intake;
 import org.firstinspires.ftc.teamcode.globals.Constants;
 import org.firstinspires.ftc.teamcode.globals.Robot;
 
 @Config
 @TeleOp(name = "SwerveTeleOp")
-public class SwerveOpMode extends CommandOpMode {
+public class SwerveTeleOp extends CommandOpMode {
     public GamepadEx driver;
     public GamepadEx operator;
 

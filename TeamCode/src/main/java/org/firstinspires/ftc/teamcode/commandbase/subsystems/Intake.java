@@ -34,7 +34,11 @@ public class Intake extends SubsystemBase {
     public static DistanceState distanceState = DistanceState.FOV_15;
 
     public void init() {
-        setPivot(PivotState.INTAKE);
+        if (OP_MODE_TYPE == OpModeType.AUTO) {
+            setPivot(PivotState.HOLD);
+        } else {
+            setPivot(PivotState.INTAKE);
+        }
     }
 
     public void setPivot(PivotState pivotState) {

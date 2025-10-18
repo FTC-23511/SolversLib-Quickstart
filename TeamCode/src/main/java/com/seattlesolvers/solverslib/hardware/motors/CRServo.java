@@ -17,7 +17,14 @@ public class CRServo extends Motor {
     private final String id;
 
     /**
-     * The constructor for the CR Servo.
+     * The implicit constructor for the CR Servo used for inheritance.
+     */
+    public CRServo() {
+        this.id = "";
+    }
+
+    /**
+     * The constructor for the CR Servo used for actual usage.
      */
     public CRServo(HardwareMap hMap, String id) {
         crServo = hMap.get(com.qualcomm.robotcore.hardware.CRServo.class, id);
