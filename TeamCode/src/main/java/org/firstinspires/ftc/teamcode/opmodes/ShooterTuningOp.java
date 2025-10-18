@@ -1,40 +1,42 @@
 package org.firstinspires.ftc.teamcode.opmodes;
 
+import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.config.Config;
+import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.geometry.Pose;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.seattlesolvers.solverslib.command.CommandOpMode;
 import com.seattlesolvers.solverslib.command.InstantCommand;
-import com.seattlesolvers.solverslib.command.button.Trigger;
 import com.seattlesolvers.solverslib.gamepad.GamepadEx;
 import com.seattlesolvers.solverslib.gamepad.GamepadKeys;
 
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 import org.firstinspires.ftc.teamcode.subsystems.IntakeSubsystem;
-import org.firstinspires.ftc.teamcode.subsystems.LEDSubSystem;
 import org.firstinspires.ftc.teamcode.subsystems.ShooterSubSystem;
 import org.firstinspires.ftc.teamcode.subsystems.SpindexerSubsystem;
-
-@TeleOp (name = "Alpha Teleop", group = "OpModes")
-public class AlphaTeleOp extends CommandOpMode {
+@Config
+@TeleOp (name = "shooter tuning op ;lut", group = "OpModes")
+public class ShooterTuningOp extends CommandOpMode {
     private Follower follower;
     public static Pose startingPose = new Pose(0,0,0);
 
     private IntakeSubsystem intake;
     private ShooterSubSystem shooter;
     private SpindexerSubsystem spindexer;
-    private LEDSubSystem led;
-
+    public static double targetVelocity = 0;
+    public static double actualVelocity = 0;
     public GamepadEx driver1;
 
     @Override
     public void initialize () {
+        telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
+
         //systems and pedro
         follower = Constants.createFollower(hardwareMap);
         intake = new IntakeSubsystem(hardwareMap);
         shooter = new ShooterSubSystem(hardwareMap);
         spindexer = new SpindexerSubsystem(hardwareMap);
-        led = new LEDSubSystem(hardwareMap);
 
         super.reset();
         register(intake, shooter, spindexer);
@@ -57,17 +59,17 @@ public class AlphaTeleOp extends CommandOpMode {
                 new InstantCommand(() -> spindexer.reverseSpindexer())
         );
         driver1.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER).whenPressed(
-                new InstantCommand(() -> shooter.setTargetVelocity(0))
+                new InstantCommand(() -> shooter.setTargetVelocity(1500.0))
         );
         driver1.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER).whenPressed(
-                new InstantCommand(() -> shooter.setTargetVelocity(0))
+                new InstantCommand(() -> shooter.setTargetVelocity(0.0))
         );
-        new Trigger(
-                () -> driver1.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) > 0.5)
-                .whenActive(new InstantCommand(() -> shooter.setTargetVelocity(1300)));
-        new Trigger(
-                () -> driver1.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) > 0.5)
-                .whenActive(new InstantCommand(() -> shooter.setTargetVelocity(-300)));
+//        new Trigger(
+//                () -> driver1.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) > 0.5)
+//                .whenActive(new InstantCommand(() -> shooter.setTargetVelocity(1500)));
+//        new Trigger(
+//                () -> driver1.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) > 0.5)
+//                .whenActive(new InstantCommand(() -> shooter.setTargetVelocity(0)));
 
 
     }
@@ -78,24 +80,18 @@ public class AlphaTeleOp extends CommandOpMode {
     public void run() {
         follower.setTeleOpDrive(driver1.getLeftY(), -driver1.getLeftX(), -driver1.getRightX(), true);
         follower.update() ;
+        shooter.setTargetVelocity(targetVelocity);
 
-        if (shooter.getActualVelocity() - shooter.getTargetVelocity() < -50) {
-            led.setColor(LEDSubSystem.LEDState.RED);
-        }
-        else if (shooter.getActualVelocity() - shooter.getTargetVelocity() > 50) {
-            led.setColor(LEDSubSystem.LEDState.BLUE);
-        }
-        else {
-            led.setColor(LEDSubSystem.LEDState.GREEN);
-        }
+
+
 
         telemetry.addData("spindexer output", spindexer.getOutput());
         telemetry.addData("spindexer setpoint", spindexer.getPIDSetpoint());
         telemetry.addData("spindexer pos", spindexer.getCurrentPosition());
 
-        telemetry.addData("------------------",null);
 
         telemetry.addData("shooter target velocity", shooter.getTargetVelocity());
+        telemetry.addData("shooter actual velocity", shooter.getActualVelocity());
         telemetry.update();
         super.run();
 

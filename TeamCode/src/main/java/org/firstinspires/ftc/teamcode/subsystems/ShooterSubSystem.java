@@ -16,6 +16,9 @@ public class ShooterSubSystem extends SubsystemBase {
     public double getTargetVelocity() {
         return targetVelocity;
     }
+    public double getActualVelocity() {
+        return shooter.getCorrectedVelocity();
+    }
     public double targetVelocity = 0.0;
 
     InterpLUT lut = new InterpLUT();
@@ -32,7 +35,9 @@ public class ShooterSubSystem extends SubsystemBase {
 
 
 
-        //lut.add(1.0,1.0);
+
+        //lut.add(51,1000);
+        //lut.add(51,1000);
         //lut.createLUT();
     }
 

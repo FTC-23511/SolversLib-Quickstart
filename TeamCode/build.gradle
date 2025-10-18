@@ -69,7 +69,7 @@ dependencies {
     // REMOVE any dashboard line like this if still uncommented:
     // implementation "com.acmerobotics.dashboard:dashboard:0.5.0"
 
-    implementation ('com.pedropathing:ftc:2.0.1') {
+    implementation ('com.pedropathing:ftc:2.0.3') {
         exclude group: "com.acmerobotics.dashboard"
     }
     implementation 'com.pedropathing:telemetry:0.0.6'
