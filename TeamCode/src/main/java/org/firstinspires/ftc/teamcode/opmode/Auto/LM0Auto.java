@@ -43,6 +43,11 @@ public class LM0Auto extends CommandOpMode {
         pathPoses.add(new Pose2d(25.90174326465927, 129.16640253565768, Math.toRadians(144.046))); // Starting Pose
         pathPoses.add(new Pose2d(-53.74326465925927, -12.77971473851029, Math.toRadians(12.954))); // Line 1
         pathPoses.add(new Pose2d(27.84152139461173, -69.10618066561012, Math.toRadians(-54.046))); // Line 2
+
+
+//        pathPoses.add(new Pose2d(25.90174326465927, 129.16640253565768, Math.toRadians(144.046))); // Starting Pose
+//        pathPoses.add(new Pose2d(-27.8415213946, 116.38668779714739, Math.toRadians(157))); // Line 1
+//        pathPoses.add(new Pose2d(53.743264659271, 60.06022187004756, Math.toRadians(90))); // Line 2
     }
 
     @Override
