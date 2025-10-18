@@ -69,12 +69,14 @@ public class LM0Auto extends CommandOpMode {
 
         schedule(
                 new SequentialCommandGroup(
-                        new DriveTo(pathPoses.get(1)).alongWith(
-                                new InstantCommand(() -> robot.launcher.setFlywheel(LAUNCHER_CLOSE_VELOCITY))
-                        ),
-                        new WaitCommand(2000),
+                        new DriveTo(pathPoses.get(1)),
+                        new InstantCommand(() -> robot.launcher.setFlywheel(LAUNCHER_CLOSE_VELOCITY)),
+                        new WaitCommand(3000),
+                        new InstantCommand(() -> robot.launcher.setRamp(true)),
+                        new WaitCommand(1000),
                         new SetIntake(Intake.MotorState.FORWARD, Intake.PivotState.TRANSFER),
                         new WaitCommand(3000),
+
                         new ParallelCommandGroup(
                                 new DriveTo(pathPoses.get(2)),
                                 new InstantCommand(() -> robot.launcher.setFlywheel(0)),

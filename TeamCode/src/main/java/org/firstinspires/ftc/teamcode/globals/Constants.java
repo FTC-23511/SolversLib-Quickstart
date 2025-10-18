@@ -31,7 +31,9 @@ public class Constants {
     public static double TRACK_WIDTH = 11.27362; // Inches
     public static double WHEEL_BASE = 11.50976; // Inches
     public static double MAX_VELOCITY = 7.75 * 12; // Inches/second
-    public static double MAX_ANGULAR_VELOCITY = MAX_VELOCITY / Math.hypot(TRACK_WIDTH/2, WHEEL_BASE/2);
+    public static double AUTO_MAX_VELOCITY = 50; // Inches/second
+    public static double MAX_ANGULAR_VELOCITY = MAX_VELOCITY / Math.hypot(TRACK_WIDTH / 2, WHEEL_BASE / 2);
+    public static double AUTO_MAX_ANGULAR_VELOCITY = AUTO_MAX_VELOCITY / Math.hypot(TRACK_WIDTH / 2, WHEEL_BASE / 2);
     public static double PINPOINT_TELEOP_POLLING_RATE = 20; // Hertz
 
     public static PIDFCoefficients SWERVO_PIDF_COEFFICIENTS = new PIDFCoefficients(0.5, 0, 0.2, 0);
@@ -41,7 +43,7 @@ public class Constants {
     public static double BR_ENCODER_OFFSET = 2.149; // Radians
 
     public static PIDFCoefficients XY_COEFFICIENTS = new PIDFCoefficients(6, 0, 0.2, 0); // Coefficients for inches
-    public static PIDFCoefficients HEADING_COEFFICIENTS = new PIDFCoefficients(5, 0, 0, 0); // Coefficients for radians
+    public static PIDFCoefficients HEADING_COEFFICIENTS = new PIDFCoefficients(4.2, 0, 0.23, 0); // Coefficients for radians
     public static double XY_TOLERANCE = 0.25; // Inches
     public static double HEADING_TOLERANCE = 0.05; // Radians
     public static double XY_MIN_OUTPUT = 8; // Inches/second
