@@ -201,9 +201,9 @@ public class RobotAutoDriveToAprilTagOmni extends LinearOpMode
             } else {
 
                 // drive using manual POV Joystick mode.  Slow things down to make the robot more controlable.
-                drive  = -gamepad1.left_stick_y  / 2.0;  // Reduce drive rate to 50%.
-                strafe = -gamepad1.left_stick_x  / 2.0;  // Reduce strafe rate to 50%.
-                turn   = -gamepad1.right_stick_x / 3.0;  // Reduce turn rate to 33%.
+                drive  = -gamepad1.left_stick_y / 1.0;  // Reduce drive rate to 50%.
+                strafe = -gamepad1.left_stick_x  / 1.0;  // Reduce strafe rate to 50%.
+                turn   = -gamepad1.right_stick_x / 1.0;  // Reduce turn rate to 33%.
                 telemetry.addData("Manual","Drive %5.2f, Strafe %5.2f, Turn %5.2f ", drive, strafe, turn);
             }
             telemetry.update();
