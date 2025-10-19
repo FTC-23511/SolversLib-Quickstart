@@ -48,11 +48,7 @@ public class RetryCommand extends CommandBase {
      * @param successCondition A condition that returns {@code true} if a retry should be attempted, or {@code false} if the command should finish without retrying.
      * @param maxRetries     The maximum number of retries allowed.
      */
-    public RetryCommand(
-            Command command,
-            BooleanSupplier successCondition,
-            int maxRetries
-    ) {
+    public RetryCommand(Command command, BooleanSupplier successCondition, int maxRetries) {
         this(command, command, successCondition, maxRetries);
     }
 
