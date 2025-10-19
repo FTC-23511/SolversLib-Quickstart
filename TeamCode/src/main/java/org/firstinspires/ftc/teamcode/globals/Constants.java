@@ -50,12 +50,12 @@ public class Constants {
     public static double HEADING_MIN_OUTPUT = 0.15; // Radians/second
 
     // Intake
-    public static double INTAKE_PIVOT_INTAKE = 0.54;
+    public static double INTAKE_PIVOT_INTAKE = 0.62;
     public static double INTAKE_PIVOT_HIGH = 0.85;
-    public static double INTAKE_PIVOT_HOLD = 0.5;
-    public static double INTAKE_PIVOT_TRANSFER = 0.46;
+    public static double INTAKE_PIVOT_HOLD = 0.58;
+    public static double INTAKE_PIVOT_TRANSFER = 0.55;
 
-    public static double INTAKE_FORWARD_SPEED = 0.75;
+    public static double INTAKE_FORWARD_SPEED = 0.7;
     public static double INTAKE_REVERSE_SPEED = -0.75;
     public static double INTAKE_TRANSFER_SPEED = 1.0; // TODO: needs to be tuned
 
@@ -64,7 +64,7 @@ public class Constants {
 
     // Launcher
     public static double RAMP_ENGAGED = 0.3;
-    public static double RAMP_DISENGAGED = 0.067;
+    public static double RAMP_DISENGAGED = 0.06;
 
     public static PIDFCoefficients FLYWHEEL_PIDF_COEFFICIENTS = new PIDFCoefficients(0.004, 0, 0, 0.00055); // Coefficients for ticks
     public static double M_S_TO_TICKS = 275; // Conversion factor for ball velocity in meters/second to launcher encoder ticks // TODO: needs to be tuned
@@ -73,7 +73,7 @@ public class Constants {
     public static double LAUNCHER_CLOSE_VELOCITY = 6.0; // Meters/second // TODO: needs to be tuned
 
     public static double MIN_HOOD_ANGLE = 16; // Degrees from horizontal // TODO: needs to be checked off CAD
-    public static double MIN_HOOD_SERVO_POS = 0.08; // MUST MATCH WITH VALUE ABOVE // TODO: needs to be tuned
+    public static double MIN_HOOD_SERVO_POS = 0.07; // MUST MATCH WITH VALUE ABOVE // TODO: needs to be tuned
     public static double MAX_HOOD_ANGLE = 50; // Degrees from horizontal
     public static double MAX_HOOD_SERVO_POS = 1.0; // MUST MATCH WITH VALUE ABOVE // TODO: needs to be tuned
 

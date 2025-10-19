@@ -10,14 +10,17 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import com.seattlesolvers.solverslib.command.CommandOpMode;
 import com.seattlesolvers.solverslib.command.InstantCommand;
 import com.seattlesolvers.solverslib.command.ParallelCommandGroup;
+import com.seattlesolvers.solverslib.command.RunCommand;
 import com.seattlesolvers.solverslib.command.SequentialCommandGroup;
 import com.seattlesolvers.solverslib.command.WaitCommand;
 import com.seattlesolvers.solverslib.controller.PIDFController;
 import com.seattlesolvers.solverslib.drivebase.swerve.coaxial.CoaxialSwerveModule;
 import com.seattlesolvers.solverslib.geometry.Pose2d;
+import com.seattlesolvers.solverslib.geometry.Rotation2d;
 import com.seattlesolvers.solverslib.util.TelemetryData;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.teamcode.commandbase.commands.ClearLaunch;
 import org.firstinspires.ftc.teamcode.commandbase.commands.DriveTo;
 import org.firstinspires.ftc.teamcode.commandbase.commands.SetIntake;
 import org.firstinspires.ftc.teamcode.commandbase.subsystems.Intake;
@@ -40,10 +43,9 @@ public class LM0Auto extends CommandOpMode {
     public void generatePath() {
         pathPoses = new ArrayList<>();
 
-        pathPoses.add(new Pose2d(25.90174326465927, 129.16640253565768, Math.toRadians(144.046))); // Starting Pose
-        pathPoses.add(new Pose2d(-53.74326465925927, -12.77971473851029, Math.toRadians(12.954))); // Line 1
-        pathPoses.add(new Pose2d(27.84152139461173, -69.10618066561012, Math.toRadians(-54.046))); // Line 2
-
+        pathPoses.add(new Pose2d(0, 0, Math.toRadians(0))); // Starting Pose
+        pathPoses.add(new Pose2d(-20, 0, Math.toRadians(0))); // Line 1
+//        pathPoses.add(new Pose2d(27.84152139461173, -69.10618066561012, Math.toRadians(-54.046))); // Line 2
 
 //        pathPoses.add(new Pose2d(25.90174326465927, 129.16640253565768, Math.toRadians(144.046))); // Starting Pose
 //        pathPoses.add(new Pose2d(-27.8415213946, 116.38668779714739, Math.toRadians(157))); // Line 1
@@ -69,18 +71,21 @@ public class LM0Auto extends CommandOpMode {
 
         schedule(
                 new SequentialCommandGroup(
-                        new DriveTo(pathPoses.get(1)),
+                        new WaitCommand(2000),
+                        new InstantCommand(() -> robot.launcher.setHood(MIN_HOOD_ANGLE)),
                         new InstantCommand(() -> robot.launcher.setFlywheel(LAUNCHER_CLOSE_VELOCITY)),
                         new WaitCommand(3000),
                         new InstantCommand(() -> robot.launcher.setRamp(true)),
-                        new WaitCommand(1000),
-                        new SetIntake(Intake.MotorState.FORWARD, Intake.PivotState.TRANSFER),
-                        new WaitCommand(3000),
-
-                        new ParallelCommandGroup(
-                                new DriveTo(pathPoses.get(2)),
-                                new InstantCommand(() -> robot.launcher.setFlywheel(0)),
-                                new SetIntake(Intake.MotorState.STOP, Intake.PivotState.INTAKE)
+                        new WaitCommand(500),
+                        new ClearLaunch(),
+                        new WaitCommand(500),
+                        new SetIntake(Intake.MotorState.REVERSE, Intake.PivotState.HOLD),
+                        new WaitCommand(200),
+                        new ClearLaunch()
+//                        new DriveTo(pathPoses.get(1))
+                ).alongWith(
+                        new RunCommand(
+                                () -> schedule(new DriveTo(pathPoses.get(1)))
                         )
                 )
         );

@@ -4,6 +4,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import com.seattlesolvers.solverslib.command.CommandBase;
 
 import org.firstinspires.ftc.teamcode.commandbase.subsystems.Intake;
+import org.firstinspires.ftc.teamcode.globals.Constants;
 import org.firstinspires.ftc.teamcode.globals.Robot;
 
 public class ClearLaunch extends CommandBase {
@@ -30,7 +31,9 @@ public class ClearLaunch extends CommandBase {
 
     @Override
     public void end(boolean interrupted) {
-        robot.intake.setIntake(Intake.MotorState.STOP);
+        if (Constants.OP_MODE_TYPE.equals(Constants.OpModeType.TELEOP)) {
+            robot.intake.setIntake(Intake.MotorState.STOP);
+        }
     }
 
     @Override

@@ -59,6 +59,14 @@ public class LM0TeleOp extends CommandOpMode {
                 new InstantCommand(() -> robot.launcher.setFlywheel(0))
         );
 
+        driver.getGamepadButton(GamepadKeys.Button.DPAD_LEFT).whenPressed(
+                new InstantCommand(() -> MIN_HOOD_SERVO_POS += 0.02)
+        );
+
+        driver.getGamepadButton(GamepadKeys.Button.DPAD_RIGHT).whenPressed(
+                new InstantCommand(() -> MIN_HOOD_SERVO_POS += 0.02)
+        );
+
         driver.getGamepadButton(GamepadKeys.Button.CIRCLE).whenPressed(
                 new SequentialCommandGroup(
                         new InstantCommand(() -> robot.launcher.setRamp(false)),
@@ -73,6 +81,10 @@ public class LM0TeleOp extends CommandOpMode {
 
         driver.getGamepadButton(GamepadKeys.Button.TRIANGLE).whileActiveContinuous(
                 new InstantCommand(() -> robot.intake.setIntake(Intake.MotorState.REVERSE))
+        );
+
+        driver.getGamepadButton(GamepadKeys.Button.TRIANGLE).whenReleased(
+                new InstantCommand(() -> robot.intake.setIntake(Intake.MotorState.FORWARD))
         );
 
         driver.getGamepadButton(GamepadKeys.Button.CROSS).whenPressed(
@@ -122,6 +134,8 @@ public class LM0TeleOp extends CommandOpMode {
 
         telemetryData.addData("Loop Time", timer.milliseconds());
         timer.reset();
+
+        telemetryData.addData("MIN_HOOD_SERVO_POS", MIN_HOOD_SERVO_POS);
 
         telemetryData.addData("Heading", robot.drive.getPose().getHeading());
         telemetryData.addData("Robot Pose", robot.drive.getPose());
