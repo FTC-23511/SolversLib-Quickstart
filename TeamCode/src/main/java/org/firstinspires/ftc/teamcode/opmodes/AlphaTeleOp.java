@@ -26,6 +26,7 @@ public class AlphaTeleOp extends CommandOpMode {
     private LEDSubSystem led;
 
     public GamepadEx driver1;
+    public GamepadEx driver2;
 
     @Override
     public void initialize () {
@@ -43,6 +44,7 @@ public class AlphaTeleOp extends CommandOpMode {
         //pedro and gamepad wrapper
         follower.startTeleopDrive();
         driver1 = new GamepadEx(gamepad1);
+        driver2 = new GamepadEx(gamepad2);
 
         //command binding
 
@@ -56,17 +58,17 @@ public class AlphaTeleOp extends CommandOpMode {
         driver1.getGamepadButton(GamepadKeys.Button.SQUARE).whenPressed(
                 new InstantCommand(() -> spindexer.reverseSpindexer())
         );
-        driver1.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER).whenPressed(
+        driver2.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER).whenPressed(
                 new InstantCommand(() -> shooter.setTargetVelocity(0))
         );
-        driver1.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER).whenPressed(
+        driver2.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER).whenPressed(
                 new InstantCommand(() -> shooter.setTargetVelocity(0))
         );
         new Trigger(
-                () -> driver1.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) > 0.5)
+                () -> driver2.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) > 0.5)
                 .whenActive(new InstantCommand(() -> shooter.setTargetVelocity(1300)));
         new Trigger(
-                () -> driver1.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) > 0.5)
+                () -> driver2.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) > 0.5)
                 .whenActive(new InstantCommand(() -> shooter.setTargetVelocity(-300)));
 
 

@@ -85,12 +85,12 @@ public class SpindexerSubsystem extends SubsystemBase {
 //        }
         currentPosition = spindexer.getCurrentPosition();
         output = pid.calculate(currentPosition, targetPosition);
-        spindexer.setPower(clamp(output, -1, 0.5));
+        spindexer.setPower(clamp(output, -0.5, 1));
     }
 
     // Get current PID output
     public String getOutput() {
-        return output + " | " + clamp(output, -1, 0.5);
+        return output + " | " + clamp(output, -0.5, 1);
     }
 
 
