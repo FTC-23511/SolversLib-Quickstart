@@ -16,7 +16,7 @@ public class SpindexerSubsystem extends SubsystemBase {
     private final DcMotor spindexer;
 
     // PIDF Coefficients
-    private final double kP = -0.0005;
+    private final double kP = -0.0006;
     private final double kI = 0.000000;
     private final double kD = 0.000001;
     private final double kF = 0.000;
@@ -85,7 +85,7 @@ public class SpindexerSubsystem extends SubsystemBase {
 //        }
         currentPosition = spindexer.getCurrentPosition();
         output = pid.calculate(currentPosition, targetPosition);
-        spindexer.setPower(clamp(output, -0.5, 1));
+        spindexer.setPower(clamp(output, -0.4, 1));
     }
 
     // Get current PID output

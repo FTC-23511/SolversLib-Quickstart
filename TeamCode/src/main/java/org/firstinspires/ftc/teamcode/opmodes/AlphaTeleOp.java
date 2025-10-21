@@ -98,6 +98,7 @@ public class AlphaTeleOp extends CommandOpMode {
         telemetry.addData("------------------",null);
 
         telemetry.addData("shooter target velocity", shooter.getTargetVelocity());
+        telemetry.addData("shooter actual velocity", shooter.getActualVelocity());
         telemetry.update();
         super.run();
 
