@@ -109,6 +109,7 @@ public class LM0TeleOp extends CommandOpMode {
 
     @Override
     public void run() {
+        robot.profiler.start("Full Loop");
         // Keep all the has movement init for until when TeleOp starts
         // This is like the init but when the program is actually started
         if (timer == null) {
@@ -157,6 +158,8 @@ public class LM0TeleOp extends CommandOpMode {
         // DO NOT REMOVE ANY LINES BELOW! Runs the command scheduler and updates telemetry
         super.run();
         telemetryData.update();
+
+        robot.profiler.end("Full Loop");
     }
 
     @Override

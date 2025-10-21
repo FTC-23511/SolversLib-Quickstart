@@ -23,10 +23,17 @@ import com.seattlesolvers.solverslib.hardware.motors.MotorGroup;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.VoltageUnit;
+import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
 import org.firstinspires.ftc.teamcode.commandbase.subsystems.Drive;
 import org.firstinspires.ftc.teamcode.commandbase.subsystems.Intake;
 import org.firstinspires.ftc.teamcode.commandbase.subsystems.Launcher;
 import org.firstinspires.ftc.teamcode.commandbase.subsystems.Turret;
+
+import java.io.File;
+
+import dev.nullftc.profiler.Profiler;
+import dev.nullftc.profiler.entry.BasicProfilerEntryFactory;
+import dev.nullftc.profiler.exporter.CSVProfilerExporter;
 
 
 public class Robot extends com.seattlesolvers.solverslib.command.Robot {
@@ -38,6 +45,8 @@ public class Robot extends com.seattlesolvers.solverslib.command.Robot {
     public LynxModule chub;
     private double cachedVoltage;
     private ElapsedTime voltageTimer;
+
+    public Profiler profiler;
 
     public MotorEx FRmotor;
     public MotorEx FLmotor;
@@ -74,6 +83,12 @@ public class Robot extends com.seattlesolvers.solverslib.command.Robot {
     public AnalogInput distanceSensor;
 
     public void init(HardwareMap hwMap) {
+        profiler = Profiler.builder()
+                .factory(new BasicProfilerEntryFactory())
+                .exporter(new CSVProfilerExporter(new File(AppUtil.LOG_FOLDER + "/profiler.csv")))
+                .debugLog(false) // Logs *everything*
+                .build();
+
         // Hardware
         FRmotor = new MotorEx(hwMap, "FR").setCachingTolerance(0.01);
         FLmotor = new MotorEx(hwMap, "FL").setCachingTolerance(0.01);

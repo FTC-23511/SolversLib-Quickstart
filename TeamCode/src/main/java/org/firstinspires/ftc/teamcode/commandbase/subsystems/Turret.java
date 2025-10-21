@@ -36,11 +36,13 @@ public class Turret extends SubsystemBase {
     }
 
     public void update() {
-        robot.turretServos.set(
-                turretController.calculate(
-                        getPosition()
-                )
-        );
+        robot.profiler.start("Turret Read/Calc");
+        double power = turretController.calculate(getPosition());
+        robot.profiler.end("Turret Read/Calc");
+
+        robot.profiler.start("Turret Write");
+        robot.turretServos.set(power);
+        robot.profiler.end("Turret Write");
     }
 
     public boolean readyToLaunch() {

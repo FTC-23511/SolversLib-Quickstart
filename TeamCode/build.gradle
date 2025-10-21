@@ -31,6 +31,7 @@ android {
 repositories {
     maven {
         url = 'https://maven.brott.dev/'
+
     }
 
     maven {
@@ -40,6 +41,10 @@ repositories {
     // Fpr Snapshot/Beta Versions of SolversLib
     maven {
         url "https://repo.dairy.foundation/snapshots"
+    }
+
+    maven {
+        url "https://maven.nullftc.dev/releases"
     }
 
 }
@@ -56,6 +61,9 @@ dependencies {
 
     // Panels Dashboard
     implementation "com.bylazar:fullpanels:1.0.5"
+
+    // Loop Time Profiler
+    implementation "dev.nullftc:Profiler:SNAPSHOT-daa44e3"
 
     //noinspection GradleDependency, could be 0.43 but haven't tested it out yet
     implementation('org.ejml:ejml-simple:0.39') {
