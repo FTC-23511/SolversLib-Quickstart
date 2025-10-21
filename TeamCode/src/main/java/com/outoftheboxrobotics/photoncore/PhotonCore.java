@@ -56,8 +56,7 @@ public class PhotonCore implements OpModeManagerNotifier.Notifications {
 
     @SuppressWarnings({"unused"})
     @OnCreateEventLoop
-    public static void attachEventLoop(Context context, FtcEventLoop eventLoop)
-    {
+    public static void attachEventLoop(Context context, FtcEventLoop eventLoop) {
         if(DEBUG) RobotLog.ii(TAG, "attachEventLoop: Attached PhotonCore to event loop");
         eventLoop.getOpModeManager().registerListener(instance);
         instance.opModeManager=eventLoop.getOpModeManager();
@@ -96,8 +95,7 @@ public class PhotonCore implements OpModeManagerNotifier.Notifications {
             // Variables used to keep track of these replacements
             //   Since the standard architecture is HardwareDevice(e.g. Motor) <-> LynxController <-> LynxModule,
             //   we first swap in the LynxControllers, followed by the HardwareDevices on a per LynxController basis
-            for(LynxController device : hardwareMap.getAll(LynxController.class))
-            {
+            for(LynxController device : hardwareMap.getAll(LynxController.class)) {
                 String deviceName=Objects.requireNonNull(deviceNames.get(device)).iterator().next();
 
 
@@ -112,8 +110,7 @@ public class PhotonCore implements OpModeManagerNotifier.Notifications {
                 // We now swap every controller we have a optimized implementation for, catering to
                 // the needs of each controller
 
-                if(device instanceof LynxDcMotorController && !(device instanceof PhotonLynxDcMotorController))
-                {
+                if (device instanceof LynxDcMotorController && !(device instanceof PhotonLynxDcMotorController)) {
                     try {
                         PhotonLynxDcMotorController photonLynxDcMotorController = new PhotonLynxDcMotorController(hardwareMap.appContext, usedModule);
                         hardwareMap.remove(deviceName, device);
@@ -121,10 +118,8 @@ public class PhotonCore implements OpModeManagerNotifier.Notifications {
                         hardwareMap.dcMotorController.put(deviceName, photonLynxDcMotorController);
                         hardwareMap.put(deviceName, photonLynxDcMotorController);
                         List<DcMotor> motors = hardwareMap.getAll(DcMotorImpl.class);
-                        for(DcMotor motor:motors)
-                        {
-                            if(motor.getController()==device)
-                            {
+                        for(DcMotor motor:motors) {
+                            if(motor.getController()==device) {
                                 String motorName = Objects.requireNonNull(deviceNames.get(motor)).iterator().next();
                                 hardwareMap.remove(motorName, motor);
                                 hardwareMap.dcMotor.remove(motorName);
@@ -150,8 +145,7 @@ public class PhotonCore implements OpModeManagerNotifier.Notifications {
                     }
                 }
 
-                if(device instanceof LynxServoController && !(device instanceof PhotonLynxServoController))
-                {
+                if (device instanceof LynxServoController && !(device instanceof PhotonLynxServoController)) {
 
                     try {
                         PhotonLynxServoController photonLynxServoController = new PhotonLynxServoController(hardwareMap.appContext, usedModule);
@@ -161,10 +155,8 @@ public class PhotonCore implements OpModeManagerNotifier.Notifications {
                         hardwareMap.servoController.put(deviceName, photonLynxServoController);
                         photonLynxServoController.initializeHardware();
                         List<Servo> servos = hardwareMap.getAll(Servo.class);
-                        for(Servo servo:servos)
-                        {
-                            if(servo.getController()==device)
-                            {
+                        for(Servo servo:servos) {
+                            if(servo.getController()==device) {
                                 String servoName=Objects.requireNonNull(deviceNames.get(servo)).iterator().next();
                                 hardwareMap.remove(servoName, servo);
                                 hardwareMap.servo.remove(servoName);
@@ -179,10 +171,8 @@ public class PhotonCore implements OpModeManagerNotifier.Notifications {
 
                         }
 
-                        for(CRServo servo:hardwareMap.getAll(CRServoImpl.class))
-                        {
-                            if(servo.getController()==device)
-                            {
+                        for(CRServo servo:hardwareMap.getAll(CRServoImpl.class)) {
+                            if(servo.getController()==device) {
                                 String servoName=Objects.requireNonNull(deviceNames.get(servo)).iterator().next();
                                 hardwareMap.remove(servoName, servo);
                                 hardwareMap.crservo.remove(servoName);
@@ -198,8 +188,7 @@ public class PhotonCore implements OpModeManagerNotifier.Notifications {
                     }
                 }
 
-                if(device instanceof LynxVoltageSensor)
-                {
+                if(device instanceof LynxVoltageSensor) {
                     try {
                         PhotonLynxVoltageSensor photonLynxVoltageSensor=new PhotonLynxVoltageSensor(hardwareMap.appContext, usedModule);
                         hardwareMap.remove(deviceName, device);
