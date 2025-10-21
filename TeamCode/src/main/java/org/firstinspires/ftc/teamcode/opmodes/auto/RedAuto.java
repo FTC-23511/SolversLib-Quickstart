@@ -10,6 +10,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import com.seattlesolvers.solverslib.command.CommandOpMode;
 import com.seattlesolvers.solverslib.command.InstantCommand;
 import com.seattlesolvers.solverslib.command.ParallelCommandGroup;
+import com.seattlesolvers.solverslib.command.ParallelDeadlineGroup;
 import com.seattlesolvers.solverslib.command.ParallelRaceGroup;
 import com.seattlesolvers.solverslib.command.RunCommand;
 import com.seattlesolvers.solverslib.command.SequentialCommandGroup;
@@ -18,6 +19,7 @@ import com.seattlesolvers.solverslib.pedroCommand.FollowPathCommand;
 
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 import org.firstinspires.ftc.teamcode.subsystems.IntakeSubsystem;
+import org.firstinspires.ftc.teamcode.subsystems.LEDSubSystem;
 import org.firstinspires.ftc.teamcode.subsystems.ShooterSubSystem;
 import org.firstinspires.ftc.teamcode.subsystems.SpindexerSubsystem;
 
@@ -55,10 +57,11 @@ public class RedAuto extends CommandOpMode {
     private Follower follower;
 
     //update starting pose
-    public static Pose startingPose = new Pose(0,0,0);
+    public static Pose startingPose = new Pose(108,108,45); //find actual statring pos
     private IntakeSubsystem intake;
     private ShooterSubSystem shooter;
     private SpindexerSubsystem spindexer;
+    private LEDSubSystem led;
 
 
     public void buildPaths(Follower follower) {
@@ -160,17 +163,31 @@ public class RedAuto extends CommandOpMode {
                 //set spindexer state to ready for one ball
                 //continuous spindexer movement to intake multiple balls or power spindexer off
 
-                //snap spindexer to nearest 120
-                new InstantCommand(() -> spindexer.killSpindexerPower()), //this is not truly shutting off the power so it might not work
                 new InstantCommand(() -> intake.setSpeed(IntakeSubsystem.IntakeState.INTAKING)),
-                new WaitCommand(2000),
+                //wait x time or wait for robot to cross x line
+                new WaitCommand(200),
+                new InstantCommand(() -> spindexer.advanceSpindexer()),
+                new WaitCommand(300),
+
+                new InstantCommand(() -> spindexer.advanceSpindexer()),
+                new WaitCommand(300),
+
                 new InstantCommand(() -> intake.setSpeed(IntakeSubsystem.IntakeState.STILL))
-                //power spindexer again
         );
 
-        SequentialCommandGroup shootArtifacts = new SequentialCommandGroup(
-                new WaitCommand(2000)
 
+
+
+        SequentialCommandGroup shootArtifacts = new SequentialCommandGroup(
+                new InstantCommand(() -> shooter.setTargetVelocity(500)),
+                new InstantCommand(() -> spindexer.advanceSpindexer()),
+                new WaitCommand(1000),
+
+                new InstantCommand(() -> spindexer.advanceSpindexer()),
+                new WaitCommand(1000),
+
+                new InstantCommand(() -> spindexer.advanceSpindexer()),
+                new InstantCommand(() -> shooter.setTargetVelocity(0))
         );
 
 
@@ -217,6 +234,27 @@ public class RedAuto extends CommandOpMode {
         );
 
 
+    }
+    @Override
+    public void run() {
+        if (shooter.getActualVelocity() - shooter.getTargetVelocity() < -50) {
+            led.setColor(LEDSubSystem.LEDState.RED);
+        }
+        else if (shooter.getActualVelocity() - shooter.getTargetVelocity() > 50) {
+            led.setColor(LEDSubSystem.LEDState.BLUE);
+        }
+        else {
+            led.setColor(LEDSubSystem.LEDState.GREEN);
+        }
 
+        telemetry.addData("spindexer output", spindexer.getOutput());
+        telemetry.addData("spindexer setpoint", spindexer.getPIDSetpoint());
+        telemetry.addData("spindexer pos", spindexer.getCurrentPosition());
+
+        telemetry.addData("------------------",null);
+
+        telemetry.addData("shooter target velocity", shooter.getTargetVelocity());
+        telemetry.update();
+        super.run();
     }
 }
