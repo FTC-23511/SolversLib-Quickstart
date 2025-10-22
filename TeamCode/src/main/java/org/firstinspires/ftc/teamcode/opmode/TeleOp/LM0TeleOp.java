@@ -117,6 +117,7 @@ public class LM0TeleOp extends CommandOpMode {
             timer = new ElapsedTime();
         }
 
+        robot.profiler.start("Swerve Drive");
         // Drive the robot
         if (gamepad1.start) {
             robot.drive.swerve.updateWithXLock();
@@ -132,7 +133,9 @@ public class LM0TeleOp extends CommandOpMode {
                     )
             );
         }
+        robot.profiler.end("Swerve Drive");
 
+        robot.profiler.start("High TelemetryData");
         telemetryData.addData("Loop Time", timer.milliseconds());
         timer.reset();
 
@@ -147,17 +150,25 @@ public class LM0TeleOp extends CommandOpMode {
         telemetryData.addData("Flywheel Target", robot.launcher.getFlywheelTarget());
         telemetryData.addData("Flywheel Velocity", robot.launchEncoder.getCorrectedVelocity());
 
+        robot.profiler.end("High TelemetryData");
+        robot.profiler.start("Low TelemetryData");
+
         telemetryData.addData("Target Chassis Velocity", robot.drive.swerve.getTargetVelocity());
         telemetryData.addData("FR Module", robot.drive.swerve.getModules()[0].getTargetVelocity() + " | " + robot.drive.swerve.getModules()[0].getPowerTelemetry());
         telemetryData.addData("FL Module", robot.drive.swerve.getModules()[1].getTargetVelocity() + " | " + robot.drive.swerve.getModules()[1].getPowerTelemetry());
         telemetryData.addData("BL Module", robot.drive.swerve.getModules()[2].getTargetVelocity() + " | " + robot.drive.swerve.getModules()[2].getPowerTelemetry());
         telemetryData.addData("BR Module", robot.drive.swerve.getModules()[3].getTargetVelocity() + " | " + robot.drive.swerve.getModules()[3].getPowerTelemetry());
 
-        telemetryData.addData("Sigma", "Devyn");
+        telemetryData.addData("Sigma", "Polar");
+        robot.profiler.end("Low TelemetryData");
 
+        robot.profiler.start("Run + Update");
         // DO NOT REMOVE ANY LINES BELOW! Runs the command scheduler and updates telemetry
         super.run();
         telemetryData.update();
+        robot.controlHub.clearBulkCache();
+        robot.profiler.end("Run + Update");
+
 
         robot.profiler.end("Full Loop");
     }
@@ -165,6 +176,7 @@ public class LM0TeleOp extends CommandOpMode {
     @Override
     public void end() {
         Constants.END_POSE = robot.drive.getPose();
+        robot.exportProfiler(robot.file);
+        telemetryData.update();
     }
-
 }

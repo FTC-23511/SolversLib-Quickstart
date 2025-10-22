@@ -1,16 +1,17 @@
 package org.firstinspires.ftc.teamcode.globals;
 
+import static com.qualcomm.robotcore.hardware.configuration.LynxConstants.EXPANSION_HUB_PRODUCT_NUMBER;
+import static com.qualcomm.robotcore.hardware.configuration.LynxConstants.SERVO_HUB_PRODUCT_NUMBER;
 import static org.firstinspires.ftc.teamcode.globals.Constants.*;
 
 import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.hardware.AnalogInput;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.configuration.LynxConstants;
 import com.qualcomm.robotcore.util.ElapsedTime;
+import com.qualcomm.robotcore.util.RobotLog;
 import com.seattlesolvers.solverslib.geometry.Pose2d;
 import com.seattlesolvers.solverslib.hardware.AbsoluteAnalogEncoder;
 import com.seattlesolvers.solverslib.hardware.motors.CRServoGroup;
@@ -42,7 +43,9 @@ public class Robot extends com.seattlesolvers.solverslib.command.Robot {
         return instance;
     }
 
-    public LynxModule chub;
+    public LynxModule controlHub;
+//    public LynxModule expansionHub;
+//    public LynxModule servoHub;
     private double cachedVoltage;
     private ElapsedTime voltageTimer;
 
@@ -82,11 +85,19 @@ public class Robot extends com.seattlesolvers.solverslib.command.Robot {
 
     public AnalogInput distanceSensor;
 
+    public File file;
+
     public void init(HardwareMap hwMap) {
+        File logsFolder = new File(AppUtil.FIRST_FOLDER, "logs");
+        if (!logsFolder.exists()) logsFolder.mkdirs();
+
+        long timestamp = System.currentTimeMillis();
+        file = new File(logsFolder, "profiler-" + timestamp + ".csv");
+
         profiler = Profiler.builder()
                 .factory(new BasicProfilerEntryFactory())
-                .exporter(new CSVProfilerExporter(new File(AppUtil.LOG_FOLDER + "/profiler.csv")))
-                .debugLog(false) // Logs *everything*
+                .exporter(new CSVProfilerExporter(file))
+                .debugLog(false) // Log EVERYTHING
                 .build();
 
         // Hardware
@@ -166,12 +177,16 @@ public class Robot extends com.seattlesolvers.solverslib.command.Robot {
         turret = new Turret();
 
         // Robot/CommandScheduler configurations
-        setBulkReading(hwMap, LynxModule.BulkCachingMode.MANUAL);
+//        setBulkReading(hwMap, LynxModule.BulkCachingMode.MANUAL);
 
         for (LynxModule hub : hwMap.getAll(LynxModule.class)) {
             hub.setBulkCachingMode(LynxModule.BulkCachingMode.MANUAL);
             if (hub.isParent() && LynxConstants.isEmbeddedSerialNumber(hub.getSerialNumber())) {
-                chub = hub;
+                controlHub = hub;
+//            } else if (!hub.isParent() && hub.getRevProductNumber() == (EXPANSION_HUB_PRODUCT_NUMBER)) {
+////                expansionHub = hub;
+//            } else if (!hub.isParent() && hub.getRevProductNumber() == (SERVO_HUB_PRODUCT_NUMBER)) {
+//                servoHub = hub;
             }
         }
 
@@ -192,11 +207,27 @@ public class Robot extends com.seattlesolvers.solverslib.command.Robot {
     public double getVoltage() {
         if (voltageTimer == null) {
             voltageTimer = new ElapsedTime();
-            cachedVoltage = chub.getInputVoltage(VoltageUnit.VOLTS);
+            cachedVoltage = controlHub.getInputVoltage(VoltageUnit.VOLTS);
         } else if (voltageTimer.milliseconds() > (1 / VOLTAGE_SENSOR_POLLING_RATE) * 1000) {
-            cachedVoltage = chub.getInputVoltage(VoltageUnit.VOLTS);
+            cachedVoltage = controlHub.getInputVoltage(VoltageUnit.VOLTS);
         }
         return cachedVoltage;
+    }
+
+    public void exportProfiler(File file) {
+        RobotLog.i("Starting async profiler export to: " + file.getAbsolutePath());
+
+        Thread exportThread = new Thread(() -> {
+            try {
+                profiler.export();
+                profiler.shutdown();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
+
+        exportThread.setDaemon(true);
+        exportThread.start();
     }
 
     /* Not needed now that we have pinpoint

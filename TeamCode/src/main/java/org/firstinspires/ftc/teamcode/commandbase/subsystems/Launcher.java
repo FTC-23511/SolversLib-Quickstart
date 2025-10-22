@@ -33,6 +33,7 @@ public class Launcher extends SubsystemBase {
     }
 
     private void updateFlywheel() {
+        robot.profiler.start("Launcher Read/Calc");
         if (getFlywheelTarget() == 0) { // Don't unnecessarily decelerate to a stop (just causes current spike)
             robot.launchMotors.set(0);
         } else {
@@ -41,6 +42,7 @@ public class Launcher extends SubsystemBase {
                     flywheelController.calculate(robot.launchEncoder.getCorrectedVelocity())
             );
         }
+        robot.profiler.end("Launcher Read/Calc");
     }
 
     public void setRamp(boolean engaged) {

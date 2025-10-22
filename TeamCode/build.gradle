@@ -44,9 +44,9 @@ repositories {
     }
 
     maven {
+        name "nullftcReleases"
         url "https://maven.nullftc.dev/releases"
     }
-
 }
 
 dependencies {
@@ -57,6 +57,7 @@ dependencies {
 //    implementation "org.solverslib:core:SNAPSHOT-7cdcc66" // core
 //    implementation "org.solverslib:pedroPathing:SNAPSHOT-7cdcc66" // pedroPathing
 
+    implementation "dev.nullftc:Profiler:SNAPSHOT-8e16b25"
     implementation "com.acmerobotics.dashboard:dashboard:0.4.17" // FTC Dashboard
 
     // Panels Dashboard
