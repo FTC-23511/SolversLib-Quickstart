@@ -103,4 +103,8 @@ public class SpindexerSubsystem extends SubsystemBase {
     public void killSpindexerPower() {
         spindexer.setPower(0.0);
     }
+    public void DANGEROUS_RESETENCODER() {
+        spindexer.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        spindexer.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+    }
 }
