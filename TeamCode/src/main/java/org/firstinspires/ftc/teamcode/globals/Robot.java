@@ -44,8 +44,8 @@ public class Robot extends com.seattlesolvers.solverslib.command.Robot {
     }
 
     public LynxModule controlHub;
-//    public LynxModule expansionHub;
-//    public LynxModule servoHub;
+    public LynxModule expansionHub;
+    public LynxModule servoHub;
     private double cachedVoltage;
     private ElapsedTime voltageTimer;
 
@@ -183,10 +183,10 @@ public class Robot extends com.seattlesolvers.solverslib.command.Robot {
             hub.setBulkCachingMode(LynxModule.BulkCachingMode.MANUAL);
             if (hub.isParent() && LynxConstants.isEmbeddedSerialNumber(hub.getSerialNumber())) {
                 controlHub = hub;
-//            } else if (!hub.isParent() && hub.getRevProductNumber() == (EXPANSION_HUB_PRODUCT_NUMBER)) {
-////                expansionHub = hub;
-//            } else if (!hub.isParent() && hub.getRevProductNumber() == (SERVO_HUB_PRODUCT_NUMBER)) {
-//                servoHub = hub;
+            } else if (!hub.isParent() && hub.getRevProductNumber() == (EXPANSION_HUB_PRODUCT_NUMBER)) {
+                expansionHub = hub;
+            } else if (!hub.isParent() && hub.getRevProductNumber() == (SERVO_HUB_PRODUCT_NUMBER)) {
+                servoHub = hub;
             }
         }
 
