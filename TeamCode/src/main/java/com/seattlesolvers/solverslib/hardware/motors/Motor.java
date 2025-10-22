@@ -297,15 +297,13 @@ public class Motor implements HardwareDevice {
             double speed = bufferFraction * output * ACHIEVABLE_MAX_TICKS_PER_SECOND;
             double velocity = veloController.calculate(getVelocity(), speed) + feedforward.calculate(speed, encoder.getAcceleration());
             power = velocity / ACHIEVABLE_MAX_TICKS_PER_SECOND;
-            motor.setPower(power);
         } else if (runmode == RunMode.PositionControl) {
             double error = positionController.calculate(getDistance());
             power = output * error;
-            motor.setPower(power);
         } else {
             power = output;
-            motor.setPower(power);
         }
+        motor.setPower(power);
         lastPower = power;
     }
 
