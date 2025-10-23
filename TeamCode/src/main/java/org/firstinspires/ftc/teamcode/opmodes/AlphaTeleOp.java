@@ -52,8 +52,9 @@ public class AlphaTeleOp extends CommandOpMode {
                 new InstantCommand(() -> intake.setSpeed(IntakeSubsystem.IntakeState.INTAKING)),
                 new InstantCommand(() -> intake.setSpeed(IntakeSubsystem.IntakeState.STILL))
         );
-        driver1.getGamepadButton(GamepadKeys.Button.X).toggleWhenActive(
-                new InstantCommand(() -> intake.setSpeed(IntakeSubsystem.IntakeState.REVERSE))
+        driver1.getGamepadButton(GamepadKeys.Button.CROSS).toggleWhenActive(
+                new InstantCommand(() -> intake.setSpeed(IntakeSubsystem.IntakeState.REVERSE)),
+                new InstantCommand(() -> intake.setSpeed(IntakeSubsystem.IntakeState.STILL))
         );
         driver1.getGamepadButton(GamepadKeys.Button.CIRCLE).whenPressed(
                 new InstantCommand(() -> spindexer.advanceSpindexer())
