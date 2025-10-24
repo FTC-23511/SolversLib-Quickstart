@@ -87,15 +87,27 @@ public class AlphaTeleOp extends CommandOpMode {
     public void run() {
         follower.setTeleOpDrive(driver1.getLeftY(), -driver1.getLeftX(), -driver1.getRightX(), true);
         follower.update() ;
-
-        if (shooter.getActualVelocity() - shooter.getTargetVelocity() < -50) {
-            led.setColor(LEDSubSystem.LEDState.RED);
+        if (shooter.getActualVelocity() > 300) { //shooting mode
+            if (shooter.getActualVelocity() - shooter.getTargetVelocity() < -50) {
+                led.setColor(LEDSubSystem.LEDState.RED);
+            }
+            else if (shooter.getActualVelocity() - shooter.getTargetVelocity() > 50) {
+                led.setColor(LEDSubSystem.LEDState.BLUE);
+            }
+            else {
+                led.setColor(LEDSubSystem.LEDState.GREEN);
+            }
         }
-        else if (shooter.getActualVelocity() - shooter.getTargetVelocity() > 50) {
-            led.setColor(LEDSubSystem.LEDState.BLUE);
-        }
-        else {
-            led.setColor(LEDSubSystem.LEDState.GREEN);
+        else { //intaking mode
+            if (colorSensor.checkIfGreen()) {
+                led.setColor(LEDSubSystem.LEDState.VIOLET);
+            }
+            else if (colorSensor.checkIfPurple()) {
+                led.setColor(LEDSubSystem.LEDState.GREEN);
+            }
+            else {
+                led.setColor(LEDSubSystem.LEDState.WHITE); //anything else besides green or purple
+            }
         }
 
         telemetry.addData("spindexer output", spindexer.getOutput());
