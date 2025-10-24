@@ -30,6 +30,11 @@ apply plugin: 'dev.frozenmilk.sinister.sloth.load'
 android {
     namespace = 'org.firstinspires.ftc.teamcode'
 
+    compileSdk 35
+    defaultConfig {
+        minSdk 24
+    }
+
     packagingOptions {
         jniLibs.useLegacyPackaging true
     }
