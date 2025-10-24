@@ -30,7 +30,7 @@ public class ColorSubSystem extends SubsystemBase {
     }
 
 
-    public void senseColor() {
+    public float[] senseColor() {
         sensedcolors = colorSensor.getNormalizedColors();
 
         float r = sensedcolors.red;
@@ -39,7 +39,7 @@ public class ColorSubSystem extends SubsystemBase {
         // Convert RGB to HSV
         colorHSV = rgbToHsv(r, g, b);
         Log.d("colorsensor","Converted HSV: Hue=" + colorHSV[0] + ", Saturation=" + colorHSV[1] + ", Value=" + colorHSV[2]);
-
+        return new float[] {colorHSV[0],colorHSV[1],colorHSV[2]};
     }
 
     // Function to convert RGB to HSV
@@ -73,9 +73,6 @@ public class ColorSubSystem extends SubsystemBase {
         return new float[] {h, s, v};
     }
 
-    public float[] getColor() {
-        return new float[] {colorHSV[0],colorHSV[1],colorHSV[2]};
-    }
     public boolean sensorIsGreen() {
         return colorInRange(colorHSV, greenLowerHSV, greenHigherHSV);
     }
