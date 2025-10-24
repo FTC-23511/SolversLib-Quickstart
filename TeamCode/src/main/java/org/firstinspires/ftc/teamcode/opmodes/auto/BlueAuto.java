@@ -7,7 +7,7 @@ import com.seattlesolvers.solverslib.command.CommandOpMode;
 
 
 @Config
-@Autonomous(name = "techniqueAmplification (BlueAuto)", group = "limitless")
+@Autonomous(name = "BlueAuto", group = "angryBirds")
 public class BlueAuto extends CommandOpMode {
 
     @Override

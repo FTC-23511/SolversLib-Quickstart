@@ -10,6 +10,7 @@ import com.seattlesolvers.solverslib.gamepad.GamepadEx;
 import com.seattlesolvers.solverslib.gamepad.GamepadKeys;
 
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
+import org.firstinspires.ftc.teamcode.subsystems.ColorSubSystem;
 import org.firstinspires.ftc.teamcode.subsystems.IntakeSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.LEDSubSystem;
 import org.firstinspires.ftc.teamcode.subsystems.ShooterSubSystem;
@@ -23,6 +24,7 @@ public class AlphaTeleOp extends CommandOpMode {
     private IntakeSubsystem intake;
     private ShooterSubSystem shooter;
     private SpindexerSubsystem spindexer;
+    private ColorSubSystem colorSensor;
     private LEDSubSystem led;
 
     public GamepadEx driver1;
@@ -35,6 +37,7 @@ public class AlphaTeleOp extends CommandOpMode {
         intake = new IntakeSubsystem(hardwareMap);
         shooter = new ShooterSubSystem(hardwareMap);
         spindexer = new SpindexerSubsystem(hardwareMap);
+        colorSensor = new ColorSubSystem(hardwareMap);
         led = new LEDSubSystem(hardwareMap);
 
         super.reset();
