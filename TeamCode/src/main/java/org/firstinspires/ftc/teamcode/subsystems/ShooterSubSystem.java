@@ -4,6 +4,7 @@ import static com.seattlesolvers.solverslib.util.MathUtils.clamp;
 
 import com.seattlesolvers.solverslib.command.SubsystemBase;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.seattlesolvers.solverslib.controller.PIDFController;
 import com.seattlesolvers.solverslib.hardware.motors.Motor;
 import com.seattlesolvers.solverslib.util.InterpLUT;
 
@@ -20,15 +21,14 @@ public class ShooterSubSystem extends SubsystemBase {
         return shooter.getCorrectedVelocity();
     }
     public double targetVelocity = 0.0;
+    private final PIDFController flywheelController = new PIDFController(0.004, 0, 0, 0.00055);
 
     InterpLUT lut = new InterpLUT();
 
     public ShooterSubSystem(final HardwareMap hMap) {
         shooter = new Motor(hMap, "shooter", Motor.GoBILDA.RPM_312);
 
-        shooter.setRunMode(Motor.RunMode.VelocityControl);
-        shooter.setVeloCoefficients(p, i, d);
-        shooter.setFeedforwardCoefficients(s, v, a);
+        shooter.setRunMode(Motor.RunMode.RawPower);
         shooter.set(0.0);
 
         shooter.setZeroPowerBehavior(Motor.ZeroPowerBehavior.FLOAT);
@@ -45,9 +45,8 @@ public class ShooterSubSystem extends SubsystemBase {
         targetVelocity = (lut.get(distance));
     }
 
-    public void setTargetVelocity(double num) {
-        targetVelocity = num;
-        shooter.set(targetVelocity);
+    public void setTargetVelocity(double vel) {
+        flywheelController.setSetPoint(vel * 275);
     }
 
     public void periodic() {
