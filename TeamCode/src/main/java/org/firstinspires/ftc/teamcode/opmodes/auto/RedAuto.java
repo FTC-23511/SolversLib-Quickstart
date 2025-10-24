@@ -26,7 +26,7 @@ import org.firstinspires.ftc.teamcode.subsystems.SpindexerSubsystem;
 import java.util.ArrayList;
 
 @Config
-@Autonomous(name = "techniqueReversal (RedAuto)", group = "limitless")
+@Autonomous(name = "Red🦅", group = "angryBirds")
 public class RedAuto extends CommandOpMode {
     //paths
     /*
@@ -139,6 +139,30 @@ public class RedAuto extends CommandOpMode {
                 .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(45))
                 .build());
     }
+    //preset command methods
+    public SequentialCommandGroup shootArtifacts() {
+        return new SequentialCommandGroup(
+                new InstantCommand(() -> shooter.setTargetVelocity(500)),
+                new InstantCommand(() -> spindexer.advanceSpindexer()),
+                new WaitCommand(1000),
+                new InstantCommand(() -> spindexer.advanceSpindexer()),
+                new WaitCommand(1000),
+                new InstantCommand(() -> spindexer.advanceSpindexer()),
+                new InstantCommand(() -> shooter.setTargetVelocity(0))
+        );
+    }
+
+    private SequentialCommandGroup intakeArtifacts() {
+        return new SequentialCommandGroup(
+                new InstantCommand(() -> intake.setSpeed(IntakeSubsystem.IntakeState.INTAKING)),
+                new WaitCommand(200),
+                new InstantCommand(() -> spindexer.advanceSpindexer()),
+                new WaitCommand(300),
+                new InstantCommand(() -> spindexer.advanceSpindexer()),
+                new WaitCommand(300),
+                new InstantCommand(() -> intake.setSpeed(IntakeSubsystem.IntakeState.STILL))
+        );
+    }
 
     @Override
     public void initialize() {
@@ -158,39 +182,6 @@ public class RedAuto extends CommandOpMode {
         //init paths
         buildPaths(follower);
 
-        //preset commands
-        SequentialCommandGroup intakeArtifacts = new SequentialCommandGroup(
-                //set spindexer state to ready for one ball
-                //continuous spindexer movement to intake multiple balls or power spindexer off
-
-                new InstantCommand(() -> intake.setSpeed(IntakeSubsystem.IntakeState.INTAKING)),
-                //wait x time or wait for robot to cross x line
-                new WaitCommand(200),
-                new InstantCommand(() -> spindexer.advanceSpindexer()),
-                new WaitCommand(300),
-
-                new InstantCommand(() -> spindexer.advanceSpindexer()),
-                new WaitCommand(300),
-
-                new InstantCommand(() -> intake.setSpeed(IntakeSubsystem.IntakeState.STILL))
-        );
-
-
-
-
-        SequentialCommandGroup shootArtifacts = new SequentialCommandGroup(
-                new InstantCommand(() -> shooter.setTargetVelocity(500)),
-                new InstantCommand(() -> spindexer.advanceSpindexer()),
-                new WaitCommand(1000),
-
-                new InstantCommand(() -> spindexer.advanceSpindexer()),
-                new WaitCommand(1000),
-
-                new InstantCommand(() -> spindexer.advanceSpindexer()),
-                new InstantCommand(() -> shooter.setTargetVelocity(0))
-        );
-
-
 
         //schedule commands
         //one cycle = 3 balls + shoot given starting position is right at the shooting spot
@@ -202,34 +193,34 @@ public class RedAuto extends CommandOpMode {
 
                 new SequentialCommandGroup(
                         //starting shoot
-                        shootArtifacts,
+                        shootArtifacts(),
 
                         //cycle one
                         new FollowPathCommand(follower, paths.get(0)),
                         new ParallelCommandGroup(
-                            intakeArtifacts,
+                            intakeArtifacts(),
                             new FollowPathCommand(follower, paths.get(1))
                         ),
                         new FollowPathCommand(follower, paths.get(2)),
-                        shootArtifacts,
+                        shootArtifacts(),
 
                         //cycle two
                         new FollowPathCommand(follower, paths.get(3)),
                         new ParallelCommandGroup(
-                                intakeArtifacts,
+                                intakeArtifacts(),
                                 new FollowPathCommand(follower, paths.get(4))
                         ),
                         new FollowPathCommand(follower, paths.get(5)),
-                        shootArtifacts,
+                        shootArtifacts(),
 
                         //cycle three
                         new FollowPathCommand(follower, paths.get(6)),
                         new ParallelCommandGroup(
-                                intakeArtifacts,
+                                intakeArtifacts(),
                                 new FollowPathCommand(follower, paths.get(7))
                         ),
                         new FollowPathCommand(follower, paths.get(8)),
-                        shootArtifacts
+                        shootArtifacts()
                 )
         );
 
