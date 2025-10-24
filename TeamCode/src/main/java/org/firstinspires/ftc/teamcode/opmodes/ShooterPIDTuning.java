@@ -6,46 +6,51 @@ import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
+import com.seattlesolvers.solverslib.controller.PIDFController;
 import com.seattlesolvers.solverslib.hardware.motors.Motor;
 
 @Config
 @TeleOp(name = "Shooter pid tuning", group = " Tuning ")
 public class ShooterPIDTuning extends OpMode {
 
-    public static double p = 0.00002, i = 0.0, d = 0.0002;
-    public static double s = 500, v = 0.0005, a = 0.0;
-    public static double targetVelocity = 100; // encoder counts per second
+    public static double p = 0.0015, i = 0.0, d = 0.0;
+    public static double f = 0.00067;
+    public static double targetVelocity = 2000; // ticks per second
 
     Motor shooter;
+    private PIDFController flywheelController;
     private ElapsedTime deltaTime = new ElapsedTime();
 
     @Override
     public void init() {
-        shooter = new Motor(hardwareMap, "shooter", Motor.GoBILDA.RPM_312);
-
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
-        shooter.setRunMode(Motor.RunMode.VelocityControl);
-        shooter.setVeloCoefficients(p, i, d);
-        shooter.setFeedforwardCoefficients(s, v, a);
-        shooter.set(0.0);
-
+        shooter = new Motor(hardwareMap, "shooter", Motor.GoBILDA.RPM_312);
+        shooter.setRunMode(Motor.RunMode.RawPower);
         shooter.setZeroPowerBehavior(Motor.ZeroPowerBehavior.FLOAT);
+
+        // Initialize custom PIDF controller (same as ShooterSubSystem)
+        flywheelController = new PIDFController(p, i, d, f);
+        flywheelController.setSetPoint(targetVelocity);
 
         deltaTime.reset();
     }
 
     @Override
     public void loop() {
-        shooter.setVeloCoefficients(p, i, d);
-        shooter.setFeedforwardCoefficients(s, v, a);
+        flywheelController.setPIDF(p, i, d, f);
+        flywheelController.setSetPoint(targetVelocity);
 
-        shooter.set(targetVelocity);
+        double currentVelocity = shooter.getCorrectedVelocity();
+        double powerOutput = flywheelController.calculate(currentVelocity);
+
+        shooter.set(powerOutput);
 
         // Telemetry
-        telemetry.addData("currentpos", shooter.getCurrentPosition());
-        telemetry.addData("Velocity", shooter.getCorrectedVelocity());
         telemetry.addData("Target Velocity", targetVelocity);
+        telemetry.addData("Actual Velocity", currentVelocity);
+        telemetry.addData("Error", targetVelocity - currentVelocity);
+        telemetry.addData("Output Power", powerOutput);
         telemetry.update();
 
         // Prepare for next loop
