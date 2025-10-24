@@ -50,7 +50,7 @@ public class ShooterSubSystem extends SubsystemBase {
     }
 
     public void periodic() {
-//        shooter.set(targetVelocity);
+        shooter.set(flywheelController.calculate(shooter.getCorrectedVelocity()));
     }
 
 }
