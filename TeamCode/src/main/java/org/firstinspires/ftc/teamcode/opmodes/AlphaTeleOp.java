@@ -35,7 +35,11 @@ public class AlphaTeleOp extends CommandOpMode {
     private boolean manualControl = true;
     private void setSavedPose(Pose pose) {
         savedPose = pose;
-        gamepad1.rumbleBlips(2);
+        gamepad1.rumbleBlips(1);
+    }
+    private void goToSavedPose() {
+        manualControl = false;
+        gamepad1.rumbleBlips(3);
     }
 
     @Override
@@ -72,6 +76,9 @@ public class AlphaTeleOp extends CommandOpMode {
         driver1.getGamepadButton(GamepadKeys.Button.SQUARE).whenPressed(
                 new InstantCommand(() -> spindexer.reverseSpindexer())
         );
+        driver1.getGamepadButton(GamepadKeys.Button.DPAD_UP).whenPressed(
+                new InstantCommand(() -> goToSavedPose())
+        );
         driver1.getGamepadButton(GamepadKeys.Button.DPAD_DOWN).whenPressed(
                 new InstantCommand(() -> setSavedPose(follower.getPose()))
         );
@@ -99,7 +106,7 @@ public class AlphaTeleOp extends CommandOpMode {
             follower.setTeleOpDrive(driver1.getLeftY(), -driver1.getLeftX(), -driver1.getRightX(), true);
         } else {
             follower.holdPoint(savedPose); //maybe work idk??
-            if (follower.atPose(savedPose, 1, 1)) {
+            if (follower.) {
                 manualControl = true;
             }
         }
@@ -126,6 +133,12 @@ public class AlphaTeleOp extends CommandOpMode {
                 led.setColor(LEDSubSystem.LEDState.WHITE); //anything else besides green or purple
             }
         }
+
+        telemetry.addData("current pos", follower.getPose().toString());
+        telemetry.addData("saved pos", savedPose.toString());
+
+        telemetry.addData("------------------",null);
+
 
         telemetry.addData("spindexer output", spindexer.getOutput());
         telemetry.addData("spindexer setpoint", spindexer.getPIDSetpoint());
