@@ -5,6 +5,7 @@ import com.pedropathing.geometry.Pose;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.seattlesolvers.solverslib.command.CommandOpMode;
 import com.seattlesolvers.solverslib.command.InstantCommand;
+import com.seattlesolvers.solverslib.command.ParallelCommandGroup;
 import com.seattlesolvers.solverslib.command.button.Trigger;
 import com.seattlesolvers.solverslib.gamepad.GamepadEx;
 import com.seattlesolvers.solverslib.gamepad.GamepadKeys;
@@ -20,6 +21,7 @@ import org.firstinspires.ftc.teamcode.subsystems.SpindexerSubsystem;
 public class AlphaTeleOp extends CommandOpMode {
     private Follower follower;
     public static Pose startingPose = new Pose(0,0,0);
+    public static Pose savedPose = new Pose(0,0,0);
 
     private IntakeSubsystem intake;
     private ShooterSubSystem shooter;
@@ -29,6 +31,12 @@ public class AlphaTeleOp extends CommandOpMode {
 
     public GamepadEx driver1;
     public GamepadEx driver2;
+
+    private boolean manualControl = true;
+    private void setSavedPose(Pose pose) {
+        savedPose = pose;
+        gamepad1.rumbleBlips(2);
+    }
 
     @Override
     public void initialize () {
@@ -48,7 +56,6 @@ public class AlphaTeleOp extends CommandOpMode {
         follower.startTeleopDrive();
         driver1 = new GamepadEx(gamepad1);
         driver2 = new GamepadEx(gamepad2);
-
         //command binding
 
         driver1.getGamepadButton(GamepadKeys.Button.TRIANGLE).toggleWhenActive(
@@ -65,18 +72,21 @@ public class AlphaTeleOp extends CommandOpMode {
         driver1.getGamepadButton(GamepadKeys.Button.SQUARE).whenPressed(
                 new InstantCommand(() -> spindexer.reverseSpindexer())
         );
-        driver2.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER).whenPressed(
-                new InstantCommand(() -> shooter.setTargetVelocity(0))
+        driver1.getGamepadButton(GamepadKeys.Button.DPAD_DOWN).whenPressed(
+                new InstantCommand(() -> setSavedPose(follower.getPose()))
         );
-        driver2.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER).whenPressed(
-                new InstantCommand(() -> shooter.setTargetVelocity(0))
+        driver1.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER).whenPressed(
+                new InstantCommand(() -> shooter.setTargetVelocity(1300))
+        );
+        driver1.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER).whenPressed(
+                new InstantCommand(() -> shooter.setTargetVelocity(-300))
         );
         new Trigger(
-                () -> driver2.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) > 0.5)
-                .whenActive(new InstantCommand(() -> shooter.setTargetVelocity(1300)));
+                () -> driver1.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) > 0.5)
+                .whenActive(new InstantCommand(() -> shooter.setTargetVelocity(+0)));
         new Trigger(
-                () -> driver2.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) > 0.5)
-                .whenActive(new InstantCommand(() -> shooter.setTargetVelocity(-300)));
+                () -> driver1.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) > 0.5)
+                .whenActive(new InstantCommand(() -> shooter.setTargetVelocity(-0)));
 
 
     }
@@ -85,8 +95,15 @@ public class AlphaTeleOp extends CommandOpMode {
 
     @Override
     public void run() {
-        follower.setTeleOpDrive(driver1.getLeftY(), -driver1.getLeftX(), -driver1.getRightX(), true);
-        follower.update() ;
+        if (manualControl) {
+            follower.setTeleOpDrive(driver1.getLeftY(), -driver1.getLeftX(), -driver1.getRightX(), true);
+        } else {
+            follower.holdPoint(savedPose); //maybe work idk??
+            if (follower.atPose(savedPose, 1, 1)) {
+                manualControl = true;
+            }
+        }
+        follower.update();
         if (shooter.getActualVelocity() > 300) { //shooting mode
             if (shooter.getActualVelocity() - shooter.getTargetVelocity() < -50) {
                 led.setColor(LEDSubSystem.LEDState.RED);
