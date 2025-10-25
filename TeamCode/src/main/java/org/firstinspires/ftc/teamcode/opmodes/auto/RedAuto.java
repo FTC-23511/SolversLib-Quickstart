@@ -142,11 +142,12 @@ public class RedAuto extends CommandOpMode {
     //preset command methods
     public SequentialCommandGroup shootArtifacts() {
         return new SequentialCommandGroup(
-                new InstantCommand(() -> shooter.setTargetVelocity(500)),
-                new InstantCommand(() -> spindexer.advanceSpindexer()),
+                new InstantCommand(() -> shooter.setTargetVelocity(1300)),
                 new WaitCommand(1000),
                 new InstantCommand(() -> spindexer.advanceSpindexer()),
-                new WaitCommand(1000),
+                new WaitCommand(2000),
+                new InstantCommand(() -> spindexer.advanceSpindexer()),
+                new WaitCommand(2000),
                 new InstantCommand(() -> spindexer.advanceSpindexer()),
                 new InstantCommand(() -> shooter.setTargetVelocity(0))
         );
@@ -155,11 +156,11 @@ public class RedAuto extends CommandOpMode {
     private SequentialCommandGroup intakeArtifacts() {
         return new SequentialCommandGroup(
                 new InstantCommand(() -> intake.setSpeed(IntakeSubsystem.IntakeState.INTAKING)),
-                new WaitCommand(200),
+                new WaitCommand(2000),
                 new InstantCommand(() -> spindexer.advanceSpindexer()),
-                new WaitCommand(300),
+                new WaitCommand(2000),
                 new InstantCommand(() -> spindexer.advanceSpindexer()),
-                new WaitCommand(300),
+                new WaitCommand(2000),
                 new InstantCommand(() -> intake.setSpeed(IntakeSubsystem.IntakeState.STILL))
         );
     }
@@ -174,6 +175,7 @@ public class RedAuto extends CommandOpMode {
         intake = new IntakeSubsystem(hardwareMap);
         shooter = new ShooterSubSystem(hardwareMap);
         spindexer = new SpindexerSubsystem(hardwareMap);
+        led = new LEDSubSystem(hardwareMap);
 
         // DO NOT REMOVE! Resetting FTCLib Command Scheduler
         //Idk what this is but I think it's important it was from the github code
