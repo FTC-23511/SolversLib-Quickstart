@@ -36,14 +36,23 @@ public class ColorSubSystem extends SubsystemBase {
         float r = sensedcolors.red;
         float g = sensedcolors.green;
         float b = sensedcolors.blue;
+
         // Convert RGB to HSV
-        colorHSV = rgbToHsv(r, g, b);
+        float[] rgb = {r, g, b};
+        colorHSV = rgbToHsv(rgb);
+
+        //this is debug I think but you can only see this in logcat so I guess it isn't useful
         Log.d("colorsensor","Converted HSV: Hue=" + colorHSV[0] + ", Saturation=" + colorHSV[1] + ", Value=" + colorHSV[2]);
         return new float[] {colorHSV[0],colorHSV[1],colorHSV[2]};
     }
 
     // Function to convert RGB to HSV
-    public float[] rgbToHsv(float r, float g, float b) {
+    public float[] rgbToHsv(float[] colors) {
+        float r = colors[0];
+        float g = colors[1];
+        float b = colors[2];
+
+
         float max = Math.max(r, Math.max(g, b));
         float min = Math.min(r, Math.min(g, b));
         float delta = max - min;
