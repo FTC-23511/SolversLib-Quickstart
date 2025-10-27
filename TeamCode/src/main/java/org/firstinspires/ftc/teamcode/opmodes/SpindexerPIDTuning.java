@@ -16,7 +16,7 @@ import com.seattlesolvers.solverslib.controller.PIDController;
 public class SpindexerPIDTuning extends OpMode {
     private PIDController controller;
 
-    public static double p=-0.0005, i=0.000002, d=0.000001;
+    public static double p=-0.0004, i=0.00000, d=0.00000;
     public static double f=0;
     public static double clamp = 0.4;
     public static int target=0;
