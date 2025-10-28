@@ -47,10 +47,20 @@ public class AlphaTeleOp extends CommandOpMode {
         gamepad1.rumbleBlips(1);
     }
     private void goToSavedPose() {
+        Pose currentPose = follower.getPose();
         manualControl = false;
-        follower.followPath(pathChainSupplier.get());
+
+        PathChain path = follower.pathBuilder()
+                .addPath(new Path(new BezierLine(currentPose, savedPose)))
+                .setHeadingInterpolation(
+                        HeadingInterpolator.linearFromPoint(currentPose::getHeading, savedPose::getHeading, 0.8)
+                )
+                .build();
+
+        follower.followPath(path);
         gamepad1.rumbleBlips(3);
     }
+
 
     @Override
     public void initialize () {
@@ -74,7 +84,7 @@ public class AlphaTeleOp extends CommandOpMode {
         driver2 = new GamepadEx(gamepad2);
         pathChainSupplier = () -> follower.pathBuilder() //Lazy Curve Generation
                 .addPath(new Path(new BezierLine(follower::getPose, savedPose)))
-                .setHeadingInterpolation(HeadingInterpolator.linearFromPoint(follower::getHeading, Math.toRadians(45), 0.8))
+                .setHeadingInterpolation(HeadingInterpolator.linearFromPoint(follower::getHeading, savedPose::getHeading, 0.8))
                 .build();
         //command binding
 
@@ -121,8 +131,9 @@ public class AlphaTeleOp extends CommandOpMode {
         if (manualControl) {
             follower.setTeleOpDrive(driver1.getLeftY(), -driver1.getLeftX(), -driver1.getRightX(), true);
         } else {
-            if (!follower.isBusy() || (gamepad1.touchpad_finger_1 && gamepad1.touchpad_finger_2)) {
+            if (Math.abs(follower.getPose().getHeading() - savedPose.getHeading()) < 0.02 || (gamepad1.touchpad_finger_1 && gamepad1.touchpad_finger_2)) {
                 manualControl = true;
+                follower.startTeleopDrive();
             }
         }
         follower.update();
@@ -151,6 +162,8 @@ public class AlphaTeleOp extends CommandOpMode {
 
         telemetry.addData("current pos", follower.getPose().toString());
         telemetry.addData("saved pos", savedPose.toString());
+        telemetry.addData("t value", follower.getCurrentTValue());
+        telemetry.addData("!follower.isBusy() || (gamepad1.touchpad_finger_1 && gamepad1.touchpad_finger_2)", !follower.isBusy() || (gamepad1.touchpad_finger_1 && gamepad1.touchpad_finger_2));
 
         telemetry.addData("------------------",null);
 
