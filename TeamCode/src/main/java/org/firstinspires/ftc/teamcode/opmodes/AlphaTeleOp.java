@@ -1,7 +1,11 @@
 package org.firstinspires.ftc.teamcode.opmodes;
 
 import com.pedropathing.follower.Follower;
+import com.pedropathing.geometry.BezierLine;
 import com.pedropathing.geometry.Pose;
+import com.pedropathing.paths.HeadingInterpolator;
+import com.pedropathing.paths.Path;
+import com.pedropathing.paths.PathChain;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.seattlesolvers.solverslib.command.CommandOpMode;
 import com.seattlesolvers.solverslib.command.InstantCommand;
@@ -17,11 +21,14 @@ import org.firstinspires.ftc.teamcode.subsystems.LEDSubSystem;
 import org.firstinspires.ftc.teamcode.subsystems.ShooterSubSystem;
 import org.firstinspires.ftc.teamcode.subsystems.SpindexerSubsystem;
 
+import java.util.function.Supplier;
+
 @TeleOp (name = "Alpha Teleop", group = "OpModes")
 public class AlphaTeleOp extends CommandOpMode {
     private Follower follower;
     public static Pose startingPose = new Pose(0,0,0);
     public static Pose savedPose = new Pose(0,0,0);
+    private Supplier<PathChain> pathChainSupplier;
 
     private IntakeSubsystem intake;
     private ShooterSubSystem shooter;
@@ -33,12 +40,15 @@ public class AlphaTeleOp extends CommandOpMode {
     public GamepadEx driver2;
 
     private boolean manualControl = true;
+
+
     private void setSavedPose(Pose pose) {
         savedPose = pose;
         gamepad1.rumbleBlips(1);
     }
     private void goToSavedPose() {
         manualControl = false;
+        follower.followPath(pathChainSupplier.get());
         gamepad1.rumbleBlips(3);
     }
 
@@ -46,6 +56,7 @@ public class AlphaTeleOp extends CommandOpMode {
     public void initialize () {
         //systems and pedro
         follower = Constants.createFollower(hardwareMap);
+        follower.setStartingPose(startingPose);
         intake = new IntakeSubsystem(hardwareMap);
         shooter = new ShooterSubSystem(hardwareMap);
         spindexer = new SpindexerSubsystem(hardwareMap);
@@ -56,10 +67,15 @@ public class AlphaTeleOp extends CommandOpMode {
         register(intake, shooter, spindexer);
 
 
+
         //pedro and gamepad wrapper
         follower.startTeleopDrive();
         driver1 = new GamepadEx(gamepad1);
         driver2 = new GamepadEx(gamepad2);
+        pathChainSupplier = () -> follower.pathBuilder() //Lazy Curve Generation
+                .addPath(new Path(new BezierLine(follower::getPose, savedPose)))
+                .setHeadingInterpolation(HeadingInterpolator.linearFromPoint(follower::getHeading, Math.toRadians(45), 0.8))
+                .build();
         //command binding
 
         driver1.getGamepadButton(GamepadKeys.Button.TRIANGLE).toggleWhenActive(
@@ -105,8 +121,7 @@ public class AlphaTeleOp extends CommandOpMode {
         if (manualControl) {
             follower.setTeleOpDrive(driver1.getLeftY(), -driver1.getLeftX(), -driver1.getRightX(), true);
         } else {
-            follower.holdPoint(savedPose); //maybe work idk??
-            if (follower.) {
+            if (!follower.isBusy() || gamepad1.touchpad_finger_1&&gamepad1.touchpad_finger_2) {
                 manualControl = true;
             }
         }

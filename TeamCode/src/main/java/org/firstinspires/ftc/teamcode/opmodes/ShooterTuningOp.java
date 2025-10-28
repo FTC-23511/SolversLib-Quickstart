@@ -51,6 +51,7 @@ public class ShooterTuningOp extends CommandOpMode {
         spindexer = new SpindexerSubsystem(hardwareMap);
 
         shooter = new Motor(hardwareMap, "shooter", Motor.GoBILDA.RPM_312);
+
         shooter.setRunMode(Motor.RunMode.RawPower);
         shooter.setZeroPowerBehavior(Motor.ZeroPowerBehavior.FLOAT);
         shooter.set(0.0);
