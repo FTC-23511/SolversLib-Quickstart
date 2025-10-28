@@ -181,6 +181,9 @@ public class RedAuto extends CommandOpMode {
         //Idk what this is but I think it's important it was from the github code
         super.reset();
 
+        // Initialize subsystems
+        register(intake, spindexer, shooter);
+
         //init paths
         buildPaths(follower);
 
@@ -206,6 +209,8 @@ public class RedAuto extends CommandOpMode {
                         new FollowPathCommand(follower, paths.get(2)),
                         shootArtifacts(),
 
+                        new WaitCommand(1000),
+
                         //cycle two
                         new FollowPathCommand(follower, paths.get(3)),
                         new ParallelCommandGroup(
@@ -213,8 +218,8 @@ public class RedAuto extends CommandOpMode {
                                 new FollowPathCommand(follower, paths.get(4))
                         ),
                         new FollowPathCommand(follower, paths.get(5)),
-                        shootArtifacts(),
-
+                        shootArtifacts()
+                        /*
                         //cycle three
                         new FollowPathCommand(follower, paths.get(6)),
                         new ParallelCommandGroup(
@@ -222,7 +227,7 @@ public class RedAuto extends CommandOpMode {
                                 new FollowPathCommand(follower, paths.get(7))
                         ),
                         new FollowPathCommand(follower, paths.get(8)),
-                        shootArtifacts()
+                        shootArtifacts()*/
                 )
         );
 
@@ -247,6 +252,7 @@ public class RedAuto extends CommandOpMode {
         telemetry.addData("------------------",null);
 
         telemetry.addData("shooter target velocity", shooter.getTargetVelocity());
+        telemetry.addData("shooter actual velocity", shooter.getActualVelocity());
         telemetry.update();
         super.run();
     }

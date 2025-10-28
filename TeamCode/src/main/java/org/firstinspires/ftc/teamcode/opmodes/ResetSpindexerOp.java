@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.opmodes;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.geometry.Pose;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.seattlesolvers.solverslib.command.CommandOpMode;
 import com.seattlesolvers.solverslib.command.InstantCommand;
 import com.seattlesolvers.solverslib.command.button.Trigger;
@@ -17,28 +18,25 @@ import org.firstinspires.ftc.teamcode.subsystems.SpindexerSubsystem;
 
 @TeleOp (name = "\uD83D\uDC80 Reset Spindexer", group = "OpModes")
 public class ResetSpindexerOp extends CommandOpMode {
-    private SpindexerSubsystem spindexer;
     private GamepadEx driver1;
+    private DcMotor spindexer;
+
+
     @Override
     public void initialize () {
         //systems and pedro
         driver1 = new GamepadEx(gamepad1);
-        spindexer = new SpindexerSubsystem(hardwareMap);
+        spindexer = hardwareMap.get(DcMotor.class, "spindexer");
 
         super.reset();
-        register(spindexer);
-
-        spindexer.DANGEROUS_RESETENCODER();
-        driver1.getGamepadButton(GamepadKeys.Button.CIRCLE).whenPressed(
-                new InstantCommand(spindexer::DANGEROUS_RESETENCODER)
-        );
-
     }
-
-
 
     @Override
     public void run() {
+        if (gamepad1.b) {
+            spindexer.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            spindexer.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        }
         telemetry.addData("Press circle to reset spindexer.", ":)");
         telemetry.addData("Spindexer Position", spindexer.getCurrentPosition());
         telemetry.update();

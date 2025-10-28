@@ -3,22 +3,22 @@ package org.firstinspires.ftc.teamcode.subsystems;
 //import com.qualcomm.robotcore.hardware.ColorSensor;
 import android.util.Log;
 
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
 import com.qualcomm.robotcore.hardware.NormalizedRGBA;
 import com.qualcomm.robotcore.hardware.SwitchableLight;
 import com.seattlesolvers.solverslib.command.SubsystemBase;
 import com.seattlesolvers.solverslib.controller.PIDFController;
-
 public class ColorSubSystem extends SubsystemBase {
     private NormalizedColorSensor colorSensor;
     private NormalizedRGBA sensedcolors;
     public float[] colorHSV = {0, 0, 0}; //defaut
-    public float[] greenHigherHSV = {170, 1.0f, 0.7f};  // upper bound for bright/lime greens
-    public float[] greenLowerHSV  = {90, 0.4f, 0.1f};   // lower bound for darker/olive greens
+    public float[] greenHigherHSV = {175.758f, 0.907f, 0.749f};  // upper bound for bright/lime greens
+    public float[] greenLowerHSV  = {135.758f, 0.507f, 0.349f};   // lower bound for darker/olive greens
 
-    public float[] purpleHigherHSV = {300, 1.0f, 0.7f}; // upper bound for bright magenta/purple
-    public float[] purpleLowerHSV  = {250, 0.4f, 0.1f}; // lower bound for darker violet shades
+    public float[] purpleHigherHSV = {248.434f, 0.617f, 0.98f}; // upper bound for bright magenta/purple
+    public float[] purpleLowerHSV  = {208.434f, 0.2f, 0.58f}; // lower bound for darker violet shades
 
     public ColorSubSystem(final HardwareMap hMap) {
         colorSensor = hMap.get(NormalizedColorSensor.class, "colorsensor");
@@ -27,6 +27,7 @@ public class ColorSubSystem extends SubsystemBase {
         if (colorSensor instanceof SwitchableLight) {
             ((SwitchableLight) colorSensor).enableLight(true);
         }
+        colorSensor.setGain(105.5f);
     }
 
 
