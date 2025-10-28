@@ -28,8 +28,8 @@ public class SpindexerSubsystem extends SubsystemBase {
     public int currentPosition = 0;
 
 
-    // Target position for PIDF
-    private double targetPosition = SPINDEXER_INITPOS;
+    // Target position for PIDF 
+    private double targetPosition = 0;
 
     // PIDF Controller
     private final PIDController pid;
