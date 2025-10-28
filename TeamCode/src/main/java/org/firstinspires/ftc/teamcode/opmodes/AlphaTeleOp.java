@@ -121,7 +121,7 @@ public class AlphaTeleOp extends CommandOpMode {
         if (manualControl) {
             follower.setTeleOpDrive(driver1.getLeftY(), -driver1.getLeftX(), -driver1.getRightX(), true);
         } else {
-            if (!follower.isBusy() || gamepad1.touchpad_finger_1&&gamepad1.touchpad_finger_2) {
+            if (!follower.isBusy() || (gamepad1.touchpad_finger_1 && gamepad1.touchpad_finger_2)) {
                 manualControl = true;
             }
         }
