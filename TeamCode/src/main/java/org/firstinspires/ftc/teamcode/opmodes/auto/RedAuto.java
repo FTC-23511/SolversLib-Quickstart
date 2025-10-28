@@ -66,78 +66,87 @@ public class RedAuto extends CommandOpMode {
 
     public void buildPaths(Follower follower) {
         follower.setStartingPose(startingPose);
+        paths.add(follower
+                .pathBuilder()
+                .addPath(
+                        new BezierLine(new Pose(123.361, 122.175), new Pose(84.000, 84.000))
+                )
+                .setLinearHeadingInterpolation(Math.toRadians(45), Math.toRadians(45))
+                .build()
+        );
 
         paths.add(follower
                 .pathBuilder()
                 .addPath(
-                        new BezierLine(new Pose(108.000, 108.000), new Pose(99.000, 84.000))
+                        new BezierLine(new Pose(84.000, 84.000), new Pose(101.000, 84.000))
                 )
                 .setLinearHeadingInterpolation(Math.toRadians(45), Math.toRadians(0))
-                .build());
+                .build()
+        );
 
         paths.add(follower
                 .pathBuilder()
                 .addPath(
-                        new BezierLine(new Pose(99.000, 84.000), new Pose(125.000, 84.000))
+                        new BezierLine(new Pose(101.000, 84.000), new Pose(130.000, 84.000))
                 )
                 .setTangentHeadingInterpolation()
-                .build());
+                .build()
+        );
 
         paths.add(follower
                 .pathBuilder()
                 .addPath(
-                        new BezierLine(new Pose(125.000, 84.000), new Pose(108.000, 108.000))
+                        new BezierLine(new Pose(130.000, 84.000), new Pose(84.000, 84.000))
                 )
                 .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(45))
-                .build());
+                .build()
+        );
 
         paths.add(follower
                 .pathBuilder()
                 .addPath(
-                        new BezierLine(new Pose(108.000, 108.000), new Pose(99.000, 60.000))
+                        new BezierLine(new Pose(84.000, 84.000), new Pose(101.000, 60.000))
                 )
                 .setLinearHeadingInterpolation(Math.toRadians(45), Math.toRadians(0))
-                .build());
+                .build()
+        );
 
         paths.add(follower
                 .pathBuilder()
                 .addPath(
-                        new BezierLine(new Pose(99.000, 60.000), new Pose(125.000, 60.000))
+                        new BezierLine(new Pose(101.000, 60.000), new Pose(135.000, 60.000))
                 )
                 .setTangentHeadingInterpolation()
-                .build());
+                .build()
+        );
 
         paths.add(follower
                 .pathBuilder()
                 .addPath(
-                        new BezierLine(new Pose(125.000, 60.000), new Pose(108.000, 108.000))
+                        new BezierLine(new Pose(135.000, 60.000), new Pose(125.000, 60.000))
+                )
+                .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(0))
+                .build()
+        );
+
+        paths.add(follower
+                .pathBuilder()
+                .addPath(
+                        new BezierLine(new Pose(125.000, 60.000), new Pose(84.000, 84.000))
                 )
                 .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(45))
-                .build());
+                .build()
+        );
 
         paths.add(follower
                 .pathBuilder()
                 .addPath(
-                        new BezierLine(new Pose(108.000, 108.000), new Pose(99.000, 35.000))
+                        new BezierLine(new Pose(84.000, 84.000), new Pose(84.000, 108.000))
                 )
                 .setLinearHeadingInterpolation(Math.toRadians(45), Math.toRadians(0))
-                .build());
+                .build()
+        );
 
-        paths.add(follower
-                .pathBuilder()
-                .addPath(
-                        new BezierLine(new Pose(99.000, 35.000), new Pose(125.000, 35.000))
-                )
-                .setTangentHeadingInterpolation()
-                .build());
-
-        paths.add(follower
-                .pathBuilder()
-                .addPath(
-                        new BezierLine(new Pose(125.000, 35.000), new Pose(108.000, 108.000))
-                )
-                .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(45))
-                .build());
     }
     //preset command methods
     public SequentialCommandGroup shootArtifacts() {
@@ -197,37 +206,7 @@ public class RedAuto extends CommandOpMode {
                 new RunCommand(() -> follower.update()),
 
                 new SequentialCommandGroup(
-                        //starting shoot
-                        shootArtifacts(),
-
-                        //cycle one
-                        new FollowPathCommand(follower, paths.get(0)),
-                        new ParallelCommandGroup(
-                            intakeArtifacts(),
-                            new FollowPathCommand(follower, paths.get(1))
-                        ),
-                        new FollowPathCommand(follower, paths.get(2)),
-                        shootArtifacts(),
-
-                        new WaitCommand(1000),
-
-                        //cycle two
-                        new FollowPathCommand(follower, paths.get(3)),
-                        new ParallelCommandGroup(
-                                intakeArtifacts(),
-                                new FollowPathCommand(follower, paths.get(4))
-                        ),
-                        new FollowPathCommand(follower, paths.get(5)),
-                        shootArtifacts()
-                        /*
-                        //cycle three
-                        new FollowPathCommand(follower, paths.get(6)),
-                        new ParallelCommandGroup(
-                                intakeArtifacts(),
-                                new FollowPathCommand(follower, paths.get(7))
-                        ),
-                        new FollowPathCommand(follower, paths.get(8)),
-                        shootArtifacts()*/
+                        
                 )
         );
 
