@@ -10,13 +10,16 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import com.seattlesolvers.solverslib.command.CommandOpMode;
 import com.seattlesolvers.solverslib.command.InstantCommand;
 import com.seattlesolvers.solverslib.command.ParallelCommandGroup;
+import com.seattlesolvers.solverslib.command.ParallelRaceGroup;
 import com.seattlesolvers.solverslib.command.RunCommand;
 import com.seattlesolvers.solverslib.command.SequentialCommandGroup;
 import com.seattlesolvers.solverslib.command.WaitCommand;
 import com.seattlesolvers.solverslib.command.WaitUntilCommand;
 import com.seattlesolvers.solverslib.pedroCommand.FollowPathCommand;
 
+import org.firstinspires.ftc.teamcode.commands.WaitForColorCommand;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
+import org.firstinspires.ftc.teamcode.subsystems.ColorSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.IntakeSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.LEDSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.ShooterSubsystem;
@@ -61,6 +64,7 @@ public class RedAuto extends CommandOpMode {
     private IntakeSubsystem intake;
     private ShooterSubsystem shooter;
     private SpindexerSubsystem spindexer;
+    private ColorSubsystem colorsensor;
     private LEDSubsystem led;
 
 
@@ -163,11 +167,20 @@ public class RedAuto extends CommandOpMode {
     private SequentialCommandGroup intakeArtifacts() {
         return new SequentialCommandGroup(
                 new InstantCommand(() -> intake.setSpeed(IntakeSubsystem.IntakeState.INTAKING)),
-                new WaitCommand(2000),
+                new ParallelRaceGroup(
+                        new WaitForColorCommand(colorsensor),
+                        new WaitCommand(1500)
+                ),
                 new InstantCommand(() -> spindexer.advanceSpindexer()),
-                new WaitCommand(2000),
+                new ParallelRaceGroup(
+                        new WaitForColorCommand(colorsensor),
+                        new WaitCommand(1500)
+                ),
                 new InstantCommand(() -> spindexer.advanceSpindexer()),
-                new WaitCommand(2000),
+                new ParallelRaceGroup(
+                        new WaitForColorCommand(colorsensor),
+                        new WaitCommand(1500)
+                ),
                 new InstantCommand(() -> intake.setSpeed(IntakeSubsystem.IntakeState.STILL))
         );
     }
@@ -189,7 +202,7 @@ public class RedAuto extends CommandOpMode {
         super.reset();
 
         // Initialize subsystems
-        register(intake, spindexer, shooter);
+        register(intake, spindexer, shooter, colorsensor, led);
 
         //init paths
         buildPaths(follower);
