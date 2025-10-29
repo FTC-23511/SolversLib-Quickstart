@@ -2,27 +2,23 @@ package org.firstinspires.ftc.teamcode.opmodes;
 
 import com.pedropathing.control.PIDFCoefficients;
 import com.pedropathing.follower.Follower;
-import com.pedropathing.geometry.BezierLine;
 import com.pedropathing.geometry.Pose;
-import com.pedropathing.paths.HeadingInterpolator;
-import com.pedropathing.paths.Path;
 import com.pedropathing.paths.PathChain;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.seattlesolvers.solverslib.command.Command;
 import com.seattlesolvers.solverslib.command.CommandOpMode;
 import com.seattlesolvers.solverslib.command.InstantCommand;
-import com.seattlesolvers.solverslib.command.ParallelCommandGroup;
 import com.seattlesolvers.solverslib.command.SelectCommand;
 import com.seattlesolvers.solverslib.command.button.Trigger;
 import com.seattlesolvers.solverslib.gamepad.GamepadEx;
 import com.seattlesolvers.solverslib.gamepad.GamepadKeys;
 
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
-import org.firstinspires.ftc.teamcode.subsystems.ColorSubSystem;
+import org.firstinspires.ftc.teamcode.subsystems.ColorSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.IntakeSubsystem;
-import org.firstinspires.ftc.teamcode.subsystems.LEDSubSystem;
-import org.firstinspires.ftc.teamcode.subsystems.ShooterSubSystem;
+import org.firstinspires.ftc.teamcode.subsystems.LEDSubsystem;
+import org.firstinspires.ftc.teamcode.subsystems.ShooterSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.SpindexerSubsystem;
 
 import java.util.function.Supplier;
@@ -35,10 +31,10 @@ public class AlphaTeleOp extends CommandOpMode {
     private Supplier<PathChain> pathChainSupplier;
 
     private IntakeSubsystem intake;
-    private ShooterSubSystem shooter;
+    private ShooterSubsystem shooter;
     private SpindexerSubsystem spindexer;
-    private ColorSubSystem colorSensor;
-    private LEDSubSystem led;
+    private ColorSubsystem colorSensor;
+    private LEDSubsystem led;
 
     public GamepadEx driver1;
     public GamepadEx driver2;
@@ -85,10 +81,10 @@ public class AlphaTeleOp extends CommandOpMode {
         follower.setHeadingPIDFCoefficients(new PIDFCoefficients(2, 0, 0, 0));
         follower.setStartingPose(startingPose);
         intake = new IntakeSubsystem(hardwareMap);
-        shooter = new ShooterSubSystem(hardwareMap);
+        shooter = new ShooterSubsystem(hardwareMap);
         spindexer = new SpindexerSubsystem(hardwareMap);
-        colorSensor = new ColorSubSystem(hardwareMap);
-        led = new LEDSubSystem(hardwareMap);
+        colorSensor = new ColorSubsystem(hardwareMap);
+        led = new LEDSubsystem(hardwareMap);
 
         super.reset();
         register(intake, shooter, spindexer);
@@ -193,24 +189,24 @@ public class AlphaTeleOp extends CommandOpMode {
         follower.update();
         if (shooter.getActualVelocity() > 300) { //shooting mode
             if (shooter.getActualVelocity() - shooter.getTargetVelocity() < -50) {
-                led.setColor(LEDSubSystem.LEDState.RED);
+                led.setColor(LEDSubsystem.LEDState.RED);
             }
             else if (shooter.getActualVelocity() - shooter.getTargetVelocity() > 50) {
-                led.setColor(LEDSubSystem.LEDState.BLUE);
+                led.setColor(LEDSubsystem.LEDState.BLUE);
             }
             else {
-                led.setColor(LEDSubSystem.LEDState.GREEN);
+                led.setColor(LEDSubsystem.LEDState.GREEN);
             }
         }
         else { //intaking mode
             if (colorSensor.checkIfGreen()) {
-                led.setColor(LEDSubSystem.LEDState.GREEN);
+                led.setColor(LEDSubsystem.LEDState.GREEN);
             }
             else if (colorSensor.checkIfPurple()) {
-                led.setColor(LEDSubSystem.LEDState.VIOLET);
+                led.setColor(LEDSubsystem.LEDState.VIOLET);
             }
             else {
-                led.setColor(LEDSubSystem.LEDState.WHITE); //anything else besides green or purple
+                led.setColor(LEDSubsystem.LEDState.WHITE); //anything else besides green or purple
             }
         }
 

@@ -10,8 +10,6 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import com.seattlesolvers.solverslib.command.CommandOpMode;
 import com.seattlesolvers.solverslib.command.InstantCommand;
 import com.seattlesolvers.solverslib.command.ParallelCommandGroup;
-import com.seattlesolvers.solverslib.command.ParallelDeadlineGroup;
-import com.seattlesolvers.solverslib.command.ParallelRaceGroup;
 import com.seattlesolvers.solverslib.command.RunCommand;
 import com.seattlesolvers.solverslib.command.SequentialCommandGroup;
 import com.seattlesolvers.solverslib.command.WaitCommand;
@@ -19,8 +17,8 @@ import com.seattlesolvers.solverslib.pedroCommand.FollowPathCommand;
 
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 import org.firstinspires.ftc.teamcode.subsystems.IntakeSubsystem;
-import org.firstinspires.ftc.teamcode.subsystems.LEDSubSystem;
-import org.firstinspires.ftc.teamcode.subsystems.ShooterSubSystem;
+import org.firstinspires.ftc.teamcode.subsystems.LEDSubsystem;
+import org.firstinspires.ftc.teamcode.subsystems.ShooterSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.SpindexerSubsystem;
 
 import java.util.ArrayList;
@@ -59,9 +57,9 @@ public class RedAuto extends CommandOpMode {
     //update starting pose
     public static Pose startingPose = new Pose(108,108,45); //find actual statring pos
     private IntakeSubsystem intake;
-    private ShooterSubSystem shooter;
+    private ShooterSubsystem shooter;
     private SpindexerSubsystem spindexer;
-    private LEDSubSystem led;
+    private LEDSubsystem led;
 
 
     public void buildPaths(Follower follower) {
@@ -173,9 +171,9 @@ public class RedAuto extends CommandOpMode {
         //systems and pedro
         follower = Constants.createFollower(hardwareMap);
         intake = new IntakeSubsystem(hardwareMap);
-        shooter = new ShooterSubSystem(hardwareMap);
+        shooter = new ShooterSubsystem(hardwareMap);
         spindexer = new SpindexerSubsystem(hardwareMap);
-        led = new LEDSubSystem(hardwareMap);
+        led = new LEDSubsystem(hardwareMap);
 
         // DO NOT REMOVE! Resetting FTCLib Command Scheduler
         //Idk what this is but I think it's important it was from the github code
@@ -236,13 +234,13 @@ public class RedAuto extends CommandOpMode {
     @Override
     public void run() {
         if (shooter.getActualVelocity() - shooter.getTargetVelocity() < -50) {
-            led.setColor(LEDSubSystem.LEDState.RED);
+            led.setColor(LEDSubsystem.LEDState.RED);
         }
         else if (shooter.getActualVelocity() - shooter.getTargetVelocity() > 50) {
-            led.setColor(LEDSubSystem.LEDState.BLUE);
+            led.setColor(LEDSubsystem.LEDState.BLUE);
         }
         else {
-            led.setColor(LEDSubSystem.LEDState.GREEN);
+            led.setColor(LEDSubsystem.LEDState.GREEN);
         }
 
         telemetry.addData("spindexer output", spindexer.getOutput());
