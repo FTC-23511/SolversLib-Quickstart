@@ -2,25 +2,23 @@ package org.firstinspires.ftc.teamcode.opmodes;
 
 import com.pedropathing.control.PIDFCoefficients;
 import com.pedropathing.follower.Follower;
-import com.pedropathing.geometry.BezierLine;
 import com.pedropathing.geometry.Pose;
-import com.pedropathing.paths.HeadingInterpolator;
-import com.pedropathing.paths.Path;
 import com.pedropathing.paths.PathChain;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
+import com.seattlesolvers.solverslib.command.Command;
 import com.seattlesolvers.solverslib.command.CommandOpMode;
 import com.seattlesolvers.solverslib.command.InstantCommand;
-import com.seattlesolvers.solverslib.command.ParallelCommandGroup;
+import com.seattlesolvers.solverslib.command.SelectCommand;
 import com.seattlesolvers.solverslib.command.button.Trigger;
 import com.seattlesolvers.solverslib.gamepad.GamepadEx;
 import com.seattlesolvers.solverslib.gamepad.GamepadKeys;
 
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
-import org.firstinspires.ftc.teamcode.subsystems.ColorSubSystem;
+import org.firstinspires.ftc.teamcode.subsystems.ColorSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.IntakeSubsystem;
-import org.firstinspires.ftc.teamcode.subsystems.LEDSubSystem;
-import org.firstinspires.ftc.teamcode.subsystems.ShooterSubSystem;
+import org.firstinspires.ftc.teamcode.subsystems.LEDSubsystem;
+import org.firstinspires.ftc.teamcode.subsystems.ShooterSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.SpindexerSubsystem;
 
 import java.util.function.Supplier;
@@ -33,10 +31,10 @@ public class AlphaTeleOp extends CommandOpMode {
     private Supplier<PathChain> pathChainSupplier;
 
     private IntakeSubsystem intake;
-    private ShooterSubSystem shooter;
+    private ShooterSubsystem shooter;
     private SpindexerSubsystem spindexer;
-    private ColorSubSystem colorSensor;
-    private LEDSubSystem led;
+    private ColorSubsystem colorSensor;
+    private LEDSubsystem led;
 
     public GamepadEx driver1;
     public GamepadEx driver2;
@@ -56,6 +54,25 @@ public class AlphaTeleOp extends CommandOpMode {
         gamepad1.rumbleBlips(3);
     }
 
+    public enum IntakeState {
+        STOP, FORWARD, REVERSE
+    }
+    private IntakeState intakeState = IntakeState.STOP;
+    private IntakeState getIntakeState() {
+        return intakeState;
+    }
+    public Command intakeCommand() {
+        switch (getIntakeState()) {
+            case FORWARD:
+                return new InstantCommand(() -> intake.setSpeed(IntakeSubsystem.IntakeState.INTAKING));
+            case REVERSE:
+                return new InstantCommand(() -> intake.setSpeed(IntakeSubsystem.IntakeState.REVERSE));
+            case STOP:
+            default:
+                return new InstantCommand(() -> intake.setSpeed(IntakeSubsystem.IntakeState.STILL));
+        }
+    }
+
 
     @Override
     public void initialize () {
@@ -64,10 +81,10 @@ public class AlphaTeleOp extends CommandOpMode {
         follower.setHeadingPIDFCoefficients(new PIDFCoefficients(2, 0, 0, 0));
         follower.setStartingPose(startingPose);
         intake = new IntakeSubsystem(hardwareMap);
-        shooter = new ShooterSubSystem(hardwareMap);
+        shooter = new ShooterSubsystem(hardwareMap);
         spindexer = new SpindexerSubsystem(hardwareMap);
-        colorSensor = new ColorSubSystem(hardwareMap);
-        led = new LEDSubSystem(hardwareMap);
+        colorSensor = new ColorSubsystem(hardwareMap);
+        led = new LEDSubsystem(hardwareMap);
 
         super.reset();
         register(intake, shooter, spindexer);
@@ -83,39 +100,72 @@ public class AlphaTeleOp extends CommandOpMode {
 //                .setHeadingInterpolation(HeadingInterpolator.linearFromPoint(follower::getHeading, savedPose::getHeading, 0.8))
 //                .build();
         //command binding
+        SelectCommand intakeSelectCommand = new SelectCommand(this::intakeCommand);
 
-        driver1.getGamepadButton(GamepadKeys.Button.TRIANGLE).toggleWhenActive(
-                new InstantCommand(() -> intake.setSpeed(IntakeSubsystem.IntakeState.INTAKING)),
-                new InstantCommand(() -> intake.setSpeed(IntakeSubsystem.IntakeState.STILL))
+        driver1.getGamepadButton(GamepadKeys.Button.TRIANGLE).whenPressed(
+                new InstantCommand(() -> {
+                    if (intakeState == IntakeState.FORWARD) intakeState = IntakeState.STOP;
+                    else intakeState = IntakeState.FORWARD;
+                    new SelectCommand(this::intakeCommand).schedule();
+                    shooter.setTargetVelocity(0);
+                })
         );
-        driver1.getGamepadButton(GamepadKeys.Button.CROSS).toggleWhenActive(
-                new InstantCommand(() -> intake.setSpeed(IntakeSubsystem.IntakeState.REVERSE)),
-                new InstantCommand(() -> intake.setSpeed(IntakeSubsystem.IntakeState.STILL))
+        driver1.getGamepadButton(GamepadKeys.Button.CROSS).whenPressed(
+                new InstantCommand(() -> {
+                    if (intakeState == IntakeState.REVERSE) intakeState = IntakeState.STOP;
+                    else intakeState = IntakeState.REVERSE;
+                    new SelectCommand(this::intakeCommand).schedule();
+                    shooter.setTargetVelocity(0);
+                })
         );
         driver1.getGamepadButton(GamepadKeys.Button.CIRCLE).whenPressed(
-                new InstantCommand(() -> spindexer.advanceSpindexer())
+                new InstantCommand(() -> {
+                    spindexer.advanceSpindexer();
+                })
         );
         driver1.getGamepadButton(GamepadKeys.Button.SQUARE).whenPressed(
-                new InstantCommand(() -> spindexer.reverseSpindexer())
+                new InstantCommand(() -> {
+                    spindexer.reverseSpindexer();
+                })
         );
         driver1.getGamepadButton(GamepadKeys.Button.DPAD_UP).whenPressed(
-                new InstantCommand(() -> goToSavedPose())
+                new InstantCommand(() -> {
+                    goToSavedPose();
+                })
         );
         driver1.getGamepadButton(GamepadKeys.Button.DPAD_DOWN).whenPressed(
-                new InstantCommand(() -> setSavedPose(follower.getPose()))
+                new InstantCommand(() -> {
+                    setSavedPose(follower.getPose());
+                })
         );
         driver1.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER).whenPressed(
-                new InstantCommand(() -> shooter.setTargetVelocity(1300))
+                new InstantCommand(() -> {
+                    shooter.setTargetVelocity(1300);
+                    intakeState = IntakeState.STOP;
+                    new SelectCommand(this::intakeCommand).schedule();
+                })
         );
         driver1.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER).whenPressed(
-                new InstantCommand(() -> shooter.setTargetVelocity(-300))
+                new InstantCommand(() -> {
+                    shooter.setTargetVelocity(-300);
+                    intakeState = IntakeState.STOP;
+                    new SelectCommand(this::intakeCommand).schedule();
+                })
         );
         new Trigger(
                 () -> driver1.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) > 0.5)
-                .whenActive(new InstantCommand(() -> shooter.setTargetVelocity(+0)));
+                .whenActive(new InstantCommand(() -> {
+                    shooter.setTargetVelocity(+0);
+                    intakeState = IntakeState.STOP;
+                    new SelectCommand(this::intakeCommand).schedule();
+                }));
         new Trigger(
                 () -> driver1.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) > 0.5)
-                .whenActive(new InstantCommand(() -> shooter.setTargetVelocity(-0)));
+                .whenActive(new InstantCommand(() -> {
+                    shooter.setTargetVelocity(-0);
+                    intakeState = IntakeState.STOP;
+                    new SelectCommand(this::intakeCommand).schedule();
+                }));
 
 
     }
@@ -128,7 +178,7 @@ public class AlphaTeleOp extends CommandOpMode {
             follower.setTeleOpDrive(driver1.getLeftY(), -driver1.getLeftX(), -driver1.getRightX(), true);
         } else {
             if (
-                    (Math.abs(follower.getPose().getHeading() - savedPose.getHeading()) < 0.02
+                    (Math.abs(follower.getPose().getHeading() - savedPose.getHeading()) < 0.04
                     && Math.abs(follower.getPose().getX() - savedPose.getX()) < 1
                     && Math.abs(follower.getPose().getY() - savedPose.getY()) < 1)
                     || (gamepad1.touchpad_finger_1 && gamepad1.touchpad_finger_2)) {
@@ -139,24 +189,24 @@ public class AlphaTeleOp extends CommandOpMode {
         follower.update();
         if (shooter.getActualVelocity() > 300) { //shooting mode
             if (shooter.getActualVelocity() - shooter.getTargetVelocity() < -50) {
-                led.setColor(LEDSubSystem.LEDState.RED);
+                led.setColor(LEDSubsystem.LEDState.RED);
             }
             else if (shooter.getActualVelocity() - shooter.getTargetVelocity() > 50) {
-                led.setColor(LEDSubSystem.LEDState.BLUE);
+                led.setColor(LEDSubsystem.LEDState.BLUE);
             }
             else {
-                led.setColor(LEDSubSystem.LEDState.GREEN);
+                led.setColor(LEDSubsystem.LEDState.GREEN);
             }
         }
         else { //intaking mode
             if (colorSensor.checkIfGreen()) {
-                led.setColor(LEDSubSystem.LEDState.GREEN);
+                led.setColor(LEDSubsystem.LEDState.GREEN);
             }
             else if (colorSensor.checkIfPurple()) {
-                led.setColor(LEDSubSystem.LEDState.VIOLET);
+                led.setColor(LEDSubsystem.LEDState.VIOLET);
             }
             else {
-                led.setColor(LEDSubSystem.LEDState.WHITE); //anything else besides green or purple
+                led.setColor(LEDSubsystem.LEDState.WHITE); //anything else besides green or purple
             }
         }
 

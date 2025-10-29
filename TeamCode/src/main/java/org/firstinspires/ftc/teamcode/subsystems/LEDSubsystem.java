@@ -4,13 +4,13 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.seattlesolvers.solverslib.command.SubsystemBase;
 
-public class LEDSubSystem extends SubsystemBase {
+public class LEDSubsystem extends SubsystemBase {
     private Servo led;
     public enum LEDState {
         OFF, RED, ORANGE, YELLOW, SAGE, GREEN, AZURE, BLUE, INDIGO, VIOLET, WHITE;
     }
     public LEDState ledstate = LEDState.OFF;
-    public LEDSubSystem(final HardwareMap hMap) {
+    public LEDSubsystem(final HardwareMap hMap) {
         led = hMap.get(Servo.class, "led");
     }
 
