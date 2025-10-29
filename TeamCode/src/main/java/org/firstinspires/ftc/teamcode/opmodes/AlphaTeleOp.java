@@ -123,16 +123,24 @@ public class AlphaTeleOp extends CommandOpMode {
                 })
         );
         driver1.getGamepadButton(GamepadKeys.Button.CIRCLE).whenPressed(
-                new InstantCommand(() -> spindexer.advanceSpindexer())
+                new InstantCommand(() -> {
+                    spindexer.advanceSpindexer();
+                })
         );
         driver1.getGamepadButton(GamepadKeys.Button.SQUARE).whenPressed(
-                new InstantCommand(() -> spindexer.reverseSpindexer())
+                new InstantCommand(() -> {
+                    spindexer.reverseSpindexer();
+                })
         );
         driver1.getGamepadButton(GamepadKeys.Button.DPAD_UP).whenPressed(
-                new InstantCommand(() -> goToSavedPose())
+                new InstantCommand(() -> {
+                    goToSavedPose();
+                })
         );
         driver1.getGamepadButton(GamepadKeys.Button.DPAD_DOWN).whenPressed(
-                new InstantCommand(() -> setSavedPose(follower.getPose()))
+                new InstantCommand(() -> {
+                    setSavedPose(follower.getPose());
+                })
         );
         driver1.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER).whenPressed(
                 new InstantCommand(() -> {
@@ -174,7 +182,7 @@ public class AlphaTeleOp extends CommandOpMode {
             follower.setTeleOpDrive(driver1.getLeftY(), -driver1.getLeftX(), -driver1.getRightX(), true);
         } else {
             if (
-                    (Math.abs(follower.getPose().getHeading() - savedPose.getHeading()) < 0.02
+                    (Math.abs(follower.getPose().getHeading() - savedPose.getHeading()) < 0.04
                     && Math.abs(follower.getPose().getX() - savedPose.getX()) < 1
                     && Math.abs(follower.getPose().getY() - savedPose.getY()) < 1)
                     || (gamepad1.touchpad_finger_1 && gamepad1.touchpad_finger_2)) {
