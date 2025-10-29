@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.opmodes;
 
+import com.pedropathing.control.PIDFCoefficients;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.geometry.BezierLine;
 import com.pedropathing.geometry.Pose;
@@ -46,6 +47,8 @@ public class AlphaTeleOp extends CommandOpMode {
     double currentVoltage = 14;
 
     public ElapsedTime lastVoltageCheck = new ElapsedTime();
+    private ElapsedTime timer = new ElapsedTime();
+
     private void setSavedPose(Pose pose) {
         savedPose = pose;
         gamepad1.rumbleBlips(1);
@@ -53,15 +56,7 @@ public class AlphaTeleOp extends CommandOpMode {
     private void goToSavedPose() {
         Pose currentPose = follower.getPose();
         manualControl = false;
-
-        PathChain path = follower.pathBuilder()
-                .addPath(new Path(new BezierLine(currentPose, savedPose)))
-                .setHeadingInterpolation(
-                        HeadingInterpolator.linearFromPoint(currentPose::getHeading, savedPose::getHeading, 0.8)
-                )
-                .build();
-
-        follower.followPath(path);
+        follower.holdPoint(savedPose);
         gamepad1.rumbleBlips(3);
     }
 
@@ -70,6 +65,7 @@ public class AlphaTeleOp extends CommandOpMode {
     public void initialize () {
         //systems and pedro
         follower = Constants.createFollower(hardwareMap);
+        follower.setHeadingPIDFCoefficients(new PIDFCoefficients(2, 0, 0, 0));
         follower.setStartingPose(startingPose);
         intake = new IntakeSubsystem(hardwareMap);
         shooter = new ShooterSubSystem(hardwareMap);
@@ -86,10 +82,10 @@ public class AlphaTeleOp extends CommandOpMode {
         follower.startTeleopDrive();
         driver1 = new GamepadEx(gamepad1);
         driver2 = new GamepadEx(gamepad2);
-        pathChainSupplier = () -> follower.pathBuilder() //Lazy Curve Generation
-                .addPath(new Path(new BezierLine(follower::getPose, savedPose)))
-                .setHeadingInterpolation(HeadingInterpolator.linearFromPoint(follower::getHeading, savedPose::getHeading, 0.8))
-                .build();
+//        pathChainSupplier = () -> follower.pathBuilder() //Lazy Curve Generation
+//                .addPath(new Path(new BezierLine(follower::getPose, savedPose)))
+//                .setHeadingInterpolation(HeadingInterpolator.linearFromPoint(follower::getHeading, savedPose::getHeading, 0.8))
+//                .build();
         //command binding
 
         driver1.getGamepadButton(GamepadKeys.Button.TRIANGLE).toggleWhenActive(
@@ -135,7 +131,11 @@ public class AlphaTeleOp extends CommandOpMode {
         if (manualControl) {
             follower.setTeleOpDrive(driver1.getLeftY(), -driver1.getLeftX(), -driver1.getRightX(), true);
         } else {
-            if (Math.abs(follower.getPose().getHeading() - savedPose.getHeading()) < 0.02 || (gamepad1.touchpad_finger_1 && gamepad1.touchpad_finger_2)) {
+            if (
+                    (Math.abs(follower.getPose().getHeading() - savedPose.getHeading()) < 0.02
+                    && Math.abs(follower.getPose().getX() - savedPose.getX()) < 1
+                    && Math.abs(follower.getPose().getY() - savedPose.getY()) < 1)
+                    || (gamepad1.touchpad_finger_1 && gamepad1.touchpad_finger_2)) {
                 manualControl = true;
                 follower.startTeleopDrive();
             }
@@ -172,6 +172,13 @@ public class AlphaTeleOp extends CommandOpMode {
 
         telemetry.addData("current pos", follower.getPose().toString());
         telemetry.addData("saved pos", savedPose.toString());
+        telemetry.addData("Loop Time", timer.milliseconds());
+        timer.reset();
+
+        telemetry.addData("current pos", String.format("X: %8.2f, Y: %8.2f", follower.getPose().getX(), follower.getPose().getY()));
+        telemetry.addData("current heading", String.format("Heading: %.4f", follower.getPose().getHeading()));
+        telemetry.addData("saved pos", String.format("X: %8.2f, Y: %8.2f", savedPose.getX(), savedPose.getY()));
+        telemetry.addData("saved heading", String.format("Heading: %.4f", savedPose.getHeading()));
         telemetry.addData("t value", follower.getCurrentTValue());
         telemetry.addData("!follower.isBusy() || (gamepad1.touchpad_finger_1 && gamepad1.touchpad_finger_2)", !follower.isBusy() || (gamepad1.touchpad_finger_1 && gamepad1.touchpad_finger_2));
 
