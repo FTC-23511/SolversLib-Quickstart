@@ -9,9 +9,11 @@ import com.pedropathing.paths.Path;
 import com.pedropathing.paths.PathChain;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
+import com.seattlesolvers.solverslib.command.Command;
 import com.seattlesolvers.solverslib.command.CommandOpMode;
 import com.seattlesolvers.solverslib.command.InstantCommand;
 import com.seattlesolvers.solverslib.command.ParallelCommandGroup;
+import com.seattlesolvers.solverslib.command.SelectCommand;
 import com.seattlesolvers.solverslib.command.button.Trigger;
 import com.seattlesolvers.solverslib.gamepad.GamepadEx;
 import com.seattlesolvers.solverslib.gamepad.GamepadKeys;
@@ -56,6 +58,25 @@ public class AlphaTeleOp extends CommandOpMode {
         gamepad1.rumbleBlips(3);
     }
 
+    public enum IntakeState {
+        STOP, FORWARD, REVERSE
+    }
+    private IntakeState intakeState = IntakeState.STOP;
+    private IntakeState getIntakeState() {
+        return intakeState;
+    }
+    public Command intakeCommand() {
+        switch (getIntakeState()) {
+            case FORWARD:
+                return new InstantCommand(() -> intake.setSpeed(IntakeSubsystem.IntakeState.INTAKING));
+            case REVERSE:
+                return new InstantCommand(() -> intake.setSpeed(IntakeSubsystem.IntakeState.REVERSE));
+            case STOP:
+            default:
+                return new InstantCommand(() -> intake.setSpeed(IntakeSubsystem.IntakeState.STILL));
+        }
+    }
+
 
     @Override
     public void initialize () {
@@ -83,14 +104,21 @@ public class AlphaTeleOp extends CommandOpMode {
 //                .setHeadingInterpolation(HeadingInterpolator.linearFromPoint(follower::getHeading, savedPose::getHeading, 0.8))
 //                .build();
         //command binding
+        SelectCommand intakeSelectCommand = new SelectCommand(this::intakeCommand);
 
-        driver1.getGamepadButton(GamepadKeys.Button.TRIANGLE).toggleWhenActive(
-                new InstantCommand(() -> intake.setSpeed(IntakeSubsystem.IntakeState.INTAKING)),
-                new InstantCommand(() -> intake.setSpeed(IntakeSubsystem.IntakeState.STILL))
+        driver1.getGamepadButton(GamepadKeys.Button.TRIANGLE).whenPressed(
+                new InstantCommand(() -> {
+                    if (intakeState == IntakeState.FORWARD) intakeState = IntakeState.STOP;
+                    else intakeState = IntakeState.FORWARD;
+                    new SelectCommand(this::intakeCommand).schedule();
+                })
         );
-        driver1.getGamepadButton(GamepadKeys.Button.CROSS).toggleWhenActive(
-                new InstantCommand(() -> intake.setSpeed(IntakeSubsystem.IntakeState.REVERSE)),
-                new InstantCommand(() -> intake.setSpeed(IntakeSubsystem.IntakeState.STILL))
+        driver1.getGamepadButton(GamepadKeys.Button.CROSS).whenPressed(
+                new InstantCommand(() -> {
+                    if (intakeState == IntakeState.REVERSE) intakeState = IntakeState.STOP;
+                    else intakeState = IntakeState.REVERSE;
+                    new SelectCommand(this::intakeCommand).schedule();
+                })
         );
         driver1.getGamepadButton(GamepadKeys.Button.CIRCLE).whenPressed(
                 new InstantCommand(() -> spindexer.advanceSpindexer())
@@ -105,17 +133,33 @@ public class AlphaTeleOp extends CommandOpMode {
                 new InstantCommand(() -> setSavedPose(follower.getPose()))
         );
         driver1.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER).whenPressed(
-                new InstantCommand(() -> shooter.setTargetVelocity(1300))
+                new InstantCommand(() -> {
+                    shooter.setTargetVelocity(1300);
+                    intakeState = IntakeState.STOP;
+                    new SelectCommand(this::intakeCommand).schedule();
+                })
         );
         driver1.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER).whenPressed(
-                new InstantCommand(() -> shooter.setTargetVelocity(-300))
+                new InstantCommand(() -> {
+                    shooter.setTargetVelocity(-300);
+                    intakeState = IntakeState.STOP;
+                    new SelectCommand(this::intakeCommand).schedule();
+                })
         );
         new Trigger(
                 () -> driver1.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) > 0.5)
-                .whenActive(new InstantCommand(() -> shooter.setTargetVelocity(+0)));
+                .whenActive(new InstantCommand(() -> {
+                    shooter.setTargetVelocity(+0);
+                    intakeState = IntakeState.STOP;
+                    new SelectCommand(this::intakeCommand).schedule();
+                }));
         new Trigger(
                 () -> driver1.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) > 0.5)
-                .whenActive(new InstantCommand(() -> shooter.setTargetVelocity(-0)));
+                .whenActive(new InstantCommand(() -> {
+                    shooter.setTargetVelocity(-0);
+                    intakeState = IntakeState.STOP;
+                    new SelectCommand(this::intakeCommand).schedule();
+                }));
 
 
     }
