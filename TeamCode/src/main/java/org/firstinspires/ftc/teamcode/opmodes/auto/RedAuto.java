@@ -15,6 +15,7 @@ import com.seattlesolvers.solverslib.command.ParallelRaceGroup;
 import com.seattlesolvers.solverslib.command.RunCommand;
 import com.seattlesolvers.solverslib.command.SequentialCommandGroup;
 import com.seattlesolvers.solverslib.command.WaitCommand;
+import com.seattlesolvers.solverslib.command.WaitUntilCommand;
 import com.seattlesolvers.solverslib.pedroCommand.FollowPathCommand;
 
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
@@ -24,6 +25,7 @@ import org.firstinspires.ftc.teamcode.subsystems.ShooterSubSystem;
 import org.firstinspires.ftc.teamcode.subsystems.SpindexerSubsystem;
 
 import java.util.ArrayList;
+import java.util.function.BooleanSupplier;
 
 @Config
 @Autonomous(name = "Red🦅", group = "angryBirds")
@@ -151,14 +153,12 @@ public class RedAuto extends CommandOpMode {
     //preset command methods
     public SequentialCommandGroup shootArtifacts() {
         return new SequentialCommandGroup(
-                new InstantCommand(() -> shooter.setTargetVelocity(1300)),
-                new WaitCommand(1500),
                 new InstantCommand(() -> spindexer.advanceSpindexer()),
                 new WaitCommand(1500),
                 new InstantCommand(() -> spindexer.advanceSpindexer()),
                 new WaitCommand(1500),
                 new InstantCommand(() -> spindexer.advanceSpindexer()),
-                new InstantCommand(() -> shooter.setTargetVelocity(0))
+                new WaitCommand(1500)
         );
     }
 
@@ -206,15 +206,16 @@ public class RedAuto extends CommandOpMode {
                 new RunCommand(() -> follower.update()),
 
                 new SequentialCommandGroup(
-                        //starting shoot
-                        new FollowPathCommand(follower, paths.get(0)),
+                        new InstantCommand(() -> {shooter.setTargetVelocity(1300);}), //start shoot
+                        new FollowPathCommand(follower, paths.get(0)), //drive to shooting pos
+                        new WaitCommand(1500),
                         shootArtifacts(),
 
                         //cycle one
                         new FollowPathCommand(follower, paths.get(1)),
                         new ParallelCommandGroup(
                                 intakeArtifacts(),
-                                new FollowPathCommand(follower, paths.get(2), true, 0.2)
+                                new FollowPathCommand(follower, paths.get(2), 0.2)
                         ),
                         new FollowPathCommand(follower, paths.get(3), true),
                         //needs time for shooter to ramp up
