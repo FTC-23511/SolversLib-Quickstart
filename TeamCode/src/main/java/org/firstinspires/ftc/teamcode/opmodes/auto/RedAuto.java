@@ -149,6 +149,7 @@ public class RedAuto extends CommandOpMode {
                 new InstantCommand(() -> spindexer.advanceSpindexer()),
                 new WaitCommand(2000),
                 new InstantCommand(() -> spindexer.advanceSpindexer()),
+                new WaitCommand(1000),
                 new InstantCommand(() -> shooter.setTargetVelocity(0))
         );
     }
@@ -200,24 +201,32 @@ public class RedAuto extends CommandOpMode {
                         //starting shoot
                         shootArtifacts(),
 
+                        new WaitCommand(1000),
+
                         //cycle one
                         new FollowPathCommand(follower, paths.get(0)),
+                        new WaitCommand(1000),
                         new ParallelCommandGroup(
                             intakeArtifacts(),
                             new FollowPathCommand(follower, paths.get(1))
                         ),
+                        new WaitCommand(1000),
                         new FollowPathCommand(follower, paths.get(2)),
+                        new WaitCommand(1000),
                         shootArtifacts(),
 
                         new WaitCommand(1000),
 
                         //cycle two
                         new FollowPathCommand(follower, paths.get(3)),
+                        new WaitCommand(1000),
                         new ParallelCommandGroup(
                                 intakeArtifacts(),
                                 new FollowPathCommand(follower, paths.get(4))
                         ),
+                        new WaitCommand(1000),
                         new FollowPathCommand(follower, paths.get(5)),
+                        new WaitCommand(1000),
                         shootArtifacts()
                         /*
                         //cycle three
