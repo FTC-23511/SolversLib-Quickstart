@@ -223,12 +223,12 @@ public class RedAuto extends CommandOpMode {
                         shootArtifacts(),
 
                         //cycle one
-                        new FollowPathCommand(follower, paths.get(1)),
+                        new FollowPathCommand(follower, paths.get(1)), //drives to balls and lines itself up to intake
                         new ParallelCommandGroup(
                                 intakeArtifacts(),
-                                new FollowPathCommand(follower, paths.get(2), 0.2)
+                                new FollowPathCommand(follower, paths.get(2), 0.2) //driving and intaking
                         ),
-                        new FollowPathCommand(follower, paths.get(3), true),
+                        new FollowPathCommand(follower, paths.get(3), true), // returning to shooting pos
                         //needs time for shooter to ramp up
                         new WaitCommand(1500),
                         shootArtifacts(),
@@ -236,7 +236,7 @@ public class RedAuto extends CommandOpMode {
                         new WaitCommand(1000),
 
                         //cycle two
-                        new FollowPathCommand(follower, paths.get(4)),
+                        new FollowPathCommand(follower, paths.get(4)), //drives to balls and lines itself up to intake
                         new ParallelCommandGroup(
                                 intakeArtifacts(),
                                 new FollowPathCommand(follower, paths.get(5), true, 0.2)
@@ -244,7 +244,7 @@ public class RedAuto extends CommandOpMode {
                         //needs extra step to back out from the wall because it will collide with the exit of the ramp
                         new FollowPathCommand(follower, paths.get(6)),
 
-                        new FollowPathCommand(follower, paths.get(7), true),
+                        new FollowPathCommand(follower, paths.get(7), true), //return to shooting pos
                         new WaitCommand(1500),
                         shootArtifacts(),
 
