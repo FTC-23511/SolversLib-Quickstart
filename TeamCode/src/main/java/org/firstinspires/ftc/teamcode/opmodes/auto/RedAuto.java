@@ -214,9 +214,9 @@ public class RedAuto extends CommandOpMode {
                         new FollowPathCommand(follower, paths.get(1)),
                         new ParallelCommandGroup(
                                 intakeArtifacts(),
-                                new FollowPathCommand(follower, paths.get(2), 0.5)
+                                new FollowPathCommand(follower, paths.get(2), true, 0.2)
                         ),
-                        new FollowPathCommand(follower, paths.get(3)),
+                        new FollowPathCommand(follower, paths.get(3), true),
                         //needs time for shooter to ramp up
                         new WaitCommand(1500),
                         shootArtifacts(),
@@ -227,12 +227,12 @@ public class RedAuto extends CommandOpMode {
                         new FollowPathCommand(follower, paths.get(4)),
                         new ParallelCommandGroup(
                                 intakeArtifacts(),
-                                new FollowPathCommand(follower, paths.get(5), 0.5)
+                                new FollowPathCommand(follower, paths.get(5), true, 0.2)
                         ),
                         //needs extra step to back out from the wall because it will collide with the exit of the ramp
                         new FollowPathCommand(follower, paths.get(6)),
 
-                        new FollowPathCommand(follower, paths.get(7)),
+                        new FollowPathCommand(follower, paths.get(7), true),
                         new WaitCommand(1500),
                         shootArtifacts(),
 
