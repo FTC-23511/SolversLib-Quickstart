@@ -57,7 +57,7 @@ public class RedAuto extends CommandOpMode {
     private Follower follower;
 
     //update starting pose
-    public static Pose startingPose = new Pose(108,108,45); //find actual statring pos
+    public static Pose startingPose = new Pose(123.36079077429983,122.17462932454696,45); //find actual statring pos
     private IntakeSubsystem intake;
     private ShooterSubSystem shooter;
     private SpindexerSubsystem spindexer;
@@ -214,7 +214,7 @@ public class RedAuto extends CommandOpMode {
                         new FollowPathCommand(follower, paths.get(1)),
                         new ParallelCommandGroup(
                                 intakeArtifacts(),
-                                new FollowPathCommand(follower, paths.get(2))
+                                new FollowPathCommand(follower, paths.get(2), 0.5)
                         ),
                         new FollowPathCommand(follower, paths.get(3)),
                         //needs time for shooter to ramp up
@@ -227,7 +227,7 @@ public class RedAuto extends CommandOpMode {
                         new FollowPathCommand(follower, paths.get(4)),
                         new ParallelCommandGroup(
                                 intakeArtifacts(),
-                                new FollowPathCommand(follower, paths.get(5))
+                                new FollowPathCommand(follower, paths.get(5), 0.5)
                         ),
                         //needs extra step to back out from the wall because it will collide with the exit of the ramp
                         new FollowPathCommand(follower, paths.get(6)),
