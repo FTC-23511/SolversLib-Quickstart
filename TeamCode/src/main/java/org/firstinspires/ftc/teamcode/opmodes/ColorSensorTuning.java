@@ -6,17 +6,17 @@ import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
-import org.firstinspires.ftc.teamcode.subsystems.ColorSubSystem;
+import org.firstinspires.ftc.teamcode.subsystems.ColorSubsystem;
 
 import java.util.Arrays;
 
 @Config
 @TeleOp(name = "Color Sensor Tuning ", group = " Tuning ")
 public class ColorSensorTuning extends OpMode {
-    private ColorSubSystem colorSensor;
+    private ColorSubsystem colorSensor;
     @Override
     public void init() {
-        colorSensor = new ColorSubSystem(hardwareMap);
+        colorSensor = new ColorSubsystem(hardwareMap);
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
     }
 

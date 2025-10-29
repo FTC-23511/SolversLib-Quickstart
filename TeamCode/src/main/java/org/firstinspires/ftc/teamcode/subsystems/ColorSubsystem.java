@@ -3,14 +3,13 @@ package org.firstinspires.ftc.teamcode.subsystems;
 //import com.qualcomm.robotcore.hardware.ColorSensor;
 import android.util.Log;
 
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
 import com.qualcomm.robotcore.hardware.NormalizedRGBA;
 import com.qualcomm.robotcore.hardware.SwitchableLight;
 import com.seattlesolvers.solverslib.command.SubsystemBase;
-import com.seattlesolvers.solverslib.controller.PIDFController;
-public class ColorSubSystem extends SubsystemBase {
+
+public class ColorSubsystem extends SubsystemBase {
     private NormalizedColorSensor colorSensor;
     private NormalizedRGBA sensedcolors;
     public float[] colorHSV = {0, 0, 0}; //defaut
@@ -20,7 +19,7 @@ public class ColorSubSystem extends SubsystemBase {
     public float[] purpleHigherHSV = {248.434f, 0.617f, 0.98f}; // upper bound for bright magenta/purple
     public float[] purpleLowerHSV  = {208.434f, 0.2f, 0.58f}; // lower bound for darker violet shades
 
-    public ColorSubSystem(final HardwareMap hMap) {
+    public ColorSubsystem(final HardwareMap hMap) {
         colorSensor = hMap.get(NormalizedColorSensor.class, "colorsensor");
 
         //if there is a controllable light turn it on
