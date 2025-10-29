@@ -6,10 +6,14 @@ import com.seattlesolvers.solverslib.command.SubsystemBase;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.seattlesolvers.solverslib.controller.PIDFController;
 import com.seattlesolvers.solverslib.hardware.motors.Motor;
+import com.seattlesolvers.solverslib.hardware.motors.MotorGroup;
 import com.seattlesolvers.solverslib.util.InterpLUT;
 
 public class ShooterSubSystem extends SubsystemBase {
-    Motor shooter;
+
+    Motor shooter1;
+    Motor shooter2;
+    MotorGroup shooter;
     public double getTargetVelocity() {
         return targetVelocity;
     }
@@ -22,7 +26,13 @@ public class ShooterSubSystem extends SubsystemBase {
     InterpLUT lut = new InterpLUT();
 
     public ShooterSubSystem(final HardwareMap hMap) {
-        shooter = new Motor(hMap, "shooter", Motor.GoBILDA.RPM_312);
+        shooter1 = new Motor(hMap, "shooter1", Motor.GoBILDA.RPM_312);
+        shooter2 = new Motor(hMap, "shooter2", Motor.GoBILDA.RPM_312);
+
+        shooter1.setInverted(true); //one has to be backwards
+        shooter2.setInverted(false);
+
+        shooter = new MotorGroup(shooter1, shooter2);
 
         shooter.setRunMode(Motor.RunMode.RawPower);
         shooter.set(0.0);
