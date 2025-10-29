@@ -152,11 +152,11 @@ public class RedAuto extends CommandOpMode {
     public SequentialCommandGroup shootArtifacts() {
         return new SequentialCommandGroup(
                 new InstantCommand(() -> shooter.setTargetVelocity(1300)),
-                new WaitCommand(1000),
+                new WaitCommand(1500),
                 new InstantCommand(() -> spindexer.advanceSpindexer()),
-                new WaitCommand(2000),
+                new WaitCommand(1500),
                 new InstantCommand(() -> spindexer.advanceSpindexer()),
-                new WaitCommand(2000),
+                new WaitCommand(1500),
                 new InstantCommand(() -> spindexer.advanceSpindexer()),
                 new InstantCommand(() -> shooter.setTargetVelocity(0))
         );
@@ -206,7 +206,38 @@ public class RedAuto extends CommandOpMode {
                 new RunCommand(() -> follower.update()),
 
                 new SequentialCommandGroup(
-                        
+                        //starting shoot
+                        new FollowPathCommand(follower, paths.get(0)),
+                        shootArtifacts(),
+
+                        //cycle one
+                        new FollowPathCommand(follower, paths.get(1)),
+                        new ParallelCommandGroup(
+                                intakeArtifacts(),
+                                new FollowPathCommand(follower, paths.get(2))
+                        ),
+                        new FollowPathCommand(follower, paths.get(3)),
+                        //needs time for shooter to ramp up
+                        new WaitCommand(1500),
+                        shootArtifacts(),
+
+                        new WaitCommand(1000),
+
+                        //cycle two
+                        new FollowPathCommand(follower, paths.get(4)),
+                        new ParallelCommandGroup(
+                                intakeArtifacts(),
+                                new FollowPathCommand(follower, paths.get(5))
+                        ),
+                        //needs extra step to back out from the wall because it will collide with the exit of the ramp
+                        new FollowPathCommand(follower, paths.get(6)),
+
+                        new FollowPathCommand(follower, paths.get(7)),
+                        new WaitCommand(1500),
+                        shootArtifacts(),
+
+                        //move off shooting line so that you get extra points theoretically
+                        new FollowPathCommand(follower, paths.get(8))
                 )
         );
 
