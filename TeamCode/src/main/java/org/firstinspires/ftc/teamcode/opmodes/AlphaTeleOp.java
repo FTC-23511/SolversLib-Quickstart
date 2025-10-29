@@ -111,6 +111,7 @@ public class AlphaTeleOp extends CommandOpMode {
                     if (intakeState == IntakeState.FORWARD) intakeState = IntakeState.STOP;
                     else intakeState = IntakeState.FORWARD;
                     new SelectCommand(this::intakeCommand).schedule();
+                    shooter.setTargetVelocity(0);
                 })
         );
         driver1.getGamepadButton(GamepadKeys.Button.CROSS).whenPressed(
@@ -118,6 +119,7 @@ public class AlphaTeleOp extends CommandOpMode {
                     if (intakeState == IntakeState.REVERSE) intakeState = IntakeState.STOP;
                     else intakeState = IntakeState.REVERSE;
                     new SelectCommand(this::intakeCommand).schedule();
+                    shooter.setTargetVelocity(0);
                 })
         );
         driver1.getGamepadButton(GamepadKeys.Button.CIRCLE).whenPressed(
