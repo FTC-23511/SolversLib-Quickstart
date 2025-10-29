@@ -78,7 +78,7 @@ public class RedAuto extends CommandOpMode {
         paths.add(follower
                 .pathBuilder()
                 .addPath(
-                        new BezierLine(new Pose(84.000, 84.000), new Pose(101.000, 84.000))
+                        new BezierLine(new Pose(90, 80), new Pose(101.000, 84.000))
                 )
                 .setLinearHeadingInterpolation(Math.toRadians(45), Math.toRadians(0))
                 .build()
@@ -105,7 +105,7 @@ public class RedAuto extends CommandOpMode {
         paths.add(follower
                 .pathBuilder()
                 .addPath(
-                        new BezierLine(new Pose(84.000, 84.000), new Pose(101.000, 60.000))
+                        new BezierLine(new Pose(90,  80), new Pose(101.000, 60.000))
                 )
                 .setLinearHeadingInterpolation(Math.toRadians(45), Math.toRadians(0))
                 .build()
@@ -141,7 +141,7 @@ public class RedAuto extends CommandOpMode {
         paths.add(follower
                 .pathBuilder()
                 .addPath(
-                        new BezierLine(new Pose(84.000, 84.000), new Pose(84.000, 108.000))
+                        new BezierLine(new Pose(90, 80), new Pose(84.000, 108.000))
                 )
                 .setLinearHeadingInterpolation(Math.toRadians(45), Math.toRadians(0))
                 .build()
