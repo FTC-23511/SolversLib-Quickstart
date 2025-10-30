@@ -9,7 +9,7 @@ import com.seattlesolvers.solverslib.hardware.motors.Motor;
 import com.seattlesolvers.solverslib.hardware.motors.MotorGroup;
 import com.seattlesolvers.solverslib.util.InterpLUT;
 
-public class ShooterSubSystem extends SubsystemBase {
+public class ShooterSubsystem extends SubsystemBase {
 
     Motor shooter1;
     Motor shooter2;
@@ -25,7 +25,8 @@ public class ShooterSubSystem extends SubsystemBase {
 
     InterpLUT lut = new InterpLUT();
 
-    public ShooterSubSystem(final HardwareMap hMap) {
+
+    public ShooterSubsystem(final HardwareMap hMap) {
         shooter1 = new Motor(hMap, "shooter1", Motor.GoBILDA.RPM_312);
         shooter2 = new Motor(hMap, "shooter2", Motor.GoBILDA.RPM_312);
 
