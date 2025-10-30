@@ -192,6 +192,7 @@ public class RedAuto extends CommandOpMode {
 
         //systems and pedro
         follower = Constants.createFollower(hardwareMap);
+        follower.setMaxPower(1.0);
         intake = new IntakeSubsystem(hardwareMap);
         shooter = new ShooterSubsystem(hardwareMap);
         spindexer = new SpindexerSubsystem(hardwareMap);
