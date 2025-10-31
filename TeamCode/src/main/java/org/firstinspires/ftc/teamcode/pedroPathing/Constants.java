@@ -20,7 +20,7 @@ public class Constants {
             .forwardZeroPowerAcceleration(-56.4339326415)
             .lateralZeroPowerAcceleration(-77.942853906)
             .translationalPIDFCoefficients(new PIDFCoefficients(0.1, 0, 0, 0))
-            .headingPIDFCoefficients(new PIDFCoefficients(1.0, 0, 0, 0))
+            .headingPIDFCoefficients(new PIDFCoefficients(2.0, 0, 0, 0))
             .drivePIDFCoefficients(new FilteredPIDFCoefficients(1.0,0.0,0,0.6,0.0))
             .centripetalScaling(0.000001);
 
@@ -35,7 +35,8 @@ public class Constants {
             .rightRearMotorDirection(DcMotorSimple.Direction.FORWARD)
             .useBrakeModeInTeleOp(true)
             .xVelocity(54.6519177855)
-            .yVelocity(41.4717026758);
+            .yVelocity(41.4717026758)
+            .maxPower(0.2);
 
     public static PinpointConstants localizerConstants = new PinpointConstants()
             .forwardPodY(4) //we measured using ruler and taking length and width and dividing by two
