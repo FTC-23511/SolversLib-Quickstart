@@ -71,6 +71,9 @@ public class SpindexerSubsystem extends SubsystemBase {
             case THREE: spindexerState = SpindexerState.TWO;   break;
         }
     }
+    public void moveSpindexerBy(double x) {
+        targetPosition += x;
+    }
 
     @Override
     public void periodic() {
