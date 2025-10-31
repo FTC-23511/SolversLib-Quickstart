@@ -156,11 +156,11 @@ public class RedAuto extends CommandOpMode {
     public SequentialCommandGroup shootArtifacts() {
         return new SequentialCommandGroup(
                 new InstantCommand(() -> spindexer.advanceSpindexer()),
-                new WaitCommand(1500),
+                new WaitCommand(1000),
                 new InstantCommand(() -> spindexer.advanceSpindexer()),
-                new WaitCommand(1500),
+                new WaitCommand(1000),
                 new InstantCommand(() -> spindexer.advanceSpindexer()),
-                new WaitCommand(1500)
+                new WaitCommand(1000)
         );
     }
 
@@ -174,12 +174,12 @@ public class RedAuto extends CommandOpMode {
                 new InstantCommand(() -> spindexer.advanceSpindexer()),
                 new ParallelRaceGroup(
                         new WaitForColorCommand(colorsensor),
-                        new WaitCommand(1500)
+                        new WaitCommand(500)
                 ),
                 new InstantCommand(() -> spindexer.advanceSpindexer()),
                 new ParallelRaceGroup(
                         new WaitForColorCommand(colorsensor),
-                        new WaitCommand(1500)
+                        new WaitCommand(500)
                 ),
                 new InstantCommand(() -> intake.setSpeed(IntakeSubsystem.IntakeState.STILL))
         );
@@ -219,9 +219,8 @@ public class RedAuto extends CommandOpMode {
                 new RunCommand(() -> follower.update()),
 
                 new SequentialCommandGroup(
-                        new InstantCommand(() -> {shooter.setTargetVelocity(1200);}), //start shoot
+                        new InstantCommand(() -> {shooter.setTargetVelocity(1300);}), //start shoot
                         new FollowPathCommand(follower, paths.get(0), true), //drive to shooting pos
-                        new WaitCommand(1500),
                         shootArtifacts(),
 
                         //cycle one
@@ -232,10 +231,7 @@ public class RedAuto extends CommandOpMode {
                         ),
                         new FollowPathCommand(follower, paths.get(3), true).setGlobalMaxPower(1), // returning to shooting pos
                         //needs time for shooter to ramp up
-                        new WaitCommand(1500),
                         shootArtifacts(),
-
-                        new WaitCommand(1000),
 
                         //cycle two
                         new FollowPathCommand(follower, paths.get(4), true), //drives to balls and lines itself up to intake
@@ -247,7 +243,6 @@ public class RedAuto extends CommandOpMode {
                         new FollowPathCommand(follower, paths.get(6), true).setGlobalMaxPower(1),
 
                         new FollowPathCommand(follower, paths.get(7), true), //return to shooting pos
-                        new WaitCommand(1500),
                         shootArtifacts(),
 
                         //move off shooting line so that you get extra points theoretically
