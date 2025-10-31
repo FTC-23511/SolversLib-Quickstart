@@ -40,6 +40,7 @@ public class AlphaTeleOp extends CommandOpMode {
     public GamepadEx driver2;
 
     private boolean manualControl = true;
+    private boolean slowMode = false;
 
     private ElapsedTime timer = new ElapsedTime();
 
@@ -102,6 +103,7 @@ public class AlphaTeleOp extends CommandOpMode {
         //command binding
         SelectCommand intakeSelectCommand = new SelectCommand(this::intakeCommand);
 
+        //Driver 1
         driver1.getGamepadButton(GamepadKeys.Button.TRIANGLE).whenPressed(
                 new InstantCommand(() -> {
                     if (intakeState == IntakeState.FORWARD) intakeState = IntakeState.STOP;
@@ -166,7 +168,25 @@ public class AlphaTeleOp extends CommandOpMode {
                     intakeState = IntakeState.STOP;
                     new SelectCommand(this::intakeCommand).schedule();
                 }));
+        new Trigger(() -> driver1.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) > 0.5)
+                .whileActiveContinuous(new InstantCommand(() -> slowMode = true))
+                .whenInactive(new InstantCommand(() -> slowMode = false));
+        new Trigger(() -> driver1.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) > 0.5)
+                .whileActiveContinuous(new InstantCommand(() -> slowMode = true))
+                .whenInactive(new InstantCommand(() -> slowMode = false));
 
+
+        //Driver 2
+        driver1.getGamepadButton(GamepadKeys.Button.CIRCLE).whenPressed(
+                new InstantCommand(() -> {
+                    spindexer.moveSpindexerBy(10);
+                })
+        );
+        driver1.getGamepadButton(GamepadKeys.Button.SQUARE).whenPressed(
+                new InstantCommand(() -> {
+                    spindexer.moveSpindexerBy(-10);
+                })
+        );
 
     }
 
@@ -175,7 +195,7 @@ public class AlphaTeleOp extends CommandOpMode {
     @Override
     public void run() {
         if (manualControl) {
-            follower.setTeleOpDrive(driver1.getLeftY(), -driver1.getLeftX(), -driver1.getRightX(), true);
+            follower.setTeleOpDrive(driver1.getLeftY(), -driver1.getLeftX(), -driver1.getRightX() * (slowMode?0.5:1), true);
         } else {
             if (
                     (Math.abs(follower.getPose().getHeading() - savedPose.getHeading()) < 0.04
