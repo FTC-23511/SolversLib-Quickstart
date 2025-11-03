@@ -181,7 +181,7 @@ public class RedAuto extends CommandOpMode {
                         new WaitForColorCommand(colorsensor),
                         new WaitCommand(500)
                 ),
-                new InstantCommand(() -> intake.setSpeed(IntakeSubsystem.IntakeState.STILL))
+                new InstantCommand(() -> intake.setSpeed(IntakeSubsystem.IntakeState.REVERSE))
         );
     }
 
@@ -221,26 +221,31 @@ public class RedAuto extends CommandOpMode {
                 new SequentialCommandGroup(
                         new InstantCommand(() -> {shooter.setTargetVelocity(1300);}), //start shoot
                         new FollowPathCommand(follower, paths.get(0), true), //drive to shooting pos
+                        new WaitCommand(500),
                         shootArtifacts(),
 
                         //cycle one
                         new FollowPathCommand(follower, paths.get(1), true), //drives to balls and lines itself up to intake
                         new ParallelCommandGroup(
+                                new InstantCommand(() -> follower.setMaxPower(0.5)),
                                 intakeArtifacts(),
-                                new FollowPathCommand(follower, paths.get(2), true).setGlobalMaxPower(0.2) //driving and intaking
+                                new FollowPathCommand(follower, paths.get(2), true) //driving and intaking
                         ),
-                        new FollowPathCommand(follower, paths.get(3), true).setGlobalMaxPower(1), // returning to shooting pos
+                        new InstantCommand(() -> follower.setMaxPower(1)),
+                        new FollowPathCommand(follower, paths.get(3), true), // returning to shooting pos
                         //needs time for shooter to ramp up
                         shootArtifacts(),
 
                         //cycle two
                         new FollowPathCommand(follower, paths.get(4), true), //drives to balls and lines itself up to intake
                         new ParallelCommandGroup(
+                                new InstantCommand(() -> follower.setMaxPower(0.5)),
                                 intakeArtifacts(),
-                                new FollowPathCommand(follower, paths.get(5), true).setGlobalMaxPower(0.2)
+                                new FollowPathCommand(follower, paths.get(5), true)
                         ),
                         //needs extra step to back out from the wall because it will collide with the exit of the ramp
-                        new FollowPathCommand(follower, paths.get(6), true).setGlobalMaxPower(1),
+                        new InstantCommand(() -> follower.setMaxPower(1)),
+                        new FollowPathCommand(follower, paths.get(6), true),
 
                         new FollowPathCommand(follower, paths.get(7), true), //return to shooting pos
                         shootArtifacts(),
