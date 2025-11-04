@@ -79,8 +79,8 @@ public class AlphaTeleOp extends CommandOpMode {
     public void initialize () {
         //systems and pedro
         follower = Constants.createFollower(hardwareMap);
-        follower.setHeadingPIDFCoefficients(new PIDFCoefficients(2, 0, 0, 0));
         follower.setStartingPose(startingPose);
+        follower.setMaxPower(1.0);
         intake = new IntakeSubsystem(hardwareMap);
         shooter = new ShooterSubsystem(hardwareMap);
         spindexer = new SpindexerSubsystem(hardwareMap);
@@ -195,7 +195,7 @@ public class AlphaTeleOp extends CommandOpMode {
     @Override
     public void run() {
         if (manualControl) {
-            follower.setTeleOpDrive(driver1.getLeftY(), -driver1.getLeftX(), -driver1.getRightX() * (slowMode?0.5:1), true);
+            follower.setTeleOpDrive(driver1.getLeftY(), -driver1.getLeftX(), -driver1.getRightX() * (slowMode?1.0:1), true);
         } else {
             if (
                     (Math.abs(follower.getPose().getHeading() - savedPose.getHeading()) < 0.04
@@ -239,7 +239,7 @@ public class AlphaTeleOp extends CommandOpMode {
         telemetry.addData("saved heading", String.format("Heading: %.4f", savedPose.getHeading()));
         telemetry.addData("t value", follower.getCurrentTValue());
         telemetry.addData("!follower.isBusy() || (gamepad1.touchpad_finger_1 && gamepad1.touchpad_finger_2)", !follower.isBusy() || (gamepad1.touchpad_finger_1 && gamepad1.touchpad_finger_2));
-
+        telemetry.addData("slowmode", slowMode);
         telemetry.addData("------------------",null);
 
 

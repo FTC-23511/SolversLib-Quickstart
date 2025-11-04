@@ -13,11 +13,11 @@ public class ColorSubsystem extends SubsystemBase {
     private NormalizedColorSensor colorSensor;
     private NormalizedRGBA sensedcolors;
     public float[] colorHSV = {0, 0, 0}; //defaut
-    public float[] greenHigherHSV = {175.758f, 0.907f, 0.749f};  // upper bound for bright/lime greens
-    public float[] greenLowerHSV  = {135.758f, 0.507f, 0.349f};   // lower bound for darker/olive greens
+    public float[] greenHigherHSV = {175f, 0.9f, 0.95f};  // upper bound for bright/lime greens
+    public float[] greenLowerHSV  = {135f, 0.2f, 0.2f};   // lower bound for darker/olive greens
 
-    public float[] purpleHigherHSV = {248.434f, 0.617f, 0.98f}; // upper bound for bright magenta/purple
-    public float[] purpleLowerHSV  = {208.434f, 0.2f, 0.58f}; // lower bound for darker violet shades
+    public float[] purpleHigherHSV = {248f, 0.9f, 0.95f}; // upper bound for bright magenta/purple
+    public float[] purpleLowerHSV  = {208f, 0.2f, 0.28f}; // lower bound for darker violet shades
 
     public ColorSubsystem(final HardwareMap hMap) {
         colorSensor = hMap.get(NormalizedColorSensor.class, "colorsensor");
@@ -98,6 +98,10 @@ public class ColorSubsystem extends SubsystemBase {
     public boolean checkIfPurple() {
         senseColor();
         return colorInRange(colorHSV, purpleLowerHSV, purpleHigherHSV);
+    }
+    public boolean checkIfWhite() {
+        senseColor();
+        return colorHSV.equals(new float[] {0.0f, 0.0f, 1.0f});
     }
 
     public boolean colorInRange(float[] color, float[] min, float[] max) {
