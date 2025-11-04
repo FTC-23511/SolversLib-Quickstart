@@ -26,6 +26,7 @@ import org.firstinspires.ftc.teamcode.subsystems.ShooterSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.SpindexerSubsystem;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.function.BooleanSupplier;
 
 @Config
@@ -219,7 +220,7 @@ public class RedAuto extends CommandOpMode {
                 new RunCommand(() -> follower.update()),
 
                 new SequentialCommandGroup(
-                        new InstantCommand(() -> {shooter.setTargetVelocity(1300);}), //start shoot
+                        new InstantCommand(() -> {shooter.setTargetVelocity(1200);}), //start shoot
                         new FollowPathCommand(follower, paths.get(0), true), //drive to shooting pos
                         new WaitCommand(500),
                         shootArtifacts(),
@@ -227,7 +228,7 @@ public class RedAuto extends CommandOpMode {
                         //cycle one
                         new FollowPathCommand(follower, paths.get(1), true), //drives to balls and lines itself up to intake
                         new ParallelCommandGroup(
-                                new InstantCommand(() -> follower.setMaxPower(0.5)),
+                                new InstantCommand(() -> follower.setMaxPower(0.3)),
                                 intakeArtifacts(),
                                 new FollowPathCommand(follower, paths.get(2), true) //driving and intaking
                         ),
@@ -239,7 +240,7 @@ public class RedAuto extends CommandOpMode {
                         //cycle two
                         new FollowPathCommand(follower, paths.get(4), true), //drives to balls and lines itself up to intake
                         new ParallelCommandGroup(
-                                new InstantCommand(() -> follower.setMaxPower(0.5)),
+                                new InstantCommand(() -> follower.setMaxPower(0.3)),
                                 intakeArtifacts(),
                                 new FollowPathCommand(follower, paths.get(5), true)
                         ),
@@ -285,6 +286,9 @@ public class RedAuto extends CommandOpMode {
 
         telemetry.addData("shooter target velocity", shooter.getTargetVelocity());
         telemetry.addData("shooter actual velocity", shooter.getActualVelocity());
+        telemetry.addData("green color detected?", Arrays.toString(colorsensor.senseColor()));
+        telemetry.addData("green color detected?", colorsensor.checkIfGreen());
+        telemetry.addData("purple color detected?", colorsensor.checkIfPurple());
         telemetry.update();
         super.run();
     }
