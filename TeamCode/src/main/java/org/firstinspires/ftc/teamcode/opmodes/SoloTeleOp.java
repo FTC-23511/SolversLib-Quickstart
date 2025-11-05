@@ -23,7 +23,7 @@ import org.firstinspires.ftc.teamcode.subsystems.SpindexerSubsystem;
 
 import java.util.function.Supplier;
 
-@TeleOp (name = "Practice Teleop (potentially out of date)", group = "OpModes")
+@TeleOp (name = "Practice Teleop (potentially out of date)", group = "!")
 public class SoloTeleOp extends CommandOpMode {
     private Follower follower;
     public static Pose startingPose = new Pose(0,0,0);

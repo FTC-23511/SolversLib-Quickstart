@@ -23,7 +23,7 @@ import org.firstinspires.ftc.teamcode.subsystems.SpindexerSubsystem;
 
 import java.util.function.Supplier;
 
-@TeleOp (name = "Alpha Teleop", group = "OpModes")
+@TeleOp (name = "Alpha Teleop", group = "!")
 public class AlphaTeleOp extends CommandOpMode {
     private Follower follower;
     public static Pose startingPose = new Pose(0,0,0);
@@ -94,8 +94,6 @@ public class AlphaTeleOp extends CommandOpMode {
         colorSensor = new ColorSubsystem(hardwareMap);
         led = new LEDSubsystem(hardwareMap);
         voltageSensor = hardwareMap.get(VoltageSensor.class, "Control Hub");
-        colorSensor = new ColorSubsystem(hardwareMap);
-        led = new LEDSubsystem(hardwareMap);
 
         super.reset();
         lastVoltageCheck.reset();
@@ -258,8 +256,11 @@ public class AlphaTeleOp extends CommandOpMode {
             else if (colorSensor.checkIfPurple()) {
                 led.setColor(LEDSubsystem.LEDState.VIOLET);
             }
+            else if (colorSensor.checkIfWhite()){
+                led.setColor(LEDSubsystem.LEDState.WHITE);
+            }
             else {
-                led.setColor(LEDSubsystem.LEDState.WHITE); //anything else besides green or purple
+                led.setColor(LEDSubsystem.LEDState.YELLOW);
             }
         }
 

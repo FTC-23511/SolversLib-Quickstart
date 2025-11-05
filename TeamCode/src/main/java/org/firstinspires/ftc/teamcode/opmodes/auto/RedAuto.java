@@ -16,7 +16,7 @@ import com.seattlesolvers.solverslib.command.SequentialCommandGroup;
 import com.seattlesolvers.solverslib.command.WaitCommand;
 import com.seattlesolvers.solverslib.pedroCommand.FollowPathCommand;
 
-import org.firstinspires.ftc.teamcode.commands.IfRobotStuckThenFinishCommand;
+import org.firstinspires.ftc.teamcode.commands.WaitForRobotStuckCommand;
 import org.firstinspires.ftc.teamcode.commands.WaitForColorCommand;
 import org.firstinspires.ftc.teamcode.commands.WaitForShooterCommand;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
@@ -241,7 +241,8 @@ public class RedAuto extends CommandOpMode {
                                 intakeArtifacts(),
                                 new ParallelRaceGroup(
                                         new FollowPathCommand(follower, paths.get(2), true), //drive and pick up balls
-                                        new IfRobotStuckThenFinishCommand(follower)
+//                                        new WaitForRobotStuckCommand(follower) //does not work for some reason
+                                        new WaitCommand(5000)
                                 )
 
                         ),
@@ -257,7 +258,8 @@ public class RedAuto extends CommandOpMode {
                                 intakeArtifacts(),
                                 new ParallelRaceGroup(
                                         new FollowPathCommand(follower, paths.get(5), true), //drive and pick up balls
-                                        new IfRobotStuckThenFinishCommand(follower)
+//                                        new WaitForRobotStuckCommand(follower)
+                                        new WaitCommand(5000)
                                 )
                         ),
                         //needs extra step to back out from the wall because it will collide with the exit of the ramp
@@ -288,11 +290,10 @@ public class RedAuto extends CommandOpMode {
             led.setColor(LEDSubsystem.LEDState.GREEN);
         }
 
-/*        telemetry.addData("current pos", String.format("X: %8.2f, Y: %8.2f", follower.getPose().getX(), follower.getPose().getY()));
-        telemetry.addData("current heading", String.format("Heading: %.4f", follower.getPose().getHeading()));*/
+        telemetry.addData("stuck?", follower.isRobotStuck());
 
-        telemetry.addData("current pos", follower.getPose().getX() + " " + follower.getPose().getY());
-        telemetry.addData("current heading", Math.toDegrees(follower.getPose().getHeading()));
+        telemetry.addData("current pos", String.format("X: %8.2f, Y: %8.2f", follower.getPose().getX(), follower.getPose().getY()));
+        telemetry.addData("current heading", String.format("Heading (deg): %.4f", Math.toDegrees(follower.getPose().getHeading())));
 
         telemetry.addData("spindexer output", spindexer.getOutput());
         telemetry.addData("spindexer setpoint", spindexer.getPIDSetpoint());
@@ -305,6 +306,8 @@ public class RedAuto extends CommandOpMode {
         telemetry.addData("green color detected?", Arrays.toString(colorsensor.senseColor()));
         telemetry.addData("green color detected?", colorsensor.checkIfGreen());
         telemetry.addData("purple color detected?", colorsensor.checkIfPurple());
+
+        follower.update();
         telemetry.update();
         super.run();
     }
