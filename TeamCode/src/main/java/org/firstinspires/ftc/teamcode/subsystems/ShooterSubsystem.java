@@ -17,7 +17,7 @@ public class ShooterSubsystem extends SubsystemBase {
         return shooter.getCorrectedVelocity();
     }
     public double targetVelocity = 0.0;
-    private final PIDFController flywheelController = new PIDFController(0.0015, 0, 0, 0.00067);
+    private final PIDFController flywheelController = new PIDFController(0.0015, 0, 0, 0.00061);
 
     InterpLUT lut = new InterpLUT();
 

@@ -160,16 +160,6 @@ public class AlphaTeleOp extends CommandOpMode {
                     intakeState = IntakeState.STOP;
                     new SelectCommand(this::intakeCommand).schedule();
                 }));
-        new Trigger(
-                () -> driver1.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) > 0.5)
-                .whenActive(new InstantCommand(() -> {
-                    shooter.setTargetVelocity(-0);
-                    intakeState = IntakeState.STOP;
-                    new SelectCommand(this::intakeCommand).schedule();
-                }));
-        new Trigger(() -> driver1.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) > 0.5)
-                .whileActiveContinuous(new InstantCommand(() -> slowMode = true))
-                .whenInactive(new InstantCommand(() -> slowMode = false));
         new Trigger(() -> driver1.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) > 0.5)
                 .whileActiveContinuous(new InstantCommand(() -> slowMode = true))
                 .whenInactive(new InstantCommand(() -> slowMode = false));
@@ -210,9 +200,9 @@ public class AlphaTeleOp extends CommandOpMode {
     @Override
     public void run() {
         if (manualControl) {
-            double x = driver1.getLeftX();
-            double y = -driver1.getLeftY();
-            double rx = -driver1.getRightX() * (slowMode?0.5:1);
+            double x = -driver1.getLeftX();
+            double y = driver1.getLeftY();
+            double rx = -driver1.getRightX() * (slowMode?0.3:1);
             double denominator = Math.max(Math.abs(x) + Math.abs(y) + Math.abs(rx), 1.0);
             follower.setTeleOpDrive(y / denominator, x / denominator, rx / denominator, true);
         } else {
