@@ -196,7 +196,11 @@ public class AlphaTeleOp extends CommandOpMode {
     @Override
     public void run() {
         if (manualControl) {
-            follower.setTeleOpDrive(driver1.getLeftY(), -driver1.getLeftX(), -driver1.getRightX() * (slowMode?1.0:1), true);
+            double x = driver1.getLeftX();
+            double y = -driver1.getLeftY();
+            double rx = -driver1.getRightX() * (slowMode?0.5:1);
+            double denominator = Math.max(Math.abs(x) + Math.abs(y) + Math.abs(rx), 1.0);
+            follower.setTeleOpDrive(y / denominator, x / denominator, rx / denominator, true);
         } else {
             if (
                     (Math.abs(follower.getPose().getHeading() - savedPose.getHeading()) < 0.04
