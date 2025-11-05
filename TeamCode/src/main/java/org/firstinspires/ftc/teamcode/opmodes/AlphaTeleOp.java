@@ -48,6 +48,7 @@ public class AlphaTeleOp extends CommandOpMode {
 
     public ElapsedTime lastVoltageCheck = new ElapsedTime();
     private ElapsedTime timer = new ElapsedTime();
+    private int tickAdjustmentcount = 0;
 
     private void setSavedPose(Pose pose) {
         savedPose = pose;
@@ -84,8 +85,8 @@ public class AlphaTeleOp extends CommandOpMode {
     public void initialize () {
         //systems and pedro
         follower = Constants.createFollower(hardwareMap);
-        follower.setHeadingPIDFCoefficients(new PIDFCoefficients(2, 0, 0, 0));
         follower.setStartingPose(startingPose);
+        follower.setMaxPower(1.0);
         intake = new IntakeSubsystem(hardwareMap);
         shooter = new ShooterSubsystem(hardwareMap);
         spindexer = new SpindexerSubsystem(hardwareMap);
@@ -116,7 +117,6 @@ public class AlphaTeleOp extends CommandOpMode {
                     if (intakeState == IntakeState.FORWARD) intakeState = IntakeState.STOP;
                     else intakeState = IntakeState.FORWARD;
                     new SelectCommand(this::intakeCommand).schedule();
-                    shooter.setTargetVelocity(0);
                 })
         );
         driver1.getGamepadButton(GamepadKeys.Button.CROSS).whenPressed(
@@ -124,7 +124,6 @@ public class AlphaTeleOp extends CommandOpMode {
                     if (intakeState == IntakeState.REVERSE) intakeState = IntakeState.STOP;
                     else intakeState = IntakeState.REVERSE;
                     new SelectCommand(this::intakeCommand).schedule();
-                    shooter.setTargetVelocity(0);
                 })
         );
         driver1.getGamepadButton(GamepadKeys.Button.CIRCLE).whenPressed(
@@ -149,7 +148,7 @@ public class AlphaTeleOp extends CommandOpMode {
         );
         driver1.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER).whenPressed(
                 new InstantCommand(() -> {
-                    shooter.setTargetVelocity(1300);
+                    shooter.setTargetVelocity(1250);
                     intakeState = IntakeState.STOP;
                     new SelectCommand(this::intakeCommand).schedule();
                 })
@@ -168,30 +167,36 @@ public class AlphaTeleOp extends CommandOpMode {
                     intakeState = IntakeState.STOP;
                     new SelectCommand(this::intakeCommand).schedule();
                 }));
-        new Trigger(
-                () -> driver1.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) > 0.5)
-                .whenActive(new InstantCommand(() -> {
-                    shooter.setTargetVelocity(-0);
-                    intakeState = IntakeState.STOP;
-                    new SelectCommand(this::intakeCommand).schedule();
-                }));
-        new Trigger(() -> driver1.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) > 0.5)
-                .whileActiveContinuous(new InstantCommand(() -> slowMode = true))
-                .whenInactive(new InstantCommand(() -> slowMode = false));
         new Trigger(() -> driver1.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) > 0.5)
                 .whileActiveContinuous(new InstantCommand(() -> slowMode = true))
                 .whenInactive(new InstantCommand(() -> slowMode = false));
 
 
         //Driver 2
-        driver1.getGamepadButton(GamepadKeys.Button.CIRCLE).whenPressed(
+        driver2.getGamepadButton(GamepadKeys.Button.CIRCLE).whenPressed(
                 new InstantCommand(() -> {
                     spindexer.moveSpindexerBy(10);
+                    tickAdjustmentcount += 10;
                 })
         );
-        driver1.getGamepadButton(GamepadKeys.Button.SQUARE).whenPressed(
+        driver2.getGamepadButton(GamepadKeys.Button.SQUARE).whenPressed(
                 new InstantCommand(() -> {
                     spindexer.moveSpindexerBy(-10);
+                    tickAdjustmentcount -= 10;
+                })
+        );
+        driver2.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER).whenPressed(
+                new InstantCommand(() -> {
+                    shooter.setTargetVelocity(1250);
+                    intakeState = IntakeState.STOP;
+                    new SelectCommand(this::intakeCommand).schedule();
+                })
+        );
+        driver2.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER).whenPressed(
+                new InstantCommand(() -> {
+                    shooter.setTargetVelocity(-300);
+                    intakeState = IntakeState.STOP;
+                    new SelectCommand(this::intakeCommand).schedule();
                 })
         );
 
@@ -202,7 +207,11 @@ public class AlphaTeleOp extends CommandOpMode {
     @Override
     public void run() {
         if (manualControl) {
-            follower.setTeleOpDrive(driver1.getLeftY(), -driver1.getLeftX(), -driver1.getRightX() * (slowMode?0.5:1), true);
+            double x = -driver1.getLeftX();
+            double y = driver1.getLeftY();
+            double rx = -driver1.getRightX() * (slowMode?0.3:1);
+            double denominator = Math.max(Math.abs(x) + Math.abs(y) + Math.abs(rx), 1.0);
+            follower.setTeleOpDrive(y / denominator, x / denominator, rx / denominator, true);
         } else {
             if (
                     (Math.abs(follower.getPose().getHeading() - savedPose.getHeading()) < 0.04
@@ -254,13 +263,14 @@ public class AlphaTeleOp extends CommandOpMode {
         telemetry.addData("saved heading", String.format("Heading: %.4f", savedPose.getHeading()));
         telemetry.addData("t value", follower.getCurrentTValue());
         telemetry.addData("!follower.isBusy() || (gamepad1.touchpad_finger_1 && gamepad1.touchpad_finger_2)", !follower.isBusy() || (gamepad1.touchpad_finger_1 && gamepad1.touchpad_finger_2));
-
+        telemetry.addData("slowmode", slowMode);
         telemetry.addData("------------------",null);
 
 
         telemetry.addData("spindexer output", spindexer.getOutput());
         telemetry.addData("spindexer setpoint", spindexer.getPIDSetpoint());
         telemetry.addData("spindexer pos", spindexer.getCurrentPosition());
+        telemetry.addData("spindexer tick adjustment degrees", tickAdjustmentcount);
 
         telemetry.addData("------------------",null);
 
