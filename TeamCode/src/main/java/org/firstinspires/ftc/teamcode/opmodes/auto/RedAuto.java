@@ -14,9 +14,9 @@ import com.seattlesolvers.solverslib.command.ParallelRaceGroup;
 import com.seattlesolvers.solverslib.command.RunCommand;
 import com.seattlesolvers.solverslib.command.SequentialCommandGroup;
 import com.seattlesolvers.solverslib.command.WaitCommand;
-import com.seattlesolvers.solverslib.command.WaitUntilCommand;
 import com.seattlesolvers.solverslib.pedroCommand.FollowPathCommand;
 
+import org.firstinspires.ftc.teamcode.commands.IfRobotStuckThenFinishCommand;
 import org.firstinspires.ftc.teamcode.commands.WaitForColorCommand;
 import org.firstinspires.ftc.teamcode.commands.WaitForShooterCommand;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
@@ -28,7 +28,6 @@ import org.firstinspires.ftc.teamcode.subsystems.SpindexerSubsystem;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.function.BooleanSupplier;
 
 @Config
 @Autonomous(name = "Red🦅", group = "angryBirds")
@@ -68,7 +67,6 @@ public class RedAuto extends CommandOpMode {
     private SpindexerSubsystem spindexer;
     private ColorSubsystem colorsensor;
     private LEDSubsystem led;
-
 
     public void buildPaths(Follower follower) {
         follower.setStartingPose(startingPose);
@@ -243,7 +241,7 @@ public class RedAuto extends CommandOpMode {
                                 intakeArtifacts(),
                                 new ParallelRaceGroup(
                                         new FollowPathCommand(follower, paths.get(2), true), //drive and pick up balls
-                                        new WaitCommand(4000)
+                                        new IfRobotStuckThenFinishCommand(follower)
                                 )
 
                         ),
@@ -259,7 +257,7 @@ public class RedAuto extends CommandOpMode {
                                 intakeArtifacts(),
                                 new ParallelRaceGroup(
                                         new FollowPathCommand(follower, paths.get(5), true), //drive and pick up balls
-                                        new WaitCommand(5000)
+                                        new IfRobotStuckThenFinishCommand(follower)
                                 )
                         ),
                         //needs extra step to back out from the wall because it will collide with the exit of the ramp

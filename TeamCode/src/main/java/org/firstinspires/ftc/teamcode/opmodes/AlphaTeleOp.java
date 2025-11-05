@@ -43,6 +43,7 @@ public class AlphaTeleOp extends CommandOpMode {
     private boolean slowMode = false;
 
     private ElapsedTime timer = new ElapsedTime();
+    private int tickAdjustmentcount = 0;
 
     private void setSavedPose(Pose pose) {
         savedPose = pose;
@@ -109,7 +110,6 @@ public class AlphaTeleOp extends CommandOpMode {
                     if (intakeState == IntakeState.FORWARD) intakeState = IntakeState.STOP;
                     else intakeState = IntakeState.FORWARD;
                     new SelectCommand(this::intakeCommand).schedule();
-                    shooter.setTargetVelocity(0);
                 })
         );
         driver1.getGamepadButton(GamepadKeys.Button.CROSS).whenPressed(
@@ -117,7 +117,6 @@ public class AlphaTeleOp extends CommandOpMode {
                     if (intakeState == IntakeState.REVERSE) intakeState = IntakeState.STOP;
                     else intakeState = IntakeState.REVERSE;
                     new SelectCommand(this::intakeCommand).schedule();
-                    shooter.setTargetVelocity(0);
                 })
         );
         driver1.getGamepadButton(GamepadKeys.Button.CIRCLE).whenPressed(
@@ -140,14 +139,14 @@ public class AlphaTeleOp extends CommandOpMode {
                     setSavedPose(follower.getPose());
                 })
         );
-        driver1.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER).whenPressed(
+        driver2.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER).whenPressed(
                 new InstantCommand(() -> {
                     shooter.setTargetVelocity(1300);
                     intakeState = IntakeState.STOP;
                     new SelectCommand(this::intakeCommand).schedule();
                 })
         );
-        driver1.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER).whenPressed(
+        driver2.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER).whenPressed(
                 new InstantCommand(() -> {
                     shooter.setTargetVelocity(-300);
                     intakeState = IntakeState.STOP;
@@ -155,23 +154,23 @@ public class AlphaTeleOp extends CommandOpMode {
                 })
         );
         new Trigger(
-                () -> driver1.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) > 0.5)
+                () -> driver2.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) > 0.5)
                 .whenActive(new InstantCommand(() -> {
                     shooter.setTargetVelocity(+0);
                     intakeState = IntakeState.STOP;
                     new SelectCommand(this::intakeCommand).schedule();
                 }));
         new Trigger(
-                () -> driver1.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) > 0.5)
+                () -> driver2.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) > 0.5)
                 .whenActive(new InstantCommand(() -> {
                     shooter.setTargetVelocity(-0);
                     intakeState = IntakeState.STOP;
                     new SelectCommand(this::intakeCommand).schedule();
                 }));
-        new Trigger(() -> driver1.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) > 0.5)
+        new Trigger(() -> driver2.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) > 0.5)
                 .whileActiveContinuous(new InstantCommand(() -> slowMode = true))
                 .whenInactive(new InstantCommand(() -> slowMode = false));
-        new Trigger(() -> driver1.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) > 0.5)
+        new Trigger(() -> driver2.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) > 0.5)
                 .whileActiveContinuous(new InstantCommand(() -> slowMode = true))
                 .whenInactive(new InstantCommand(() -> slowMode = false));
 
@@ -180,11 +179,13 @@ public class AlphaTeleOp extends CommandOpMode {
         driver2.getGamepadButton(GamepadKeys.Button.CIRCLE).whenPressed(
                 new InstantCommand(() -> {
                     spindexer.moveSpindexerBy(10);
+                    tickAdjustmentcount += 10;
                 })
         );
         driver2.getGamepadButton(GamepadKeys.Button.SQUARE).whenPressed(
                 new InstantCommand(() -> {
                     spindexer.moveSpindexerBy(-10);
+                    tickAdjustmentcount -= 10;
                 })
         );
 
@@ -246,6 +247,7 @@ public class AlphaTeleOp extends CommandOpMode {
         telemetry.addData("spindexer output", spindexer.getOutput());
         telemetry.addData("spindexer setpoint", spindexer.getPIDSetpoint());
         telemetry.addData("spindexer pos", spindexer.getCurrentPosition());
+        telemetry.addData("spindexer tick adjustment degrees", tickAdjustmentcount);
 
         telemetry.addData("------------------",null);
 
