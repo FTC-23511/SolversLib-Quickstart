@@ -16,7 +16,7 @@ public class SpindexerSubsystem extends SubsystemBase {
     private final DcMotor spindexer;
 
     // PIDF Coefficients
-    private final double kP = -0.0006;
+    private double kP = -0.0004;
     private final double kI = 0.000000;
     private final double kD = 0.000001;
     private final double kF = 0.000;
@@ -102,5 +102,7 @@ public class SpindexerSubsystem extends SubsystemBase {
         return targetPosition;
     }
 
-
+    public void updatePIDVoltage(double voltage) {
+        kP = (voltage / 12) * -0.0004;
+    }
 }
