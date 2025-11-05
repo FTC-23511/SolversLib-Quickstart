@@ -86,6 +86,7 @@ public class SpindexerSubsystem extends SubsystemBase {
 //            spindexer.setPower(clipped);
 //            lastOutput = output;
 //        }
+        pid.setP(kP);
         currentPosition = spindexer.getCurrentPosition();
         output = pid.calculate(currentPosition, targetPosition);
         spindexer.setPower(clamp(output, -0.4, 1));

@@ -24,7 +24,7 @@ import org.firstinspires.ftc.teamcode.subsystems.SpindexerSubsystem;
 import java.util.ArrayList;
 
 @Config
-@Autonomous(name = "Red🦅", group = "angryBirds")
+@Autonomous(name = "Red🦅", group = "angryBirds", preselectTeleOp = "Alpha Teleop")
 public class RedAuto extends CommandOpMode {
     //paths
     /*
@@ -242,7 +242,7 @@ public class RedAuto extends CommandOpMode {
     }
     @Override
     public void run() {
-        if (shooter.getActualVelocity() - shooter.getTargetVelocity() < -50) {
+        if (shooter.getActualVelocity() - shooter.getTargetVelocity() < -30) {
             led.setColor(LEDSubsystem.LEDState.RED);
         }
         else if (shooter.getActualVelocity() - shooter.getTargetVelocity() > 50) {

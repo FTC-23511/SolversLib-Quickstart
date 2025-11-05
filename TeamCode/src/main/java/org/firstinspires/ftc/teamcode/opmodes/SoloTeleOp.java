@@ -23,8 +23,8 @@ import org.firstinspires.ftc.teamcode.subsystems.SpindexerSubsystem;
 
 import java.util.function.Supplier;
 
-@TeleOp (name = "Alpha Teleop", group = "OpModes")
-public class AlphaTeleOp extends CommandOpMode {
+@TeleOp (name = "Practice Teleop (potentially out of date)", group = "OpModes")
+public class SoloTeleOp extends CommandOpMode {
     private Follower follower;
     public static Pose startingPose = new Pose(0,0,0);
     public static Pose savedPose = new Pose(0,0,0);
@@ -213,9 +213,9 @@ public class AlphaTeleOp extends CommandOpMode {
         new Trigger(
                 () -> driver2.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) > 0.5)
                 .whenActive(new InstantCommand(() -> {
-                    shooter.setTargetVelocity(+0);
-                })
-        );
+                            shooter.setTargetVelocity(+0);
+                        })
+                );
 
     }
 
@@ -232,9 +232,9 @@ public class AlphaTeleOp extends CommandOpMode {
         } else {
             if (
                     (Math.abs(follower.getPose().getHeading() - savedPose.getHeading()) < 0.04
-                    && Math.abs(follower.getPose().getX() - savedPose.getX()) < 1
-                    && Math.abs(follower.getPose().getY() - savedPose.getY()) < 1)
-                    || (gamepad1.touchpad_finger_1 && gamepad1.touchpad_finger_2)) {
+                            && Math.abs(follower.getPose().getX() - savedPose.getX()) < 1
+                            && Math.abs(follower.getPose().getY() - savedPose.getY()) < 1)
+                            || (gamepad1.touchpad_finger_1 && gamepad1.touchpad_finger_2)) {
                 manualControl = true;
                 follower.startTeleopDrive();
             }
