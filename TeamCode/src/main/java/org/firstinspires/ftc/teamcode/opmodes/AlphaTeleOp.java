@@ -139,14 +139,14 @@ public class AlphaTeleOp extends CommandOpMode {
                     setSavedPose(follower.getPose());
                 })
         );
-        driver2.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER).whenPressed(
+        driver1.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER).whenPressed(
                 new InstantCommand(() -> {
-                    shooter.setTargetVelocity(1300);
+                    shooter.setTargetVelocity(1250);
                     intakeState = IntakeState.STOP;
                     new SelectCommand(this::intakeCommand).schedule();
                 })
         );
-        driver2.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER).whenPressed(
+        driver1.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER).whenPressed(
                 new InstantCommand(() -> {
                     shooter.setTargetVelocity(-300);
                     intakeState = IntakeState.STOP;
@@ -154,23 +154,23 @@ public class AlphaTeleOp extends CommandOpMode {
                 })
         );
         new Trigger(
-                () -> driver2.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) > 0.5)
+                () -> driver1.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) > 0.5)
                 .whenActive(new InstantCommand(() -> {
                     shooter.setTargetVelocity(+0);
                     intakeState = IntakeState.STOP;
                     new SelectCommand(this::intakeCommand).schedule();
                 }));
         new Trigger(
-                () -> driver2.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) > 0.5)
+                () -> driver1.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) > 0.5)
                 .whenActive(new InstantCommand(() -> {
                     shooter.setTargetVelocity(-0);
                     intakeState = IntakeState.STOP;
                     new SelectCommand(this::intakeCommand).schedule();
                 }));
-        new Trigger(() -> driver2.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) > 0.5)
+        new Trigger(() -> driver1.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) > 0.5)
                 .whileActiveContinuous(new InstantCommand(() -> slowMode = true))
                 .whenInactive(new InstantCommand(() -> slowMode = false));
-        new Trigger(() -> driver2.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) > 0.5)
+        new Trigger(() -> driver1.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) > 0.5)
                 .whileActiveContinuous(new InstantCommand(() -> slowMode = true))
                 .whenInactive(new InstantCommand(() -> slowMode = false));
 
@@ -186,6 +186,20 @@ public class AlphaTeleOp extends CommandOpMode {
                 new InstantCommand(() -> {
                     spindexer.moveSpindexerBy(-10);
                     tickAdjustmentcount -= 10;
+                })
+        );
+        driver2.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER).whenPressed(
+                new InstantCommand(() -> {
+                    shooter.setTargetVelocity(1250);
+                    intakeState = IntakeState.STOP;
+                    new SelectCommand(this::intakeCommand).schedule();
+                })
+        );
+        driver2.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER).whenPressed(
+                new InstantCommand(() -> {
+                    shooter.setTargetVelocity(-300);
+                    intakeState = IntakeState.STOP;
+                    new SelectCommand(this::intakeCommand).schedule();
                 })
         );
 
