@@ -254,7 +254,7 @@ public class RedAuto extends CommandOpMode {
                         //cycle two
                         new FollowPathCommand(follower, paths.get(4), true), //drives to balls and lines itself up to intake
                         new ParallelCommandGroup(
-                                new InstantCommand(() -> follower.setMaxPower(0.3)),
+                                new InstantCommand(() -> follower.setMaxPower(0.4)),
                                 intakeArtifacts(),
                                 new ParallelRaceGroup(
                                         new FollowPathCommand(follower, paths.get(5), true), //drive and pick up balls
