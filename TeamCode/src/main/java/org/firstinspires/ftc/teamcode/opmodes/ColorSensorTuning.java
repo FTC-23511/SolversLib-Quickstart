@@ -22,9 +22,9 @@ public class ColorSensorTuning extends OpMode {
 
     @Override
     public void loop() {
-        float[] sensedColor = colorSensor.senseColor();
-        boolean isGreen = colorSensor.checkIfGreen();
-        boolean isPurple = colorSensor.checkIfPurple();
+        float[] sensedColor = colorSensor.senseColor(1);
+        boolean isGreen = colorSensor.checkIfGreen(1);
+        boolean isPurple = colorSensor.checkIfPurple(1);
 
         telemetry.addData("sensed color hsv", Arrays.toString(sensedColor));
         telemetry.addData("detects green", isGreen);
