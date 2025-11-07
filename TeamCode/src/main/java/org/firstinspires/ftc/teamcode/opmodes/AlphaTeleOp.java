@@ -184,6 +184,16 @@ public class AlphaTeleOp extends CommandOpMode {
                     shooter.setTargetVelocity(+0);
                 })
         );
+        driver2.getGamepadButton(GamepadKeys.Button.DPAD_UP).whenPressed(
+                new InstantCommand(() -> {
+                    shooter.increasePivotPosition(0.001);
+                })
+        );
+        driver2.getGamepadButton(GamepadKeys.Button.DPAD_DOWN).whenPressed(
+                new InstantCommand(() -> {
+                    shooter.decreasePivotPosition(0.001);
+                })
+        );
 
     }
 
