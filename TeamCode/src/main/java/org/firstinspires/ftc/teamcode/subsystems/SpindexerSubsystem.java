@@ -104,6 +104,6 @@ public class SpindexerSubsystem extends SubsystemBase {
     }
 
     public void updatePIDVoltage(double voltage) {
-        kP = (voltage / 12) * -0.0004;
+        kP = (voltage / 13.5) * -0.0004;
     }
 }

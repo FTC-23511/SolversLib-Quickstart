@@ -45,7 +45,7 @@ public class AlphaTeleOp extends CommandOpMode {
     double currentVoltage = 14;
     private boolean slowMode = false;
 
-    double closeShooterTarget = 1100;
+    double closeShooterTarget = 1200;
 
     public ElapsedTime lastVoltageCheck = new ElapsedTime();
     private ElapsedTime timer = new ElapsedTime();
@@ -180,7 +180,7 @@ public class AlphaTeleOp extends CommandOpMode {
         );
         driver2.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER).whenPressed( //close close distance
                 new InstantCommand(() -> {
-                    shooter.setTargetVelocity(1000);
+                    shooter.setTargetVelocity(1100);
                 })
         );
         new Trigger(

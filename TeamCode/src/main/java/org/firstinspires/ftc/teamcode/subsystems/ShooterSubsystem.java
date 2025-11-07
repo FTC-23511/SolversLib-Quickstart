@@ -47,8 +47,8 @@ public class ShooterSubsystem extends SubsystemBase {
         flywheelController.setSetPoint(targetVelocity);
     }
     public void updatePIDVoltage(double voltage) {
-        kP = (voltage / 12) * kPOriginal;
-        kF = (voltage / 12) * kFOriginal;
+        kP = (voltage / 13.5) * kPOriginal;
+        kF = (voltage / 13.5) * kFOriginal;
     }
 
     public void periodic() {

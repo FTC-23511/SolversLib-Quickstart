@@ -19,7 +19,7 @@ public class LEDSubsystem extends SubsystemBase {
             led.setPosition(0.0);
         }
         else if (i == LEDState.RED) {
-            led.setPosition(0.277);
+            led.setPosition(0.3);
         }
         else if (i == LEDState.ORANGE) {
             led.setPosition(0.333);
