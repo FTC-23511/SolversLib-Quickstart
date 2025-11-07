@@ -145,75 +145,63 @@ public class AlphaTeleOp extends CommandOpMode {
                     setSavedPose(follower.getPose());
                 })
         );
-//        driver1.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER).whenPressed(
-//                new InstantCommand(() -> {
-//                    shooter.setTargetVelocity(closeShooterTarget);
-//                    intakeState = IntakeState.STOP;
-//                    new SelectCommand(this::intakeCommand).schedule();
-//                })
-//        );
-//        driver1.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER).whenPressed(
-//                new InstantCommand(() -> {
-//                    shooter.setTargetVelocity(-300);
-//                    intakeState = IntakeState.STOP;
-//                    new SelectCommand(this::intakeCommand).schedule();
-//                })
-//        );
-//        new Trigger(
-//                () -> driver1.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) > 0.5)
-//                .whenActive(new InstantCommand(() -> {
-//                    shooter.setTargetVelocity(+0);
-//                    intakeState = IntakeState.STOP;
-//                    new SelectCommand(this::intakeCommand).schedule();
-//                }));
         new Trigger(() -> driver1.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) > 0.5)
                 .whileActiveContinuous(new InstantCommand(() -> slowMode = true))
                 .whenInactive(new InstantCommand(() -> slowMode = false));
-
-
+        new Trigger(() -> driver1.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) > 0.5)
+                .whileActiveContinuous(new InstantCommand(() -> slowMode = true))
+                .whenInactive(new InstantCommand(() -> slowMode = false));
         //Driver 2
         driver2.getGamepadButton(GamepadKeys.Button.CIRCLE).whenPressed(
                 new InstantCommand(() -> {
                     spindexer.moveSpindexerBy(100);
                     spindexerAdjustmentCount += 100;
+                    gamepad2.rumbleBlips(1);
                 })
         );
         driver2.getGamepadButton(GamepadKeys.Button.SQUARE).whenPressed(
                 new InstantCommand(() -> {
                     spindexer.moveSpindexerBy(-100);
                     spindexerAdjustmentCount -= 100;
+                    gamepad2.rumbleBlips(1);
                 })
         );
         driver2.getGamepadButton(GamepadKeys.Button.TRIANGLE).whenPressed(
                 new InstantCommand(() -> {
                     closeShooterTarget += 20;
+                    gamepad2.rumbleBlips(1);
                 })
         );
         driver2.getGamepadButton(GamepadKeys.Button.CROSS).whenPressed(
                 new InstantCommand(() -> {
                     closeShooterTarget -= 20;
+                    gamepad2.rumbleBlips(1);
                 })
         );
-        driver2.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER).whenPressed(
+        driver2.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER).whenPressed( //close close distance
                 new InstantCommand(() -> {
-                    shooter.setTargetVelocity(closeShooterTarget);
-                    intakeState = IntakeState.STOP;
-                    new SelectCommand(this::intakeCommand).schedule();
-                })
-        );
-        driver2.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER).whenPressed(
-                new InstantCommand(() -> {
-                    shooter.setTargetVelocity(-300);
-                    intakeState = IntakeState.STOP;
-                    new SelectCommand(this::intakeCommand).schedule();
+                    shooter.setTargetVelocity(1000);
                 })
         );
         new Trigger(
-                () -> driver2.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) > 0.5)
+                () -> driver2.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) > 0.5) //far close distance
                 .whenActive(new InstantCommand(() -> {
-                    shooter.setTargetVelocity(+0);
+                            shooter.setTargetVelocity(closeShooterTarget);
+                        })
+                );
+        driver2.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER).whenPressed(  //turn off shooter
+                new InstantCommand(() -> {
+                    shooter.setTargetVelocity(0);
+                    gamepad2.rumbleBlips(1);
                 })
         );
+        new Trigger(
+                () -> driver2.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) > 0.5) //intake
+                .whenActive(new InstantCommand(() -> {
+                            shooter.setTargetVelocity(-300);
+                        })
+                );
+
 
     }
 

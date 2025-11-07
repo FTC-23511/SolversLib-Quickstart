@@ -43,9 +43,7 @@ public class ShooterSubsystem extends SubsystemBase {
 //    }
 
     public void setTargetVelocity(double vel) {
-        targetVelocity = vel;
-        flywheelController.setF(kF);
-        flywheelController.setP(kP);
+        targetVelocity = vel; //internal variable for tracking
         flywheelController.setSetPoint(targetVelocity);
     }
     public void updatePIDVoltage(double voltage) {
@@ -54,6 +52,8 @@ public class ShooterSubsystem extends SubsystemBase {
     }
 
     public void periodic() {
+        flywheelController.setF(kF);
+        flywheelController.setP(kP);
         shooter.set(flywheelController.calculate(shooter.getCorrectedVelocity()));
     }
 
