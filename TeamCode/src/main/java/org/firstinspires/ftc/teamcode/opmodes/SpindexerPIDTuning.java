@@ -12,7 +12,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.seattlesolvers.solverslib.controller.PIDController;
 
 @Config
-@TeleOp (name = "Spindexer pid tuning", group = " Tuning ")
+@TeleOp (name = "Spindexer pid tuning", group = "tuning")
 public class SpindexerPIDTuning extends OpMode {
     private PIDController controller;
 

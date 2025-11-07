@@ -21,7 +21,11 @@ public class ShooterSubsystem extends SubsystemBase {
         return shooter.getCorrectedVelocity();
     }
     public double targetVelocity = 0.0;
-    private final PIDFController flywheelController = new PIDFController(0.0015, 0, 0, 0.00067);
+    double kPOriginal = 0.0015;
+    double kFOriginal = 0.00061;
+    double kP = kPOriginal;
+    double kF = kFOriginal;
+    private final PIDFController flywheelController = new PIDFController(kPOriginal, 0, 0, kFOriginal);
 
     InterpLUT lut = new InterpLUT();
 
@@ -51,7 +55,13 @@ public class ShooterSubsystem extends SubsystemBase {
 
     public void setTargetVelocity(double vel) {
         targetVelocity = vel;
+        flywheelController.setF(kF);
+        flywheelController.setP(kP);
         flywheelController.setSetPoint(targetVelocity);
+    }
+    public void updatePIDVoltage(double voltage) {
+        kP = (voltage / 12) * kPOriginal;
+        kF = (voltage / 12) * kFOriginal;
     }
 
     public void periodic() {

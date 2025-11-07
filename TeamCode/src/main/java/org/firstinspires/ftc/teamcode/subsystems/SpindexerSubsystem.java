@@ -16,7 +16,7 @@ public class SpindexerSubsystem extends SubsystemBase {
     private final DcMotor spindexer;
 
     // PIDF Coefficients
-    private final double kP = -0.0006;
+    private double kP = -0.0004;
     private final double kI = 0.000000;
     private final double kD = 0.000001;
     private final double kF = 0.000;
@@ -71,6 +71,9 @@ public class SpindexerSubsystem extends SubsystemBase {
             case THREE: spindexerState = SpindexerState.TWO;   break;
         }
     }
+    public void moveSpindexerBy(double x) {
+        targetPosition += x;
+    }
 
     @Override
     public void periodic() {
@@ -83,6 +86,7 @@ public class SpindexerSubsystem extends SubsystemBase {
 //            spindexer.setPower(clipped);
 //            lastOutput = output;
 //        }
+        pid.setP(kP);
         currentPosition = spindexer.getCurrentPosition();
         output = pid.calculate(currentPosition, targetPosition);
         spindexer.setPower(clamp(output, -0.4, 1));
@@ -99,5 +103,7 @@ public class SpindexerSubsystem extends SubsystemBase {
         return targetPosition;
     }
 
-
+    public void updatePIDVoltage(double voltage) {
+        kP = (voltage / 12) * -0.0004;
+    }
 }

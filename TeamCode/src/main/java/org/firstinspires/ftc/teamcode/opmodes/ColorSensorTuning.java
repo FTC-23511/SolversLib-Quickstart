@@ -11,7 +11,7 @@ import org.firstinspires.ftc.teamcode.subsystems.ColorSubsystem;
 import java.util.Arrays;
 
 @Config
-@TeleOp(name = "Color Sensor Tuning ", group = " Tuning ")
+@TeleOp(name = "Color Sensor Tuning ", group = "tuning")
 public class ColorSensorTuning extends OpMode {
     private ColorSubsystem colorSensor;
     @Override

@@ -23,8 +23,8 @@ import org.firstinspires.ftc.teamcode.subsystems.SpindexerSubsystem;
 
 import java.util.function.Supplier;
 
-@TeleOp (name = "Alpha Teleop", group = "!")
-public class AlphaTeleOp extends CommandOpMode {
+@TeleOp (name = "Practice Teleop (potentially out of date)", group = "!")
+public class SoloTeleOp extends CommandOpMode {
     private Follower follower;
     public static Pose startingPose = new Pose(0,0,0);
     public static Pose savedPose = new Pose(0,0,0);
@@ -94,6 +94,8 @@ public class AlphaTeleOp extends CommandOpMode {
         colorSensor = new ColorSubsystem(hardwareMap);
         led = new LEDSubsystem(hardwareMap);
         voltageSensor = hardwareMap.get(VoltageSensor.class, "Control Hub");
+        colorSensor = new ColorSubsystem(hardwareMap);
+        led = new LEDSubsystem(hardwareMap);
 
         super.reset();
         lastVoltageCheck.reset();
@@ -145,27 +147,27 @@ public class AlphaTeleOp extends CommandOpMode {
                     setSavedPose(follower.getPose());
                 })
         );
-//        driver1.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER).whenPressed(
-//                new InstantCommand(() -> {
-//                    shooter.setTargetVelocity(closeShooterTarget);
-//                    intakeState = IntakeState.STOP;
-//                    new SelectCommand(this::intakeCommand).schedule();
-//                })
-//        );
-//        driver1.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER).whenPressed(
-//                new InstantCommand(() -> {
-//                    shooter.setTargetVelocity(-300);
-//                    intakeState = IntakeState.STOP;
-//                    new SelectCommand(this::intakeCommand).schedule();
-//                })
-//        );
-//        new Trigger(
-//                () -> driver1.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) > 0.5)
-//                .whenActive(new InstantCommand(() -> {
-//                    shooter.setTargetVelocity(+0);
-//                    intakeState = IntakeState.STOP;
-//                    new SelectCommand(this::intakeCommand).schedule();
-//                }));
+        driver1.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER).whenPressed(
+                new InstantCommand(() -> {
+                    shooter.setTargetVelocity(closeShooterTarget);
+                    intakeState = IntakeState.STOP;
+                    new SelectCommand(this::intakeCommand).schedule();
+                })
+        );
+        driver1.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER).whenPressed(
+                new InstantCommand(() -> {
+                    shooter.setTargetVelocity(-300);
+                    intakeState = IntakeState.STOP;
+                    new SelectCommand(this::intakeCommand).schedule();
+                })
+        );
+        new Trigger(
+                () -> driver1.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) > 0.5)
+                .whenActive(new InstantCommand(() -> {
+                    shooter.setTargetVelocity(+0);
+                    intakeState = IntakeState.STOP;
+                    new SelectCommand(this::intakeCommand).schedule();
+                }));
         new Trigger(() -> driver1.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) > 0.5)
                 .whileActiveContinuous(new InstantCommand(() -> slowMode = true))
                 .whenInactive(new InstantCommand(() -> slowMode = false));
@@ -211,9 +213,9 @@ public class AlphaTeleOp extends CommandOpMode {
         new Trigger(
                 () -> driver2.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) > 0.5)
                 .whenActive(new InstantCommand(() -> {
-                    shooter.setTargetVelocity(+0);
-                })
-        );
+                            shooter.setTargetVelocity(+0);
+                        })
+                );
 
     }
 
@@ -230,9 +232,9 @@ public class AlphaTeleOp extends CommandOpMode {
         } else {
             if (
                     (Math.abs(follower.getPose().getHeading() - savedPose.getHeading()) < 0.04
-                    && Math.abs(follower.getPose().getX() - savedPose.getX()) < 1
-                    && Math.abs(follower.getPose().getY() - savedPose.getY()) < 1)
-                    || (gamepad1.touchpad_finger_1 && gamepad1.touchpad_finger_2)) {
+                            && Math.abs(follower.getPose().getX() - savedPose.getX()) < 1
+                            && Math.abs(follower.getPose().getY() - savedPose.getY()) < 1)
+                            || (gamepad1.touchpad_finger_1 && gamepad1.touchpad_finger_2)) {
                 manualControl = true;
                 follower.startTeleopDrive();
             }
@@ -256,11 +258,8 @@ public class AlphaTeleOp extends CommandOpMode {
             else if (colorSensor.checkIfPurple()) {
                 led.setColor(LEDSubsystem.LEDState.VIOLET);
             }
-            else if (colorSensor.checkIfWhite()){
-                led.setColor(LEDSubsystem.LEDState.WHITE);
-            }
             else {
-                led.setColor(LEDSubsystem.LEDState.YELLOW);
+                led.setColor(LEDSubsystem.LEDState.WHITE); //anything else besides green or purple
             }
         }
 

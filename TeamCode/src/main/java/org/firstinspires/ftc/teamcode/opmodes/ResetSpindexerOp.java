@@ -5,7 +5,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.seattlesolvers.solverslib.command.CommandOpMode;
 import com.seattlesolvers.solverslib.gamepad.GamepadEx;
 
-@TeleOp (name = "\uD83D\uDC80 Reset Spindexer", group = "OpModes")
+@TeleOp (name = "\uD83D\uDC80 Reset Spindexer", group = "!")
 public class ResetSpindexerOp extends CommandOpMode {
     private GamepadEx driver1;
     private DcMotor spindexer;
