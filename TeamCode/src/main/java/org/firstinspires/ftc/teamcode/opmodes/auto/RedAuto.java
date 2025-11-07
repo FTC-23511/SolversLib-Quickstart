@@ -228,7 +228,7 @@ public class RedAuto extends CommandOpMode {
                 new RunCommand(() -> follower.update()),
                 new SequentialCommandGroup(
                         new InstantCommand(() -> follower.setMaxPower(1)),
-                        new InstantCommand(() -> {shooter.setTargetVelocity(1200);}), //start shoot
+                        new InstantCommand(() -> {shooter.setTargetVelocity(1150);}), //start shoot
                         new FollowPathCommand(follower, paths.get(0), true), //drive to shooting pos
                         new InstantCommand(() -> follower.setMaxPower(1.0)),
                         new WaitCommand(500),

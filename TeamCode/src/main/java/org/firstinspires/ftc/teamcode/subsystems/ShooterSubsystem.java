@@ -17,7 +17,7 @@ public class ShooterSubsystem extends SubsystemBase {
         return shooter.getCorrectedVelocity();
     }
     public double targetVelocity = 0.0;
-    double kPOriginal = 0.0015;
+    double kPOriginal = 0.0100;
     double kFOriginal = 0.00061;
     double kP = kPOriginal;
     double kF = kFOriginal;
