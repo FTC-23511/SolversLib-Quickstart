@@ -45,7 +45,7 @@ public class AlphaTeleOp extends CommandOpMode {
     double currentVoltage = 14;
     private boolean slowMode = false;
 
-    double closeShooterTarget = 1250;
+    double closeShooterTarget = 1100;
 
     public ElapsedTime lastVoltageCheck = new ElapsedTime();
     private ElapsedTime timer = new ElapsedTime();
