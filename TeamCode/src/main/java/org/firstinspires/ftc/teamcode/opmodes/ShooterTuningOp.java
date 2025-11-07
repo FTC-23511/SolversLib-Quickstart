@@ -22,7 +22,6 @@ import org.firstinspires.ftc.teamcode.subsystems.SpindexerSubsystem;
 public class ShooterTuningOp extends CommandOpMode {
 
     private Follower follower;
-    public static Pose startingPose = new Pose(0, 0, 0);
 
     private IntakeSubsystem intake;
     private SpindexerSubsystem spindexer;

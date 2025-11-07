@@ -2,7 +2,6 @@ package org.firstinspires.ftc.teamcode.opmodes;
 
 import com.pedropathing.follower.Follower;
 import com.pedropathing.geometry.Pose;
-import com.pedropathing.paths.PathChain;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -21,14 +20,12 @@ import org.firstinspires.ftc.teamcode.subsystems.LEDSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.ShooterSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.SpindexerSubsystem;
 
-import java.util.function.Supplier;
 
 @TeleOp (name = "Alpha Teleop", group = "!")
 public class AlphaTeleOp extends CommandOpMode {
     private Follower follower;
     public static Pose startingPose = new Pose(0,0,0);
     public static Pose savedPose = new Pose(0,0,0);
-    private Supplier<PathChain> pathChainSupplier;
 
     private IntakeSubsystem intake;
     private ShooterSubsystem shooter;
@@ -103,12 +100,6 @@ public class AlphaTeleOp extends CommandOpMode {
         follower.startTeleopDrive();
         driver1 = new GamepadEx(gamepad1);
         driver2 = new GamepadEx(gamepad2);
-//        pathChainSupplier = () -> follower.pathBuilder() //Lazy Curve Generation
-//                .addPath(new Path(new BezierLine(follower::getPose, savedPose)))
-//                .setHeadingInterpolation(HeadingInterpolator.linearFromPoint(follower::getHeading, savedPose::getHeading, 0.8))
-//                .build();
-        //command binding
-        SelectCommand intakeSelectCommand = new SelectCommand(this::intakeCommand);
 
         //Driver 1
         driver1.getGamepadButton(GamepadKeys.Button.TRIANGLE).whenPressed(
@@ -145,27 +136,6 @@ public class AlphaTeleOp extends CommandOpMode {
                     setSavedPose(follower.getPose());
                 })
         );
-//        driver1.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER).whenPressed(
-//                new InstantCommand(() -> {
-//                    shooter.setTargetVelocity(closeShooterTarget);
-//                    intakeState = IntakeState.STOP;
-//                    new SelectCommand(this::intakeCommand).schedule();
-//                })
-//        );
-//        driver1.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER).whenPressed(
-//                new InstantCommand(() -> {
-//                    shooter.setTargetVelocity(-300);
-//                    intakeState = IntakeState.STOP;
-//                    new SelectCommand(this::intakeCommand).schedule();
-//                })
-//        );
-//        new Trigger(
-//                () -> driver1.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) > 0.5)
-//                .whenActive(new InstantCommand(() -> {
-//                    shooter.setTargetVelocity(+0);
-//                    intakeState = IntakeState.STOP;
-//                    new SelectCommand(this::intakeCommand).schedule();
-//                }));
         new Trigger(() -> driver1.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) > 0.5)
                 .whileActiveContinuous(new InstantCommand(() -> slowMode = true))
                 .whenInactive(new InstantCommand(() -> slowMode = false));

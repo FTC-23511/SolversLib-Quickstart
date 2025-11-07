@@ -1,6 +1,5 @@
 package org.firstinspires.ftc.teamcode.subsystems;
 
-import static com.seattlesolvers.solverslib.util.MathUtils.clamp;
 
 import com.seattlesolvers.solverslib.command.SubsystemBase;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -43,15 +42,7 @@ public class ShooterSubsystem extends SubsystemBase {
         shooter.set(0.0);
 
         shooter.setZeroPowerBehavior(Motor.ZeroPowerBehavior.FLOAT);
-
-        //lut.add(51,1000);
-        //lut.add(51,1000);
-        //lut.createLUT();
     }
-
-//    public void setTargetFromDistance(double distance) {
-//        targetVelocity = (lut.get(distance));
-//    }
 
     public void setTargetVelocity(double vel) {
         targetVelocity = vel;

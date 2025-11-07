@@ -51,11 +51,6 @@ public class RedAuto extends CommandOpMode {
     //stuff
 
     private ElapsedTime timer;
-
-    //private final ArrayList<PathChain> paths = new ArrayList<>();
-
-    //private DashboardPoseTracker dashboardPoseTracker; they had this in github code and I thought it might be useful later
-
     //subsytems and pedro
 
     private Follower follower;
@@ -209,7 +204,6 @@ public class RedAuto extends CommandOpMode {
         led = new LEDSubsystem(hardwareMap);
 
         // DO NOT REMOVE! Resetting FTCLib Command Scheduler
-        //Idk what this is but I think it's important it was from the github code
         super.reset();
 
         // Initialize subsystems
