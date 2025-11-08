@@ -119,26 +119,53 @@ public class ColorSubsystem extends SubsystemBase {
         return Arrays.equals(colorHSV, new float[]{0.0f, 0.0f, 1.0f});
     }
 
-    enum Colors {
+    //color indexing
+    //example color array will look like this (changeable): [GREEN, PURPLE, PURPLE]
+    //the first element [0] will be the ball closest to the intake, or the last ball in a sequence of 3 to be intaken
+    //the second element [1] will be the ball in between the intake and shooter balls
+    //the third element [2] will be the ball closest to the shooter, or the ball ready to be shot
+
+
+    public enum Colors {
         GREEN, PURPLE, WHITE, NONE
     }
-    //unfinished
-    public Colors[] getColorSensors() {
-        ArrayList<Colors[]> colorArr = new ArrayList<>();
+    public ArrayList<Colors> scanCurrentColors() {
+        ArrayList<Colors> colorArr = new ArrayList<>();
         for (int i = 1; i <= 3; i++) {
             if (checkIfGreen(i)) {
                 colorArr.set(i, Colors.GREEN);
             } else if (checkIfPurple(i)) {
-                colorArr[i] = Colors.PURPLE;
+                colorArr.set(i, Colors.PURPLE);
             } else if (checkIfWhite(i)) {
-                colorArr[i] = Colors.WHITE;
+                colorArr.set(i, Colors.WHITE);
             } else {
-                colorArr[i] = Colors.NONE;
+                colorArr.set(i, Colors.NONE);
             }
         }
 
         return colorArr;
     }
+    //places is the amount of place you want to move by
+    public ArrayList<Colors> shiftColors(ArrayList<Colors> colors, int places) {
+        Colors temp;
+
+        if (Math.abs(places) % 3 == 0) {
+            return colors;
+        }
+        if (places % 3 == 1 || (places < 0 && Math.abs(places) % 3 == 2)) { //move 1 forward or 2 backward
+            temp = colors.get(3);
+            colors.set(3, colors.get(2));
+            colors.set(2, colors.get(1));
+            colors.set(1, temp);
+        } else if (places % 3 == 2 || (places < 0 && Math.abs(places) % 3 == 1)) { //move 1 backward or 2 forward
+            temp = colors.get(1);
+            colors.set(1, colors.get(2));
+            colors.set(2, colors.get(3));
+            colors.set(3, temp);
+        }
+        return colors;
+    }
+
 
     public boolean colorInRange(float[] color, float[] min, float[] max) {
         return

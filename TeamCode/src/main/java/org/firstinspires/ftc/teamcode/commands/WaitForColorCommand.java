@@ -20,6 +20,7 @@ public class WaitForColorCommand extends CommandBase {
         this.colortocheck = colortocheck;
         addRequirements(colorSubsystem);
     }
+    //fix this end condition(?)
     @Override
     public boolean isFinished() {
         return colorSubsystem.checkIfGreen(1) || colorSubsystem.checkIfPurple(1) || colorSubsystem.checkIfWhite(1);
