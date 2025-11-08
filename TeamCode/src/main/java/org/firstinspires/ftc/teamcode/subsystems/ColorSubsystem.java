@@ -152,6 +152,7 @@ public class ColorSubsystem extends SubsystemBase {
         if (Math.abs(places) % 3 == 0) {
             return colors;
         }
+
         if (places % 3 == 1 || (places < 0 && Math.abs(places) % 3 == 2)) { //move 1 forward or 2 backward
             temp = colors.get(3);
             colors.set(3, colors.get(2));
