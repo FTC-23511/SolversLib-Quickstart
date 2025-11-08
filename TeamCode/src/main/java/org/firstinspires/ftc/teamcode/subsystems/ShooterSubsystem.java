@@ -11,12 +11,11 @@ import com.seattlesolvers.solverslib.util.InterpLUT;
 public class ShooterSubsystem extends SubsystemBase {
     Motor shooter;
     public double getTargetVelocity() {
-        return targetVelocity;
+        return flywheelController.getSetPoint();
     }
     public double getActualVelocity() {
         return shooter.getCorrectedVelocity();
     }
-    public double targetVelocity = 0.0;
     double kPOriginal = 0.0100;
     double kFOriginal = 0.00061;
     double kP = kPOriginal;
@@ -43,8 +42,7 @@ public class ShooterSubsystem extends SubsystemBase {
 //    }
 
     public void setTargetVelocity(double vel) {
-        targetVelocity = vel; //internal variable for tracking
-        flywheelController.setSetPoint(targetVelocity);
+        flywheelController.setSetPoint(vel);
     }
     public void updatePIDVoltage(double voltage) {
         kP = (voltage / 13.5) * kPOriginal;
