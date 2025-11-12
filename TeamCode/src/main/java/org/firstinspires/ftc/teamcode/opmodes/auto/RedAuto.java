@@ -16,11 +16,10 @@ import com.seattlesolvers.solverslib.command.SequentialCommandGroup;
 import com.seattlesolvers.solverslib.command.WaitCommand;
 import com.seattlesolvers.solverslib.pedroCommand.FollowPathCommand;
 
-import org.firstinspires.ftc.teamcode.commands.WaitForRobotStuckCommand;
 import org.firstinspires.ftc.teamcode.commands.WaitForColorCommand;
 import org.firstinspires.ftc.teamcode.commands.WaitForShooterCommand;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
-import org.firstinspires.ftc.teamcode.subsystems.ColorSubsystem;
+import org.firstinspires.ftc.teamcode.subsystems.ColorSensorsSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.IntakeSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.LEDSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.ShooterSubsystem;
@@ -65,7 +64,7 @@ public class RedAuto extends CommandOpMode {
     private IntakeSubsystem intake;
     private ShooterSubsystem shooter;
     private SpindexerSubsystem spindexer;
-    private ColorSubsystem colorsensor;
+    private ColorSensorsSubsystem colorsensor;
     private LEDSubsystem led;
 
     public void buildPaths(Follower follower) {
@@ -205,7 +204,7 @@ public class RedAuto extends CommandOpMode {
         intake = new IntakeSubsystem(hardwareMap);
         shooter = new ShooterSubsystem(hardwareMap);
         spindexer = new SpindexerSubsystem(hardwareMap);
-        colorsensor = new ColorSubsystem(hardwareMap);
+        colorsensor = new ColorSensorsSubsystem(hardwareMap);
         led = new LEDSubsystem(hardwareMap);
 
         // DO NOT REMOVE! Resetting FTCLib Command Scheduler
@@ -303,7 +302,7 @@ public class RedAuto extends CommandOpMode {
 
         telemetry.addData("shooter target velocity", shooter.getTargetVelocity());
         telemetry.addData("shooter actual velocity", shooter.getActualVelocity());
-        telemetry.addData("green color detected?", Arrays.toString(colorsensor.senseColor()));
+        telemetry.addData("green color detected?", Arrays.toString(colorsensor.senseColorsHSV()));
         telemetry.addData("green color detected?", colorsensor.checkIfGreen());
         telemetry.addData("purple color detected?", colorsensor.checkIfPurple());
 

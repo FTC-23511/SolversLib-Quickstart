@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.opmodes;
 
+import static org.firstinspires.ftc.teamcode.RobotConstants.ballColors.*;
+
 import com.pedropathing.follower.Follower;
 import com.pedropathing.geometry.Pose;
 import com.pedropathing.paths.PathChain;
@@ -14,8 +16,9 @@ import com.seattlesolvers.solverslib.command.button.Trigger;
 import com.seattlesolvers.solverslib.gamepad.GamepadEx;
 import com.seattlesolvers.solverslib.gamepad.GamepadKeys;
 
+import org.firstinspires.ftc.teamcode.RobotConstants;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
-import org.firstinspires.ftc.teamcode.subsystems.ColorSubsystem;
+import org.firstinspires.ftc.teamcode.subsystems.ColorSensorsSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.IntakeSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.LEDSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.ShooterSubsystem;
@@ -23,37 +26,30 @@ import org.firstinspires.ftc.teamcode.subsystems.SpindexerSubsystem;
 
 import java.util.function.Supplier;
 
-@TeleOp (name = "Awesome Teleop", group = "!")
-public class AwesomeTeleOp extends CommandOpMode {
+@TeleOp (name = "Alpha Teleop", group = "!")
+public class AlphaTeleOp extends CommandOpMode {
+    //spindexer ball array
+    RobotConstants.ballColors[] balls = {NONE, NONE, NONE};
 
-
-
+    //pedro
     private Follower follower;
     public static Pose startingPose = new Pose(0,0,0);
     public static Pose savedPose = new Pose(0,0,0);
     private Supplier<PathChain> pathChainSupplier;
 
+    //subsystems
     private IntakeSubsystem intake;
     private ShooterSubsystem shooter;
     private SpindexerSubsystem spindexer;
-    private ColorSubsystem colorSensor;
+    private ColorSensorsSubsystem colorSensors;
     private LEDSubsystem led;
 
+    //gamepads
     public GamepadEx driver1;
     public GamepadEx driver2;
 
+    //autodrive
     private boolean manualControl = true;
-
-    public VoltageSensor voltageSensor;
-    double currentVoltage = 14;
-    private boolean slowMode = false;
-
-    double closeShooterTarget = 1100;
-
-    public ElapsedTime lastVoltageCheck = new ElapsedTime();
-    private ElapsedTime timer = new ElapsedTime();
-    private int spindexerAdjustmentCount = 0;
-
     private void setSavedPose(Pose pose) {
         savedPose = pose;
         gamepad1.rumbleBlips(1);
@@ -65,6 +61,22 @@ public class AwesomeTeleOp extends CommandOpMode {
         gamepad1.rumbleBlips(3);
     }
 
+    //voltage compensation
+    public VoltageSensor voltageSensor;
+    double currentVoltage = 14;
+    private boolean slowMode = false;
+    public ElapsedTime lastVoltageCheck = new ElapsedTime();
+
+    //variable shooter target
+    double closeShooterTarget = 1100;
+
+    //looptime
+    private ElapsedTime timer = new ElapsedTime();
+
+    //spindexer adjustment
+    private int spindexerAdjustmentCount = 0;
+
+    //intake state machine
     public enum IntakeState {
         STOP, FORWARD, REVERSE
     }
@@ -97,7 +109,7 @@ public class AwesomeTeleOp extends CommandOpMode {
         intake = new IntakeSubsystem(hardwareMap);
         shooter = new ShooterSubsystem(hardwareMap);
         spindexer = new SpindexerSubsystem(hardwareMap);
-        colorSensor = new ColorSubsystem(hardwareMap);
+        colorSensors = new ColorSensorsSubsystem(hardwareMap);
         led = new LEDSubsystem(hardwareMap);
         voltageSensor = hardwareMap.get(VoltageSensor.class, "Control Hub");
 
@@ -244,13 +256,13 @@ public class AwesomeTeleOp extends CommandOpMode {
             }
         }
         else if (!intakeState.equals(IntakeState.STOP)){ //intaking mode
-            if (colorSensor.checkIfGreen()) {
+            if (colorSensors.checkIfGreen()) {
                 led.setColor(LEDSubsystem.LEDState.GREEN);
             }
-            else if (colorSensor.checkIfPurple()) {
+            else if (colorSensors.checkIfPurple()) {
                 led.setColor(LEDSubsystem.LEDState.VIOLET);
             }
-            else if (colorSensor.checkIfWhite()){
+            else if (colorSensors.checkIfWhite()){
                 led.setColor(LEDSubsystem.LEDState.WHITE);
             }
             else {

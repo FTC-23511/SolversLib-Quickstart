@@ -24,10 +24,9 @@ public class SpindexerSubsystem extends SubsystemBase {
     //Store what balls are in the spindexer
     public ballColors[] balls = {NONE, NONE, NONE};
     //Store what state the spindexer is in
-    public enum SpindexerState { ONE, TWO, THREE }
+    public enum SpindexerState {ONE, TWO, THREE}
     public SpindexerState spindexerState = SpindexerState.ONE;
     public SpindexerState getSpindexerState() {return spindexerState;}
-
 
 
 
