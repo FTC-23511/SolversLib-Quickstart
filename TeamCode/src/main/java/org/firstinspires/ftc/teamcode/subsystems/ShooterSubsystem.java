@@ -29,8 +29,12 @@ public class ShooterSubsystem extends SubsystemBase {
 
     public double MIN_TICKS = 0.0;
     public double MAX_TICKS = 1.0;
-    public double OFFSET = 0.5;
+    public double OFFSET = 0.0; //set the ticks to make 0 degrees
     public double pivotCurrentPos = MIN_TICKS + OFFSET;
+    //degrees change on pivot bar (silver gear) convert to gold gear ticks: (6*degrees)/(1675)
+    public double degreesToTicks(double degrees) {
+        return ((6 * degrees) / 1675);
+    }
     public ShooterSubsystem(final HardwareMap hMap) {
         shooter1 = new Motor(hMap, "shooter1", Motor.GoBILDA.RPM_312);
         shooter2 = new Motor(hMap, "shooter2", Motor.GoBILDA.RPM_312);
@@ -60,9 +64,9 @@ public class ShooterSubsystem extends SubsystemBase {
         kF = (voltage / 12) * kFOriginal;
     }
 
-    public void increasePivotPosition(double tickPosition) {
-        if (pivotCurrentPos + tickPosition <= MAX_TICKS) {
-            pivotCurrentPos += tickPosition;
+    public void increasePivotPosition(double degrees) {
+        if (pivotCurrentPos + degreesToTicks(degrees) <= MAX_TICKS) {
+            pivotCurrentPos += degreesToTicks(degrees);
             pivot.set(pivotCurrentPos);
         }
         else{
@@ -70,14 +74,18 @@ public class ShooterSubsystem extends SubsystemBase {
         }
     }
 
-    public void decreasePivotPosition(double ticksPosition) {
-        if (pivotCurrentPos - ticksPosition >= MIN_TICKS) {
-            pivotCurrentPos -= ticksPosition;
+    public void decreasePivotPosition(double degrees) {
+        if (pivotCurrentPos - degreesToTicks(degrees) >= MIN_TICKS) {
+            pivotCurrentPos -= degreesToTicks(degrees);
             pivot.set(pivotCurrentPos);
         }
         else{
             pivot.set(pivotCurrentPos);
         }
+    }
+
+    public void setPivotPosition(double pivotDegrees) {
+        pivot.set(degreesToTicks(pivotDegrees)+OFFSET);
     }
 
     public double getPivotPosition() {

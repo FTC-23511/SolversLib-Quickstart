@@ -186,12 +186,12 @@ public class AlphaTeleOp extends CommandOpMode {
         );
         driver2.getGamepadButton(GamepadKeys.Button.DPAD_UP).whenPressed(
                 new InstantCommand(() -> {
-                    shooter.increasePivotPosition(0.001);
+                    shooter.increasePivotPosition(5.0);
                 })
         );
         driver2.getGamepadButton(GamepadKeys.Button.DPAD_DOWN).whenPressed(
                 new InstantCommand(() -> {
-                    shooter.decreasePivotPosition(0.001);
+                    shooter.decreasePivotPosition(5.0);
                 })
         );
 

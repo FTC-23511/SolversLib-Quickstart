@@ -298,9 +298,9 @@ public class BlueAuto extends CommandOpMode {
 
         telemetry.addData("shooter target velocity", shooter.getTargetVelocity());
         telemetry.addData("shooter actual velocity", shooter.getActualVelocity());
-        telemetry.addData("green color detected?", Arrays.toString(colorsensor.senseColor()));
-        telemetry.addData("green color detected?", colorsensor.checkIfGreen());
-        telemetry.addData("purple color detected?", colorsensor.checkIfPurple());
+        telemetry.addData("green color detected?", Arrays.toString(colorsensor.senseColor(1)));
+        telemetry.addData("green color detected?", colorsensor.checkIfGreen(1));
+        telemetry.addData("purple color detected?", colorsensor.checkIfPurple(1));
 
         follower.update();
         telemetry.update();
