@@ -14,6 +14,8 @@ public class RobotConstants {
 
     public static int SPINDEXER_INITPOS = -(int) SPINDEXER_TICKS_PER_DEG * 100;
 
-
+    public static enum ballColors {
+        NONE, PURPLE, GREEN, UNKNOWN
+    }
 
 }

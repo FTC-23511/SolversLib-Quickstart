@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.subsystems;
 
 import static com.seattlesolvers.solverslib.util.MathUtils.clamp;
 import static org.firstinspires.ftc.teamcode.RobotConstants.*;
+import static org.firstinspires.ftc.teamcode.RobotConstants.ballColors.*;
 
 import android.util.Log;
 
@@ -13,7 +14,22 @@ import com.seattlesolvers.solverslib.controller.PIDController;
 import com.seattlesolvers.solverslib.controller.PIDFController;
 
 public class SpindexerSubsystem extends SubsystemBase {
+    /*
+        Info:
+        The spindexer state can be 1-3. When the spindexer motor moves, the state also increases
+        The balls in the spindexer are 1 2 and 3 starting from the intake and ending at the shooter
+     */
     private final DcMotor spindexer;
+
+    //Store what balls are in the spindexer
+    public ballColors[] balls = {NONE, NONE, NONE};
+    //Store what state the spindexer is in
+    public enum SpindexerState { ONE, TWO, THREE }
+    public SpindexerState spindexerState = SpindexerState.ONE;
+    public SpindexerState getSpindexerState() {return spindexerState;}
+
+
+
 
     // PIDF Coefficients
     private double kP = -0.0004;
@@ -34,13 +50,6 @@ public class SpindexerSubsystem extends SubsystemBase {
     // PIDF Controller
     private final PIDController pid;
 
-    public enum SpindexerState { ONE, TWO, THREE }
-
-    public SpindexerState getSpindexerState() {
-        return spindexerState;
-    }
-
-    public SpindexerState spindexerState = SpindexerState.ONE;
 
     private double lastOutput = -9999999;
     private double output = 0;

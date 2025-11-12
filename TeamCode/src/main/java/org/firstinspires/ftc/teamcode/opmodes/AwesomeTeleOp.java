@@ -23,8 +23,11 @@ import org.firstinspires.ftc.teamcode.subsystems.SpindexerSubsystem;
 
 import java.util.function.Supplier;
 
-@TeleOp (name = "Alpha Teleop", group = "!")
-public class AlphaTeleOp extends CommandOpMode {
+@TeleOp (name = "Awesome Teleop", group = "!")
+public class AwesomeTeleOp extends CommandOpMode {
+
+
+
     private Follower follower;
     public static Pose startingPose = new Pose(0,0,0);
     public static Pose savedPose = new Pose(0,0,0);

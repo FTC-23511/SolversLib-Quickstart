@@ -10,7 +10,7 @@ import com.qualcomm.robotcore.hardware.SwitchableLight;
 import com.seattlesolvers.solverslib.command.SubsystemBase;
 
 public class ColorSubsystem extends SubsystemBase {
-    private NormalizedColorSensor colorSensor;
+    private NormalizedColorSensor colorSensor1; // Color sensor in pos 1
     private NormalizedRGBA sensedcolors;
     public float[] colorHSV = {0, 0, 0}; //defaut
     public float[] greenHigherHSV = {175f, 0.9f, 0.95f};  // upper bound for bright/lime greens
