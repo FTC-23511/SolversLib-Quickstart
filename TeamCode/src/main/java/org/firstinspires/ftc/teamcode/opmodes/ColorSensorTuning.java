@@ -22,7 +22,7 @@ public class ColorSensorTuning extends OpMode {
 
     @Override
     public void loop() {
-        //TODO: Make this work for both color sensors
+        //TODO (ez): We want telemetry on both color sensors- telemetry on both pls (very ez
         float[] sensedColor = colorSensor.senseColorsHSV();
         boolean isGreen = colorSensor.checkIfGreen();
         boolean isPurple = colorSensor.checkIfPurple();

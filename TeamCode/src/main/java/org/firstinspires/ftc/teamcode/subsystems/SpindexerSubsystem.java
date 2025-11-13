@@ -68,7 +68,7 @@ public class SpindexerSubsystem extends SubsystemBase {
 //            case TWO:   spindexerState = SpindexerState.THREE; break;
 //            case THREE: spindexerState = SpindexerState.ONE;   break;
 //        }
-        //TODO: if gate is down then set that one to none
+        //TODO: if gate is down then set that ball to NONE
         shiftBallsBy(1);
     }
     public void reverseSpindexer() {
@@ -109,7 +109,7 @@ public class SpindexerSubsystem extends SubsystemBase {
     }
     //@return boolean if spindexer is not moving and at a target position.
     public boolean availableToSenseColor() {
-        return true; //TODO: placeholder
+        return true; //TODO: return true if spindexer is almost at its target position and it is not moving a lot
     }
     public void setBalls(ballColors[] balls) {
         this.balls = balls;
