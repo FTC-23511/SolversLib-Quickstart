@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.opmodes.auto;
 
+import android.annotation.SuppressLint;
+
 import com.acmerobotics.dashboard.config.Config;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.geometry.BezierLine;
@@ -277,6 +279,7 @@ public class RedAuto extends CommandOpMode {
 
 
     }
+    @SuppressLint("DefaultLocale")
     @Override
     public void run() {
         if (shooter.getActualVelocity() - shooter.getTargetVelocity() < -30) {
@@ -302,9 +305,10 @@ public class RedAuto extends CommandOpMode {
 
         telemetry.addData("shooter target velocity", shooter.getTargetVelocity());
         telemetry.addData("shooter actual velocity", shooter.getActualVelocity());
-        telemetry.addData("green color detected?", Arrays.toString(colorsensor.senseColorsHSV()));
-        telemetry.addData("green color detected?", colorsensor.checkIfGreen());
-        telemetry.addData("purple color detected?", colorsensor.checkIfPurple());
+        telemetry.addData("1st colors detected", Arrays.toString(colorsensor.senseColorsHSV(1)));
+        telemetry.addData("2nd colors detected", Arrays.toString(colorsensor.senseColorsHSV(2)));
+        telemetry.addData("green color detected?", colorsensor.checkIfGreen(1));
+        telemetry.addData("purple color detected?", colorsensor.checkIfPurple(1));
 
         follower.update();
         telemetry.update();

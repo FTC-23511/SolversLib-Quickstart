@@ -24,9 +24,9 @@ public class SpindexerSubsystem extends SubsystemBase {
     //Store what balls are in the spindexer
     public ballColors[] balls = {NONE, NONE, NONE};
     //Store what state the spindexer is in
-    public enum SpindexerState {ONE, TWO, THREE}
-    public SpindexerState spindexerState = SpindexerState.ONE;
-    public SpindexerState getSpindexerState() {return spindexerState;}
+//    public enum SpindexerState {ONE, TWO, THREE} //unused i think??
+//    public SpindexerState spindexerState = SpindexerState.ONE;
+//    public SpindexerState getSpindexerState() {return spindexerState;}
 
 
 
@@ -64,22 +64,22 @@ public class SpindexerSubsystem extends SubsystemBase {
     public void advanceSpindexer() {
         targetPosition += SPINDEXER_TICKS_PER_DEG * 120;
 
-        switch (spindexerState) {
-            case ONE:   spindexerState = SpindexerState.TWO;   break;
-            case TWO:   spindexerState = SpindexerState.THREE; break;
-            case THREE: spindexerState = SpindexerState.ONE;   break;
-        }
+//        switch (spindexerState) {
+//            case ONE:   spindexerState = SpindexerState.TWO;   break;
+//            case TWO:   spindexerState = SpindexerState.THREE; break;
+//            case THREE: spindexerState = SpindexerState.ONE;   break;
+//        }
         //TODO: if gate is down then set that one to none
         shiftBallsBy(1);
     }
     public void reverseSpindexer() {
         targetPosition -= SPINDEXER_TICKS_PER_DEG * 120;
 
-        switch (spindexerState) {
-            case ONE:   spindexerState = SpindexerState.THREE;   break;
-            case TWO:   spindexerState = SpindexerState.ONE; break;
-            case THREE: spindexerState = SpindexerState.TWO;   break;
-        }
+//        switch (spindexerState) {
+//            case ONE:   spindexerState = SpindexerState.THREE;   break;
+//            case TWO:   spindexerState = SpindexerState.ONE; break;
+//            case THREE: spindexerState = SpindexerState.TWO;   break;
+//        }
         shiftBallsBy(-1);
     }
     public void moveSpindexerBy(double x) {
