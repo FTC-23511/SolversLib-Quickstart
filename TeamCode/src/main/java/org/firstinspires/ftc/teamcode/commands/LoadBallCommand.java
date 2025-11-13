@@ -24,7 +24,8 @@ public class LoadBallCommand extends CommandBase {
         //Cycle balls until the target color is in position 3
         //edge case: if none of them are the target color, cycle until an UNKNOWN color is in position 3
         //if none of them are the target color or UNKNOWN, dont do anything
-        //if targetColor is UNKNOWN, then that means supply any ball at all -> dont do anything
+        //if targetColor is UNKNOWN, then that means supply any color ball -> dont do anything
+        //supply means move to position 3 because then if we advance spindexer then the ball will be shot
 
     }
     @Override
