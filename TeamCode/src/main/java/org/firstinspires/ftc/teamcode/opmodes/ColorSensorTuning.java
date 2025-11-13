@@ -22,6 +22,7 @@ public class ColorSensorTuning extends OpMode {
 
     @Override
     public void loop() {
+        //TODO: Make this work for both color sensors
         float[] sensedColor = colorSensor.senseColorsHSV();
         boolean isGreen = colorSensor.checkIfGreen();
         boolean isPurple = colorSensor.checkIfPurple();

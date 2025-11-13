@@ -24,19 +24,22 @@ public class ColorSensorsSubsystem extends SubsystemBase {
         colorSensor2.setGain(27.0f);
     }
 
-    public float[] senseColorsHSV() {
-        //get colors as NormaledRGBA object
-        NormalizedRGBA sensor1NormalizedColors = colorSensor1.getNormalizedColors();
-        NormalizedRGBA sensor2NormalizedColors = colorSensor2.getNormalizedColors();
-        //convert to rgb float[]
-        float[] sensor1rgb = {sensor1NormalizedColors.red, sensor1NormalizedColors.green, sensor1NormalizedColors.blue};
-        float[] sensor2rgb = {sensor2NormalizedColors.red, sensor2NormalizedColors.green, sensor2NormalizedColors.blue};
-        //convert to hsv float[]
-        float[] sensor1hsv = rgbToHsv(sensor1rgb);
-        float[] sensor2hsv = rgbToHsv(sensor2rgb);
-        //build array: 0,1,2 sensor1hsv 3,4,5 sensor2hsv
-        return new float[] {sensor1hsv[0],sensor1hsv[1],sensor1hsv[2],sensor2hsv[0],sensor2hsv[1],sensor2hsv[2]};
+    //@param sensorNum Sensor num- 1 is intake and 2 is other
+    public float[] senseColorsHSV(int sensorNum) {
+        //Select which NormalizedRGBA
+        NormalizedRGBA normalizedColors = (sensorNum == 1)
+                ? colorSensor1.getNormalizedColors()
+                : colorSensor2.getNormalizedColors();
+        // build rgb array
+        float[] rgb = {
+                normalizedColors.red,
+                normalizedColors.green,
+                normalizedColors.blue
+        };
+        //return hsv values as float
+        return rgbToHsv(rgb);
     }
+
 
     // Function to convert RGB to HSV
     public float[] rgbToHsv(float[] colors) {
@@ -68,7 +71,21 @@ public class ColorSensorsSubsystem extends SubsystemBase {
     }
 
     //Check if green, check if purp methods
-
+    /*
+    @param position of color sensor to check- 1 is intake and 2 is other
+     */
+    public boolean checkIfGreen(int pos) {
+        float[] colors = senseColorsHSV(pos);
+        return colorInRange(colors, greenLowerHSV, greenHigherHSV);
+    }
+    public boolean checkIfPurple(int pos) {
+        float[] colors = senseColorsHSV(pos);
+        return colorInRange(colors, purpleLowerHSV, purpleHigherHSV);
+    }
+    public boolean checkIfWhite(int pos) {
+        float[] colors = senseColorsHSV(pos);
+        return colorInRange(colors, greenLowerHSV, greenHigherHSV);
+    }
 
 
 

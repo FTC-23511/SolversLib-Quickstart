@@ -17,6 +17,7 @@ import com.seattlesolvers.solverslib.gamepad.GamepadEx;
 import com.seattlesolvers.solverslib.gamepad.GamepadKeys;
 
 import org.firstinspires.ftc.teamcode.RobotConstants;
+import org.firstinspires.ftc.teamcode.commands.ScanAndUpdateBallsCommand;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 import org.firstinspires.ftc.teamcode.subsystems.ColorSensorsSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.IntakeSubsystem;
@@ -28,8 +29,7 @@ import java.util.function.Supplier;
 
 @TeleOp (name = "Alpha Teleop", group = "!")
 public class AlphaTeleOp extends CommandOpMode {
-    //spindexer ball array
-    RobotConstants.ballColors[] balls = {NONE, NONE, NONE};
+
 
     //pedro
     private Follower follower;
@@ -143,16 +143,16 @@ public class AlphaTeleOp extends CommandOpMode {
                     new SelectCommand(this::intakeCommand).schedule();
                 })
         );
-        driver1.getGamepadButton(GamepadKeys.Button.CIRCLE).whenPressed(
-                new InstantCommand(() -> {
-                    spindexer.advanceSpindexer();
-                })
-        );
-        driver1.getGamepadButton(GamepadKeys.Button.SQUARE).whenPressed(
-                new InstantCommand(() -> {
-                    spindexer.reverseSpindexer();
-                })
-        );
+//        driver1.getGamepadButton(GamepadKeys.Button.CIRCLE).whenPressed(
+//                new InstantCommand(() -> {
+//                    spindexer.advanceSpindexer();
+//                })
+//        );
+//        driver1.getGamepadButton(GamepadKeys.Button.SQUARE).whenPressed(
+//                new InstantCommand(() -> {
+//                    spindexer.reverseSpindexer();
+//                })
+//        );
         driver1.getGamepadButton(GamepadKeys.Button.DPAD_UP).whenPressed(
                 new InstantCommand(() -> {
                     goToSavedPose();
@@ -227,6 +227,13 @@ public class AlphaTeleOp extends CommandOpMode {
 
     @Override
     public void run() {
+        //While intake is on, scan color sensors
+        if (!intakeState.equals(IntakeState.STOP)) {
+            schedule(new ScanAndUpdateBallsCommand(spindexer, colorSensors));
+        }
+
+
+        //Drivetrain code
         if (manualControl) {
             double x = -driver1.getLeftX();
             double y = driver1.getLeftY();
@@ -244,6 +251,8 @@ public class AlphaTeleOp extends CommandOpMode {
             }
         }
         follower.update();
+
+        //LED Code
         if (shooter.getActualVelocity() > 300) { //shooting mode
             if (shooter.getActualVelocity() - shooter.getTargetVelocity() < -30) {
                 led.setColor(LEDSubsystem.LEDState.RED);
@@ -256,13 +265,13 @@ public class AlphaTeleOp extends CommandOpMode {
             }
         }
         else if (!intakeState.equals(IntakeState.STOP)){ //intaking mode
-            if (colorSensors.checkIfGreen()) {
+            if (colorSensors.checkIfGreen(1)) {
                 led.setColor(LEDSubsystem.LEDState.GREEN);
             }
-            else if (colorSensors.checkIfPurple()) {
+            else if (colorSensors.checkIfPurple(1)) {
                 led.setColor(LEDSubsystem.LEDState.VIOLET);
             }
-            else if (colorSensors.checkIfWhite()){
+            else if (colorSensors.checkIfWhite(1)){
                 led.setColor(LEDSubsystem.LEDState.WHITE);
             }
             else {
@@ -272,6 +281,7 @@ public class AlphaTeleOp extends CommandOpMode {
             led.setColor(LEDSubsystem.LEDState.OFF);
         }
 
+        //Voltage compensation code
         if (lastVoltageCheck.milliseconds() > 500) { //check every 500ms
             currentVoltage = voltageSensor.getVoltage();
             spindexer.updatePIDVoltage(currentVoltage);
@@ -307,6 +317,7 @@ public class AlphaTeleOp extends CommandOpMode {
         timer.reset();
         telemetry.update();
         super.run();
+
 
     }
 }

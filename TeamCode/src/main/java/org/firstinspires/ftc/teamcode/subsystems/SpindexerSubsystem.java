@@ -69,6 +69,8 @@ public class SpindexerSubsystem extends SubsystemBase {
             case TWO:   spindexerState = SpindexerState.THREE; break;
             case THREE: spindexerState = SpindexerState.ONE;   break;
         }
+        //TODO: if gate is down then set that one to none
+        shiftBallsBy(1);
     }
     public void reverseSpindexer() {
         targetPosition -= SPINDEXER_TICKS_PER_DEG * 120;
@@ -78,6 +80,7 @@ public class SpindexerSubsystem extends SubsystemBase {
             case TWO:   spindexerState = SpindexerState.ONE; break;
             case THREE: spindexerState = SpindexerState.TWO;   break;
         }
+        shiftBallsBy(-1);
     }
     public void moveSpindexerBy(double x) {
         targetPosition += x;
@@ -114,4 +117,34 @@ public class SpindexerSubsystem extends SubsystemBase {
     public void updatePIDVoltage(double voltage) {
         kP = (voltage / 13.5) * -0.0004;
     }
+    //@return boolean if spindexer is not moving and at a target position.
+    public boolean availableToSenseColor() {
+        return true; //TODO: placeholder
+    }
+    public void setBalls(ballColors[] balls) {
+        this.balls = balls;
+    }
+    public ballColors[] getBalls(ballColors[] balls) {
+        return balls;
+    }
+    //forward = spindexer forward, vice versa
+    public void shiftBallsBy(int n) {
+        n = ((n % 3) + 3) % 3; // normalize n to 0, 1, or 2
+        if (n == 0) return;
+
+        ballColors a = balls[0], b = balls[1], c = balls[2];
+
+        if (n == 1) {
+            // [0,5,2] -> [5,2,0]
+            balls[0] = b;
+            balls[1] = c;
+            balls[2] = a;
+        } else if (n == 2) {
+            // [0,5,2] -> [2,0,5]
+            balls[0] = c;
+            balls[1] = a;
+            balls[2] = b;
+        }
+    }
+
 }
