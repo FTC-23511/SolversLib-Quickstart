@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.opmodes;
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.seattlesolvers.solverslib.command.CommandOpMode;
 import com.seattlesolvers.solverslib.command.InstantCommand;
 import com.seattlesolvers.solverslib.gamepad.GamepadEx;
 import com.seattlesolvers.solverslib.gamepad.GamepadKeys;
@@ -10,14 +11,13 @@ import com.seattlesolvers.solverslib.hardware.ServoEx;
 
 import org.firstinspires.ftc.teamcode.subsystems.ShooterSubsystem;
 
-@Config
 @TeleOp(name = "Pivot Degrees")
-public class pivotDegrees extends OpMode{
+public class pivotDegrees extends CommandOpMode{
     public GamepadEx driver2;
     private ShooterSubsystem shooter;
 
     @Override
-    public void init() {
+    public void initialize() {
         driver2 = new GamepadEx(gamepad2);
         shooter = new ShooterSubsystem(hardwareMap);
         //when starting, it will try its hardest to get to position of 0 ticks
@@ -37,7 +37,7 @@ public class pivotDegrees extends OpMode{
     }
 
     @Override
-    public void loop() {
+    public void run() {
         double pivotPosition = shooter.getPivotPosition();
 
         telemetry.addData("pivot current position: ", pivotPosition);
