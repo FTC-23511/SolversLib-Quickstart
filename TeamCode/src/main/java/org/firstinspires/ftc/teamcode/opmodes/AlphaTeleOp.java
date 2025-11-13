@@ -228,7 +228,7 @@ public class AlphaTeleOp extends CommandOpMode {
     @Override
     public void run() {
         //While intake is on, scan color sensors
-        if (!intakeState.equals(IntakeState.STOP)) {
+        if (!intakeState.equals(IntakeState.STOP) && spindexer.availableToSenseColor()) {
             schedule(new ScanAndUpdateBallsCommand(spindexer, colorSensors));
         }
 

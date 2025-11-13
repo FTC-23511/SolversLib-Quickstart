@@ -17,12 +17,10 @@ public class ScanAndUpdateBallsCommand extends CommandBase {
 
     @Override
     public void initialize() {
-        if (spindexerSubsystem.availableToSenseColor()) {
             //TODO: sense color and update arrays w/ spiundexer's setBalls method
             //TODO (hard): how do we prevent false positives / negatives?
             //example on how to set balls below
             //spindexerSubsystem.setBalls(new RobotConstants.ballColors[]{RobotConstants.ballColors.GREEN, RobotConstants.ballColors.GREEN, RobotConstants.ballColors.GREEN});
-        }
     }
     @Override
     public boolean isFinished() {
