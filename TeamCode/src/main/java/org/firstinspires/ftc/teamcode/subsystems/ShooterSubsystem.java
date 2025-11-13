@@ -14,13 +14,12 @@ public class ShooterSubsystem extends SubsystemBase {
     Motor shooter2;
     MotorGroup shooter;
     public double getTargetVelocity() {
-        return targetVelocity;
+        return flywheelController.getSetPoint();
     }
     public double getActualVelocity() {
         return shooter.getCorrectedVelocity();
     }
-    public double targetVelocity = 0.0;
-    double kPOriginal = 0.0015;
+    double kPOriginal = 0.0100;
     double kFOriginal = 0.00061;
     double kP = kPOriginal;
     double kF = kFOriginal;
@@ -54,14 +53,11 @@ public class ShooterSubsystem extends SubsystemBase {
     }
 
     public void setTargetVelocity(double vel) {
-        targetVelocity = vel;
-        flywheelController.setF(kF);
-        flywheelController.setP(kP);
-        flywheelController.setSetPoint(targetVelocity);
+        flywheelController.setSetPoint(vel);
     }
     public void updatePIDVoltage(double voltage) {
-        kP = (voltage / 12) * kPOriginal;
-        kF = (voltage / 12) * kFOriginal;
+        kP = (voltage / 13.5) * kPOriginal;
+        kF = (voltage / 13.5) * kFOriginal;
     }
 
     public void increasePivotPosition(double degrees) {
@@ -93,6 +89,8 @@ public class ShooterSubsystem extends SubsystemBase {
     }
 
     public void periodic() {
+        flywheelController.setF(kF);
+        flywheelController.setP(kP);
         shooter.set(flywheelController.calculate(shooter.getCorrectedVelocity()));
     }
 

@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.opmodes;
 
 import com.pedropathing.follower.Follower;
 import com.pedropathing.geometry.Pose;
+import com.pedropathing.paths.PathChain;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -20,12 +21,14 @@ import org.firstinspires.ftc.teamcode.subsystems.LEDSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.ShooterSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.SpindexerSubsystem;
 
+import java.util.function.Supplier;
 
 @TeleOp (name = "Alpha Teleop", group = "!")
 public class AlphaTeleOp extends CommandOpMode {
     private Follower follower;
     public static Pose startingPose = new Pose(0,0,0);
     public static Pose savedPose = new Pose(0,0,0);
+    private Supplier<PathChain> pathChainSupplier;
 
     private IntakeSubsystem intake;
     private ShooterSubsystem shooter;
@@ -42,7 +45,7 @@ public class AlphaTeleOp extends CommandOpMode {
     double currentVoltage = 14;
     private boolean slowMode = false;
 
-    double closeShooterTarget = 1250;
+    double closeShooterTarget = 1100;
 
     public ElapsedTime lastVoltageCheck = new ElapsedTime();
     private ElapsedTime timer = new ElapsedTime();
@@ -63,18 +66,21 @@ public class AlphaTeleOp extends CommandOpMode {
         STOP, FORWARD, REVERSE
     }
     private IntakeState intakeState = IntakeState.STOP;
-    private IntakeState getIntakeState() {
-        return intakeState;
-    }
     public Command intakeCommand() {
-        switch (getIntakeState()) {
+        switch (intakeState) {
             case FORWARD:
-                return new InstantCommand(() -> intake.setSpeed(IntakeSubsystem.IntakeState.INTAKING));
+                return new InstantCommand(() -> {
+                    intake.setSpeed(IntakeSubsystem.IntakeState.INTAKING);
+                });
             case REVERSE:
-                return new InstantCommand(() -> intake.setSpeed(IntakeSubsystem.IntakeState.REVERSE));
+                return new InstantCommand(() -> {
+                    intake.setSpeed(IntakeSubsystem.IntakeState.REVERSE);
+                });
             case STOP:
             default:
-                return new InstantCommand(() -> intake.setSpeed(IntakeSubsystem.IntakeState.STILL));
+                return new InstantCommand(() -> {
+                    intake.setSpeed(IntakeSubsystem.IntakeState.STILL);
+                });
         }
     }
 
@@ -100,6 +106,12 @@ public class AlphaTeleOp extends CommandOpMode {
         follower.startTeleopDrive();
         driver1 = new GamepadEx(gamepad1);
         driver2 = new GamepadEx(gamepad2);
+//        pathChainSupplier = () -> follower.pathBuilder() //Lazy Curve Generation
+//                .addPath(new Path(new BezierLine(follower::getPose, savedPose)))
+//                .setHeadingInterpolation(HeadingInterpolator.linearFromPoint(follower::getHeading, savedPose::getHeading, 0.8))
+//                .build();
+        //command binding
+        SelectCommand intakeSelectCommand = new SelectCommand(this::intakeCommand);
 
         //Driver 1
         driver1.getGamepadButton(GamepadKeys.Button.TRIANGLE).whenPressed(
@@ -139,61 +151,60 @@ public class AlphaTeleOp extends CommandOpMode {
         new Trigger(() -> driver1.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) > 0.5)
                 .whileActiveContinuous(new InstantCommand(() -> slowMode = true))
                 .whenInactive(new InstantCommand(() -> slowMode = false));
-
-
+        new Trigger(() -> driver1.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) > 0.5)
+                .whileActiveContinuous(new InstantCommand(() -> slowMode = true))
+                .whenInactive(new InstantCommand(() -> slowMode = false));
         //Driver 2
         driver2.getGamepadButton(GamepadKeys.Button.CIRCLE).whenPressed(
                 new InstantCommand(() -> {
-                    spindexer.moveSpindexerBy(100);
-                    spindexerAdjustmentCount += 100;
+                    spindexer.moveSpindexerBy(60);
+                    spindexerAdjustmentCount += 60;
+                    gamepad2.rumbleBlips(1);
                 })
         );
         driver2.getGamepadButton(GamepadKeys.Button.SQUARE).whenPressed(
                 new InstantCommand(() -> {
-                    spindexer.moveSpindexerBy(-100);
-                    spindexerAdjustmentCount -= 100;
+                    spindexer.moveSpindexerBy(-60);
+                    spindexerAdjustmentCount -= 60;
+                    gamepad2.rumbleBlips(1);
                 })
         );
         driver2.getGamepadButton(GamepadKeys.Button.TRIANGLE).whenPressed(
                 new InstantCommand(() -> {
                     closeShooterTarget += 20;
+                    gamepad2.rumbleBlips(1);
                 })
         );
         driver2.getGamepadButton(GamepadKeys.Button.CROSS).whenPressed(
                 new InstantCommand(() -> {
                     closeShooterTarget -= 20;
+                    gamepad2.rumbleBlips(1);
                 })
         );
-        driver2.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER).whenPressed(
+        driver2.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER).whenPressed( //close close distance
                 new InstantCommand(() -> {
-                    shooter.setTargetVelocity(closeShooterTarget);
-                    intakeState = IntakeState.STOP;
-                    new SelectCommand(this::intakeCommand).schedule();
-                })
-        );
-        driver2.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER).whenPressed(
-                new InstantCommand(() -> {
-                    shooter.setTargetVelocity(-300);
-                    intakeState = IntakeState.STOP;
-                    new SelectCommand(this::intakeCommand).schedule();
+                    shooter.setTargetVelocity(1100);
                 })
         );
         new Trigger(
-                () -> driver2.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) > 0.5)
+                () -> driver2.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) > 0.5) //far close distance
+                    .whileActiveContinuous(new InstantCommand(() -> {
+                        shooter.setTargetVelocity(closeShooterTarget);
+                    })
+                );
+        driver2.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER).whenPressed(  //turn off shooter
+                new InstantCommand(() -> {
+                    shooter.setTargetVelocity(0);
+                    gamepad2.rumbleBlips(1);
+                })
+        );
+        new Trigger(
+                () -> driver2.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) > 0.5) //intake
                 .whenActive(new InstantCommand(() -> {
-                    shooter.setTargetVelocity(+0);
-                })
-        );
-        driver2.getGamepadButton(GamepadKeys.Button.DPAD_UP).whenPressed(
-                new InstantCommand(() -> {
-                    shooter.increasePivotPosition(5.0);
-                })
-        );
-        driver2.getGamepadButton(GamepadKeys.Button.DPAD_DOWN).whenPressed(
-                new InstantCommand(() -> {
-                    shooter.decreasePivotPosition(5.0);
-                })
-        );
+                            shooter.setTargetVelocity(-300);
+                        })
+                );
+
 
     }
 
@@ -229,7 +240,7 @@ public class AlphaTeleOp extends CommandOpMode {
                 led.setColor(LEDSubsystem.LEDState.GREEN);
             }
         }
-        else { //intaking mode
+        else if (!intakeState.equals(IntakeState.STOP)){ //intaking mode
             if (colorSensor.checkIfGreen()) {
                 led.setColor(LEDSubsystem.LEDState.GREEN);
             }
@@ -242,6 +253,8 @@ public class AlphaTeleOp extends CommandOpMode {
             else {
                 led.setColor(LEDSubsystem.LEDState.YELLOW);
             }
+        } else {
+            led.setColor(LEDSubsystem.LEDState.OFF);
         }
 
         if (lastVoltageCheck.milliseconds() > 500) { //check every 500ms
