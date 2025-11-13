@@ -230,13 +230,13 @@ public class AlphaTeleOp extends CommandOpMode {
             }
         }
         else { //intaking mode
-            if (colorSensor.checkIfGreen(1)) {
+            if (colorSensor.checkIfGreen()) {
                 led.setColor(LEDSubsystem.LEDState.GREEN);
             }
-            else if (colorSensor.checkIfPurple(1)) {
+            else if (colorSensor.checkIfPurple()) {
                 led.setColor(LEDSubsystem.LEDState.VIOLET);
             }
-            else if (colorSensor.checkIfWhite(1)){
+            else if (colorSensor.checkIfWhite()){
                 led.setColor(LEDSubsystem.LEDState.WHITE);
             }
             else {
