@@ -195,6 +195,7 @@ public class RedFarAuto extends CommandOpMode {
                 new ParallelRaceGroup(
                         new WaitForColorCommand(colorsensor),
                         new WaitCommand(500)
+
                 ),
                 new InstantCommand(() -> intake.setSpeed(IntakeSubsystem.IntakeState.REVERSE))
         );

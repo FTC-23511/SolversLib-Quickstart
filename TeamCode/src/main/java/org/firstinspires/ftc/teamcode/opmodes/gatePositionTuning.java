@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.seattlesolvers.solverslib.command.CommandOpMode;
 import com.seattlesolvers.solverslib.command.InstantCommand;
 import com.seattlesolvers.solverslib.gamepad.GamepadEx;
 import com.seattlesolvers.solverslib.gamepad.GamepadKeys;
@@ -13,11 +14,11 @@ import org.firstinspires.ftc.teamcode.subsystems.GateSubsystem;
 
 @Config
 @TeleOp(name = "Gate Position Tuning")
-public class gatePositionTuning extends OpMode {
+public class gatePositionTuning extends CommandOpMode {
     public GamepadEx driver2;
     private GateSubsystem gate;
     @Override
-    public void init() {
+    public void initialize() {
         driver2 = new GamepadEx(gamepad2);
         gate = new GateSubsystem(hardwareMap);
 
@@ -34,7 +35,7 @@ public class gatePositionTuning extends OpMode {
     }
 
     @Override
-    public void loop() {
+    public void run() {
         double gatePosition = gate.getGatePosition();
 
         telemetry.addData("gate position: ", gatePosition);
