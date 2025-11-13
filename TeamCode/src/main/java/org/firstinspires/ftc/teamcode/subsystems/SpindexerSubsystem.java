@@ -11,7 +11,6 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.seattlesolvers.solverslib.command.SubsystemBase;
 import com.seattlesolvers.solverslib.controller.PIDController;
-import com.seattlesolvers.solverslib.controller.PIDFController;
 
 public class SpindexerSubsystem extends SubsystemBase {
     /*
@@ -88,15 +87,6 @@ public class SpindexerSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
-
-//        currentPosition = spindexer.getCurrentPosition();
-//        output = pid.calculate(currentPosition, targetPosition);
-//        double clipped = clamp(output, -CLAMP_LIMIT, CLAMP_LIMIT);
-////
-//        if (Math.abs(lastOutput - clipped) > SPINDEXER_CACHETHRESHOLD) {
-//            spindexer.setPower(clipped);
-//            lastOutput = output;
-//        }
         pid.setP(kP);
         currentPosition = spindexer.getCurrentPosition();
         output = pid.calculate(currentPosition, targetPosition);
