@@ -21,6 +21,7 @@ import org.firstinspires.ftc.teamcode.commands.WaitForColorCommand;
 import org.firstinspires.ftc.teamcode.commands.WaitForShooterCommand;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 import org.firstinspires.ftc.teamcode.subsystems.ColorSubsystem;
+import org.firstinspires.ftc.teamcode.subsystems.GateSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.IntakeSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.LEDSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.ShooterSubsystem;
@@ -30,8 +31,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 @Config
-@Autonomous(name = "Blue Auto", group = "angryBirds", preselectTeleOp = "Alpha Teleop")
-public class BlueAuto extends CommandOpMode {
+@Autonomous(name = "Red Far Auto", group = "angryBirds", preselectTeleOp = "Alpha Teleop")
+public class RedFarAuto extends CommandOpMode {
     //paths
     /*
     public PathChain Path1;
@@ -51,103 +52,108 @@ public class BlueAuto extends CommandOpMode {
     //stuff
 
     private ElapsedTime timer;
-
-    //private final ArrayList<PathChain> paths = new ArrayList<>();
-
-    //private DashboardPoseTracker dashboardPoseTracker; they had this in github code and I thought it might be useful later
-
     //subsytems and pedro
 
     private Follower follower;
 
     //update starting pose
-    public static Pose startingPose = new Pose(123.36079077429983,122.17462932454696,Math.toRadians(45)).mirror(); //find actual statring pos
+    public static Pose startingPose = new Pose(88.500,8.450,Math.toRadians(90)); //find actual statring pos
     private IntakeSubsystem intake;
     private ShooterSubsystem shooter;
     private SpindexerSubsystem spindexer;
     private ColorSubsystem colorsensor;
     private LEDSubsystem led;
+    private GateSubsystem gate;
 
     public void buildPaths(Follower follower) {
         follower.setStartingPose(startingPose);
         paths.add(follower
                 .pathBuilder()
                 .addPath(
-                        new BezierLine(new Pose(123.361, 122.175).mirror(), new Pose(84, 84).mirror())
+                        new BezierLine(new Pose(88.500, 8.450), new Pose(88.500, 18.000))
                 )
-                .setLinearHeadingInterpolation(Math.toRadians(135), Math.toRadians(135))
+                .setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(70.123))
                 .build()
         );
 
         paths.add(follower
                 .pathBuilder()
                 .addPath(
-                        new BezierLine(new Pose(84, 84).mirror(), new Pose(101.000, 84.000).mirror())
+                        new BezierLine(new Pose(88.500, 18.000), new Pose(101.000, 35.000))
                 )
-                .setLinearHeadingInterpolation(Math.toRadians(135), Math.toRadians(180))
+                .setLinearHeadingInterpolation(Math.toRadians(70.123), Math.toRadians(0))
                 .build()
         );
 
         paths.add(follower
                 .pathBuilder()
                 .addPath(
-                        new BezierLine(new Pose(101.000, 84.000).mirror(), new Pose(130.000, 84.000).mirror())
+                        new BezierLine(new Pose(101.000, 35.000), new Pose(131.000, 35.000))
                 )
-                .setTangentHeadingInterpolation()
+                .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(0))
                 .build()
         );
 
         paths.add(follower
                 .pathBuilder()
                 .addPath(
-                        new BezierLine(new Pose(130.000, 84.000).mirror(), new Pose(84, 84).mirror())
+                        new BezierLine(new Pose(131.000, 35.000), new Pose(101.000, 35.000))
                 )
-                .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(135))
+                .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(0))
                 .build()
         );
 
         paths.add(follower
                 .pathBuilder()
                 .addPath(
-                        new BezierLine(new Pose(84,  84).mirror(), new Pose(95.000, 60.000).mirror())
+                        new BezierLine(new Pose(101.000, 35.000), new Pose(88.500, 18.000))
                 )
-                .setLinearHeadingInterpolation(Math.toRadians(135), Math.toRadians(180))
+                .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(70.123))
                 .build()
         );
 
         paths.add(follower
                 .pathBuilder()
                 .addPath(
-                        new BezierLine(new Pose(95.000, 60.000).mirror(), new Pose(140.000, 60.000).mirror())
+                        new BezierLine(new Pose(88.500, 18.000), new Pose(133.000, 20.000))
                 )
-                .setTangentHeadingInterpolation()
+                .setLinearHeadingInterpolation(Math.toRadians(70.123), Math.toRadians(-30))
                 .build()
         );
 
         paths.add(follower
                 .pathBuilder()
                 .addPath(
-                        new BezierLine(new Pose(140.000, 60.000).mirror(), new Pose(125.000, 60.000).mirror())
+                        new BezierLine(new Pose(133.000, 20.000), new Pose(134.000, 10.450))
                 )
-                .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(180))
+                .setLinearHeadingInterpolation(Math.toRadians(-30), Math.toRadians(-25))
                 .build()
         );
 
         paths.add(follower
                 .pathBuilder()
                 .addPath(
-                        new BezierLine(new Pose(125.000, 60.000).mirror(), new Pose(84, 84).mirror())
+                        new BezierLine(new Pose(134.000, 10.450), new Pose(133.000, 20.000))
                 )
-                .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(135))
+                .setLinearHeadingInterpolation(Math.toRadians(-25), Math.toRadians(0))
                 .build()
         );
 
         paths.add(follower
                 .pathBuilder()
                 .addPath(
-                        new BezierLine(new Pose(84, 84).mirror(), new Pose(84.000, 108.000).mirror())
+                        new BezierLine(new Pose(133.000, 20.000), new Pose(88.500, 18.000))
                 )
-                .setLinearHeadingInterpolation(Math.toRadians(135), Math.toRadians(180))
+                .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(70.123))
+                .build()
+        );
+
+        paths.add(follower
+                .pathBuilder()
+                .addPath(
+                        new BezierLine(new Pose(88.500, 18.000), new Pose(88.500, 25.000))
+                )
+                .setLinearHeadingInterpolation(Math.toRadians(70.123), Math.toRadians(70.123))
                 .build()
         );
 
@@ -189,6 +195,7 @@ public class BlueAuto extends CommandOpMode {
                 new ParallelRaceGroup(
                         new WaitForColorCommand(colorsensor),
                         new WaitCommand(500)
+
                 ),
                 new InstantCommand(() -> intake.setSpeed(IntakeSubsystem.IntakeState.REVERSE))
         );
@@ -207,13 +214,13 @@ public class BlueAuto extends CommandOpMode {
         spindexer = new SpindexerSubsystem(hardwareMap);
         colorsensor = new ColorSubsystem(hardwareMap);
         led = new LEDSubsystem(hardwareMap);
+        gate = new GateSubsystem(hardwareMap);
 
         // DO NOT REMOVE! Resetting FTCLib Command Scheduler
-        //Idk what this is but I think it's important it was from the github code
         super.reset();
 
         // Initialize subsystems
-        register(intake, spindexer, shooter, colorsensor, led);
+        register(intake, spindexer, shooter, colorsensor, led, gate);
 
         //init paths
         buildPaths(follower);
@@ -228,7 +235,7 @@ public class BlueAuto extends CommandOpMode {
                 new RunCommand(() -> follower.update()),
                 new SequentialCommandGroup(
                         new InstantCommand(() -> follower.setMaxPower(1)),
-                        new InstantCommand(() -> {shooter.setTargetVelocity(1150);}), //start shoot
+                        new InstantCommand(() -> {shooter.setTargetVelocity(1200);}), //start shoot
                         new FollowPathCommand(follower, paths.get(0), true), //drive to shooting pos
                         new InstantCommand(() -> follower.setMaxPower(1.0)),
                         new WaitCommand(500),
@@ -262,10 +269,7 @@ public class BlueAuto extends CommandOpMode {
                                         new WaitCommand(5000)
                                 )
                         ),
-                        //needs extra step to back out from the wall because it will collide with the exit of the ramp
                         new InstantCommand(() -> follower.setMaxPower(1)),
-                        new FollowPathCommand(follower, paths.get(6), true),
-
                         new FollowPathCommand(follower, paths.get(7), true), //return to shooting pos
                         shootArtifacts(),
 
@@ -303,9 +307,9 @@ public class BlueAuto extends CommandOpMode {
 
         telemetry.addData("shooter target velocity", shooter.getTargetVelocity());
         telemetry.addData("shooter actual velocity", shooter.getActualVelocity());
-        telemetry.addData("green color detected?", Arrays.toString(colorsensor.senseColor()));
-        telemetry.addData("green color detected?", colorsensor.checkIfGreen());
-        telemetry.addData("purple color detected?", colorsensor.checkIfPurple());
+        telemetry.addData("green color detected?", Arrays.toString(colorsensor.senseColor(1)));
+        telemetry.addData("green color detected?", colorsensor.checkIfGreen(1));
+        telemetry.addData("purple color detected?", colorsensor.checkIfPurple(1));
 
         follower.update();
         telemetry.update();

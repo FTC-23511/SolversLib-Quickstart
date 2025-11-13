@@ -82,14 +82,6 @@ public class ColorSubsystem extends SubsystemBase {
         return new float[] {h, s, v};
     }
 
-/*    public boolean sensorIsGreen() {
-        return colorInRange(colorHSV, greenLowerHSV, greenHigherHSV);
-    }
-
-    public boolean sensorIsPurple() {
-        return colorInRange(colorHSV, purpleLowerHSV, purpleHigherHSV);
-    }*/
-
     public boolean checkIfGreen() {
         senseColor();
         return colorInRange(colorHSV, greenLowerHSV, greenHigherHSV);

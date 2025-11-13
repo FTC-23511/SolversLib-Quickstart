@@ -51,11 +51,6 @@ public class RedAuto extends CommandOpMode {
     //stuff
 
     private ElapsedTime timer;
-
-    //private final ArrayList<PathChain> paths = new ArrayList<>();
-
-    //private DashboardPoseTracker dashboardPoseTracker; they had this in github code and I thought it might be useful later
-
     //subsytems and pedro
 
     private Follower follower;
@@ -209,7 +204,6 @@ public class RedAuto extends CommandOpMode {
         led = new LEDSubsystem(hardwareMap);
 
         // DO NOT REMOVE! Resetting FTCLib Command Scheduler
-        //Idk what this is but I think it's important it was from the github code
         super.reset();
 
         // Initialize subsystems
@@ -303,9 +297,9 @@ public class RedAuto extends CommandOpMode {
 
         telemetry.addData("shooter target velocity", shooter.getTargetVelocity());
         telemetry.addData("shooter actual velocity", shooter.getActualVelocity());
-        telemetry.addData("green color detected?", Arrays.toString(colorsensor.senseColor()));
-        telemetry.addData("green color detected?", colorsensor.checkIfGreen());
-        telemetry.addData("purple color detected?", colorsensor.checkIfPurple());
+        telemetry.addData("green color detected?", Arrays.toString(colorsensor.senseColor(1)));
+        telemetry.addData("green color detected?", colorsensor.checkIfGreen(1));
+        telemetry.addData("purple color detected?", colorsensor.checkIfPurple(1));
 
         follower.update();
         telemetry.update();
