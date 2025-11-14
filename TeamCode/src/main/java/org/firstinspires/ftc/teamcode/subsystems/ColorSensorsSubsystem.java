@@ -24,7 +24,9 @@ public class ColorSensorsSubsystem extends SubsystemBase {
         colorSensor2.setGain(27.0f);
     }
 
-    //@param sensorNum Sensor num- 1 is intake and 2 is other
+    /**
+    * @param sensorNum Sensor num- 1 is intake and 2 is other
+     */
     public float[] senseColorsHSV(int sensorNum) {
         //Select which NormalizedRGBA
         NormalizedRGBA normalizedColors = (sensorNum == 1)
