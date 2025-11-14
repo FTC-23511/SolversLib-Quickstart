@@ -23,7 +23,6 @@ public class ColorSensorsSubsystem extends SubsystemBase {
         colorSensor1.setGain(27.0f);
         colorSensor2.setGain(27.0f);
     }
-
     /**
     * @param sensorNum Sensor num- 1 is intake and 2 is other
      */
@@ -41,8 +40,6 @@ public class ColorSensorsSubsystem extends SubsystemBase {
         //return hsv values as float
         return rgbToHsv(rgb);
     }
-
-
     // Function to convert RGB to HSV
     public float[] rgbToHsv(float[] colors) {
         float r = colors[0];
@@ -76,15 +73,16 @@ public class ColorSensorsSubsystem extends SubsystemBase {
     /**
     @param colorsHSV Takes in an array in the form of [hue 0-360, saturation 0-1, value 0-1]. No longer accepts a number for color sensor location
      */
-    public boolean checkIfGreen(float[] colorsHSV) {
+    public static boolean checkIfGreen(float[] colorsHSV) {
         return colorInRange(colorsHSV, greenLowerHSV, greenHigherHSV);
     }
-    public boolean checkIfPurple(float[] colorsHSV) {
+    public static boolean checkIfPurple(float[] colorsHSV) {
         return colorInRange(colorsHSV, purpleLowerHSV, purpleHigherHSV);
     }
-    public boolean checkIfWhite(float[] colorsHSV) {
+    public static boolean checkIfWhite(float[] colorsHSV) {
         return colorInRange(colorsHSV, new float[]{0f, 0.99f, 0.99f}, new float[]{360f, 1f, 1f});
     }
+    public static boolean g
 
 
 
