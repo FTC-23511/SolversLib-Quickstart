@@ -18,4 +18,8 @@ public class RobotConstants {
         NONE, PURPLE, GREEN, UNKNOWN
     }
 
+    public enum Motifs {
+        PPG, PGP, GPP
+    }
+
 }

@@ -1,6 +1,6 @@
 package org.firstinspires.ftc.teamcode.opmodes;
 
-import static org.firstinspires.ftc.teamcode.RobotConstants.ballColors.*;
+import static org.firstinspires.ftc.teamcode.RobotConstants.Motifs.*;
 
 import com.pedropathing.follower.Follower;
 import com.pedropathing.geometry.Pose;
@@ -16,10 +16,11 @@ import com.seattlesolvers.solverslib.command.button.Trigger;
 import com.seattlesolvers.solverslib.gamepad.GamepadEx;
 import com.seattlesolvers.solverslib.gamepad.GamepadKeys;
 
-import org.firstinspires.ftc.teamcode.RobotConstants;
+import org.firstinspires.ftc.teamcode.RobotConstants.*;
 import org.firstinspires.ftc.teamcode.commands.ScanAndUpdateBallsCommand;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 import org.firstinspires.ftc.teamcode.subsystems.ColorSensorsSubsystem;
+import org.firstinspires.ftc.teamcode.subsystems.GateSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.IntakeSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.LEDSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.ShooterSubsystem;
@@ -29,7 +30,7 @@ import java.util.function.Supplier;
 
 @TeleOp (name = "Alpha Teleop", group = "!")
 public class AlphaTeleOp extends CommandOpMode {
-
+    public Motifs motifs = PPG;
 
     //pedro
     private Follower follower;
@@ -43,6 +44,7 @@ public class AlphaTeleOp extends CommandOpMode {
     private SpindexerSubsystem spindexer;
     private ColorSensorsSubsystem colorSensors;
     private LEDSubsystem led;
+    private GateSubsystem gate;
 
     //gamepads
     public GamepadEx driver1;
@@ -111,6 +113,7 @@ public class AlphaTeleOp extends CommandOpMode {
         spindexer = new SpindexerSubsystem(hardwareMap);
         colorSensors = new ColorSensorsSubsystem(hardwareMap);
         led = new LEDSubsystem(hardwareMap);
+        gate = new GateSubsystem(hardwareMap);
         voltageSensor = hardwareMap.get(VoltageSensor.class, "Control Hub");
 
         super.reset();
@@ -172,6 +175,53 @@ public class AlphaTeleOp extends CommandOpMode {
         //Driver 2
         driver2.getGamepadButton(GamepadKeys.Button.CIRCLE).whenPressed(
                 new InstantCommand(() -> {
+                    gate.gateUp();
+                })
+        );
+        driver2.getGamepadButton(GamepadKeys.Button.SQUARE).whenPressed(
+                new InstantCommand(() -> {
+                    gate.gateDown();
+                })
+        );
+        driver2.getGamepadButton(GamepadKeys.Button.OPTIONS).whenPressed(
+                new InstantCommand(() -> {
+                    shooter.increasePivotPosition(1);
+                })
+        );
+        driver2.getGamepadButton(GamepadKeys.Button.SHARE).whenPressed(
+                new InstantCommand(() -> {
+                    shooter.decreasePivotPosition(1);
+                })
+        );
+        driver2.getGamepadButton(GamepadKeys.Button.DPAD_RIGHT).whenPressed(
+                new InstantCommand(() -> {
+                    if (motifs == PPG) {
+                        motifs = GPP;
+                    }
+                    if (motifs == GPP) {
+                        motifs = PGP;
+                    }
+                    if (motifs == PGP) {
+                        motifs = PPG;
+                    }
+                })
+        );
+        driver2.getGamepadButton(GamepadKeys.Button.DPAD_LEFT).whenPressed(
+                new InstantCommand(() -> {
+                    if (motifs == PPG) {
+                        motifs = PGP;
+                    }
+                    if (motifs == PGP) {
+                        motifs = GPP;
+                    }
+                    if (motifs == GPP) {
+                        motifs = PPG;
+                    }
+                })
+        );
+        /*
+        driver2.getGamepadButton(GamepadKeys.Button.CIRCLE).whenPressed(
+                new InstantCommand(() -> {
                     spindexer.moveSpindexerBy(60);
                     spindexerAdjustmentCount += 60;
                     gamepad2.rumbleBlips(1);
@@ -183,7 +233,7 @@ public class AlphaTeleOp extends CommandOpMode {
                     spindexerAdjustmentCount -= 60;
                     gamepad2.rumbleBlips(1);
                 })
-        );
+        );*/
         driver2.getGamepadButton(GamepadKeys.Button.TRIANGLE).whenPressed(
                 new InstantCommand(() -> {
                     closeShooterTarget += 20;
@@ -265,13 +315,13 @@ public class AlphaTeleOp extends CommandOpMode {
             }
         }
         else if (!intakeState.equals(IntakeState.STOP)){ //intaking mode
-            if (colorSensors.checkIfGreen(1)) {
+            if (colorSensors.checkIfGreen(colorSensors.senseColorsHSV(1))) {
                 led.setColor(LEDSubsystem.LEDState.GREEN);
             }
-            else if (colorSensors.checkIfPurple(1)) {
+            else if (colorSensors.checkIfPurple(colorSensors.senseColorsHSV(1))) {
                 led.setColor(LEDSubsystem.LEDState.VIOLET);
             }
-            else if (colorSensors.checkIfWhite(1)){
+            else if (colorSensors.checkIfWhite(colorSensors.senseColorsHSV(1))){
                 led.setColor(LEDSubsystem.LEDState.WHITE);
             }
             else {
