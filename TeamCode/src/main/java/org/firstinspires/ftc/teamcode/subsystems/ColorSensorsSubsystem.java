@@ -11,11 +11,11 @@ public class ColorSensorsSubsystem extends SubsystemBase {
     private NormalizedColorSensor colorSensor1; // Color sensor in pos 1. see spindexer subsystem comment
     private NormalizedColorSensor colorSensor2; // pos 2
 
-    public float[] greenHigherHSV = {175f, 0.9f, 0.95f};
-    public float[] greenLowerHSV  = {135f, 0.2f, 0.2f};
+    public final static float[] greenHigherHSV = {175f, 0.9f, 0.95f};
+    public final static float[] greenLowerHSV  = {135f, 0.2f, 0.2f};
 
-    public float[] purpleHigherHSV = {248f, 0.9f, 0.95f};
-    public float[] purpleLowerHSV  = {208f, 0.2f, 0.28f};
+    public final static float[] purpleHigherHSV = {248f, 0.9f, 0.95f};
+    public final static float[] purpleLowerHSV  = {208f, 0.2f, 0.28f};
 
     public ColorSensorsSubsystem(final HardwareMap hMap) {
         colorSensor1 = hMap.get(NormalizedColorSensor.class, "colorsensor1");
