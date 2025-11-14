@@ -30,6 +30,19 @@ import org.firstinspires.ftc.teamcode.subsystems.SpindexerSubsystem;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+
+
+/*
+
+    Since so much changed between alpha and beta bot, whoever writes this auto should just start from scratch.
+    Theres stuff changed in telemetry, theres new mechanisms, and the way we use spindexer is fundameltnally differnet
+
+
+
+
+
+
+ */
 @Config
 @Autonomous(name = "Red🦅", group = "angryBirds", preselectTeleOp = "Alpha Teleop")
 public class RedAuto extends CommandOpMode {
@@ -154,46 +167,46 @@ public class RedAuto extends CommandOpMode {
 
     }
     //preset command methods
-    public SequentialCommandGroup shootArtifacts() {
-        return new SequentialCommandGroup(
-                new InstantCommand(() -> spindexer.advanceSpindexer()),
-                new ParallelRaceGroup(
-                        new WaitForShooterCommand(shooter),
-                        new WaitCommand(1000)
-                ),
-                new InstantCommand(() -> spindexer.advanceSpindexer()),
-                new ParallelRaceGroup(
-                        new WaitForShooterCommand(shooter),
-                        new WaitCommand(1000)
-                ),
-                new InstantCommand(() -> spindexer.advanceSpindexer()),
-                new ParallelRaceGroup(
-                        new WaitForShooterCommand(shooter),
-                        new WaitCommand(1000)
-                )
-        );
-    }
+//    public SequentialCommandGroup shootArtifacts() {
+//        return new SequentialCommandGroup(
+//                new InstantCommand(() -> spindexer.advanceSpindexer()),
+//                new ParallelRaceGroup(
+//                        new WaitForShooterCommand(shooter),
+//                        new WaitCommand(1000)
+//                ),
+//                new InstantCommand(() -> spindexer.advanceSpindexer()),
+//                new ParallelRaceGroup(
+//                        new WaitForShooterCommand(shooter),
+//                        new WaitCommand(1000)
+//                ),
+//                new InstantCommand(() -> spindexer.advanceSpindexer()),
+//                new ParallelRaceGroup(
+//                        new WaitForShooterCommand(shooter),
+//                        new WaitCommand(1000)
+//                )
+//        );
+//    }
 
-    private SequentialCommandGroup intakeArtifacts() {
-        return new SequentialCommandGroup(
-                new InstantCommand(() -> intake.setSpeed(IntakeSubsystem.IntakeState.INTAKING)),
-                new ParallelRaceGroup(
-                        new WaitForColorCommand(colorsensor),
-                        new WaitCommand(1500)
-                ),
-                new InstantCommand(() -> spindexer.advanceSpindexer()),
-                new ParallelRaceGroup(
-                        new WaitForColorCommand(colorsensor),
-                        new WaitCommand(500)
-                ),
-                new InstantCommand(() -> spindexer.advanceSpindexer()),
-                new ParallelRaceGroup(
-                        new WaitForColorCommand(colorsensor),
-                        new WaitCommand(500)
-                ),
-                new InstantCommand(() -> intake.setSpeed(IntakeSubsystem.IntakeState.REVERSE))
-        );
-    }
+//    private SequentialCommandGroup intakeArtifacts() {
+//        return new SequentialCommandGroup(
+//                new InstantCommand(() -> intake.setSpeed(IntakeSubsystem.IntakeState.INTAKING)),
+//                new ParallelRaceGroup(
+//                        new WaitForColorCommand(colorsensor),
+//                        new WaitCommand(1500)
+//                ),
+//                new InstantCommand(() -> spindexer.advanceSpindexer()),
+//                new ParallelRaceGroup(
+//                        new WaitForColorCommand(colorsensor),
+//                        new WaitCommand(500)
+//                ),
+//                new InstantCommand(() -> spindexer.advanceSpindexer()),
+//                new ParallelRaceGroup(
+//                        new WaitForColorCommand(colorsensor),
+//                        new WaitCommand(500)
+//                ),
+//                new InstantCommand(() -> intake.setSpeed(IntakeSubsystem.IntakeState.REVERSE))
+//        );
+//    }
 
     @Override
     public void initialize() {
@@ -224,58 +237,58 @@ public class RedAuto extends CommandOpMode {
         //one cycle = 3 balls + shoot given starting position is right at the shooting spot
         //pp file is editable but you have to update the buildPath
 
-        schedule(
-                // DO NOT REMOVE: updates follower to follow path
-                new RunCommand(() -> follower.update()),
-                new SequentialCommandGroup(
-                        new InstantCommand(() -> follower.setMaxPower(1)),
-                        new InstantCommand(() -> {shooter.setTargetVelocity(1150);}), //start shoot
-                        new FollowPathCommand(follower, paths.get(0), true), //drive to shooting pos
-                        new InstantCommand(() -> follower.setMaxPower(1.0)),
-                        new WaitCommand(500),
-                        shootArtifacts(),
-
-                        //cycle one
-                        new FollowPathCommand(follower, paths.get(1), true), //drives to balls and lines itself up to intake
-                        new ParallelCommandGroup(
-                                new InstantCommand(() -> follower.setMaxPower(0.3)),
-                                intakeArtifacts(),
-                                new ParallelRaceGroup(
-                                        new FollowPathCommand(follower, paths.get(2), true), //drive and pick up balls
-//                                        new WaitForRobotStuckCommand(follower) //does not work for some reason
-                                        new WaitCommand(5000)
-                                )
-
-                        ),
-                        new InstantCommand(() -> follower.setMaxPower(1)),
-                        new FollowPathCommand(follower, paths.get(3), true), // returning to shooting pos
-                        //needs time for shooter to ramp up
-                        shootArtifacts(),
-
-                        //cycle two
-                        new FollowPathCommand(follower, paths.get(4), true), //drives to balls and lines itself up to intake
-                        new ParallelCommandGroup(
-                                new InstantCommand(() -> follower.setMaxPower(0.4)),
-                                intakeArtifacts(),
-                                new ParallelRaceGroup(
-                                        new FollowPathCommand(follower, paths.get(5), true), //drive and pick up balls
-//                                        new WaitForRobotStuckCommand(follower)
-                                        new WaitCommand(5000)
-                                )
-                        ),
-                        //needs extra step to back out from the wall because it will collide with the exit of the ramp
-                        new InstantCommand(() -> follower.setMaxPower(1)),
-                        new FollowPathCommand(follower, paths.get(6), true),
-
-                        new FollowPathCommand(follower, paths.get(7), true), //return to shooting pos
-                        shootArtifacts(),
-
-                        //move off shooting line so that you get extra points theoretically
-                        new FollowPathCommand(follower, paths.get(8), true),
-
-                        new InstantCommand(() -> {shooter.setTargetVelocity(0);})
-                )
-        );
+//        schedule(
+//                // DO NOT REMOVE: updates follower to follow path
+//                new RunCommand(() -> follower.update()),
+//                new SequentialCommandGroup(
+//                        new InstantCommand(() -> follower.setMaxPower(1)),
+//                        new InstantCommand(() -> {shooter.setTargetVelocity(1150);}), //start shoot
+//                        new FollowPathCommand(follower, paths.get(0), true), //drive to shooting pos
+//                        new InstantCommand(() -> follower.setMaxPower(1.0)),
+//                        new WaitCommand(500),
+//                        shootArtifacts(),
+//
+//                        //cycle one
+//                        new FollowPathCommand(follower, paths.get(1), true), //drives to balls and lines itself up to intake
+//                        new ParallelCommandGroup(
+//                                new InstantCommand(() -> follower.setMaxPower(0.3)),
+//                                intakeArtifacts(),
+//                                new ParallelRaceGroup(
+//                                        new FollowPathCommand(follower, paths.get(2), true), //drive and pick up balls
+////                                        new WaitForRobotStuckCommand(follower) //does not work for some reason
+//                                        new WaitCommand(5000)
+//                                )
+//
+//                        ),
+//                        new InstantCommand(() -> follower.setMaxPower(1)),
+//                        new FollowPathCommand(follower, paths.get(3), true), // returning to shooting pos
+//                        //needs time for shooter to ramp up
+//                        shootArtifacts(),
+//
+//                        //cycle two
+//                        new FollowPathCommand(follower, paths.get(4), true), //drives to balls and lines itself up to intake
+//                        new ParallelCommandGroup(
+//                                new InstantCommand(() -> follower.setMaxPower(0.4)),
+//                                intakeArtifacts(),
+//                                new ParallelRaceGroup(
+//                                        new FollowPathCommand(follower, paths.get(5), true), //drive and pick up balls
+////                                        new WaitForRobotStuckCommand(follower)
+//                                        new WaitCommand(5000)
+//                                )
+//                        ),
+//                        //needs extra step to back out from the wall because it will collide with the exit of the ramp
+//                        new InstantCommand(() -> follower.setMaxPower(1)),
+//                        new FollowPathCommand(follower, paths.get(6), true),
+//
+//                        new FollowPathCommand(follower, paths.get(7), true), //return to shooting pos
+//                        shootArtifacts(),
+//
+//                        //move off shooting line so that you get extra points theoretically
+//                        new FollowPathCommand(follower, paths.get(8), true),
+//
+//                        new InstantCommand(() -> {shooter.setTargetVelocity(0);})
+//                )
+//        );
 
 
     }
@@ -292,26 +305,26 @@ public class RedAuto extends CommandOpMode {
             led.setColor(LEDSubsystem.LEDState.GREEN);
         }
 
-        telemetry.addData("stuck?", follower.isRobotStuck());
-
-        telemetry.addData("current pos", String.format("X: %8.2f, Y: %8.2f", follower.getPose().getX(), follower.getPose().getY()));
-        telemetry.addData("current heading", String.format("Heading (deg): %.4f", Math.toDegrees(follower.getPose().getHeading())));
-
-        telemetry.addData("spindexer output", spindexer.getOutput());
-        telemetry.addData("spindexer setpoint", spindexer.getPIDSetpoint());
-        telemetry.addData("spindexer pos", spindexer.getCurrentPosition());
-
-        telemetry.addData("------------------",null);
-
-        telemetry.addData("shooter target velocity", shooter.getTargetVelocity());
-        telemetry.addData("shooter actual velocity", shooter.getActualVelocity());
-        telemetry.addData("1st colors detected", Arrays.toString(colorsensor.senseColorsHSV(1)));
-        telemetry.addData("2nd colors detected", Arrays.toString(colorsensor.senseColorsHSV(2)));
-        telemetry.addData("green color detected?", colorsensor.checkIfGreen(1));
-        telemetry.addData("purple color detected?", colorsensor.checkIfPurple(1));
-
-        follower.update();
-        telemetry.update();
+//        telemetry.addData("stuck?", follower.isRobotStuck());
+//
+//        telemetry.addData("current pos", String.format("X: %8.2f, Y: %8.2f", follower.getPose().getX(), follower.getPose().getY()));
+//        telemetry.addData("current heading", String.format("Heading (deg): %.4f", Math.toDegrees(follower.getPose().getHeading())));
+//
+//        telemetry.addData("spindexer output", spindexer.getOutput());
+//        telemetry.addData("spindexer setpoint", spindexer.getPIDSetpoint());
+//        telemetry.addData("spindexer pos", spindexer.getCurrentPosition());
+//
+//        telemetry.addData("------------------",null);
+//
+//        telemetry.addData("shooter target velocity", shooter.getTargetVelocity());
+//        telemetry.addData("shooter actual velocity", shooter.getActualVelocity());
+//        telemetry.addData("1st colors detected", Arrays.toString(colorsensor.senseColorsHSV(1)));
+//        telemetry.addData("2nd colors detected", Arrays.toString(colorsensor.senseColorsHSV(2)));
+//        telemetry.addData("green color detected?", colorsensor.checkIfGreen(1));
+//        telemetry.addData("purple color detected?", colorsensor.checkIfPurple(1));
+//
+//        follower.update();
+//        telemetry.update();
         super.run();
     }
 }
