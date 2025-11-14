@@ -22,6 +22,7 @@ public class WaitForColorCommand extends CommandBase {
     }
     @Override
     public boolean isFinished() {
+        //TODO: fix
         return colorSubsystem.checkIfGreen(1) || colorSubsystem.checkIfPurple(1) || colorSubsystem.checkIfWhite(1);
     }
 }

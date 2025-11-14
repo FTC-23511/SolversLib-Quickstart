@@ -71,21 +71,19 @@ public class ColorSensorsSubsystem extends SubsystemBase {
     }
 
     //Check if green, check if purp methods
-    /*
-    @param position of color sensor to check- 1 is intake and 2 is other
+    /**
+    @param colorsHSV Takes in an array in the form of [hue 0-360, saturation 0-1, value 0-1]. No longer accepts a number for color sensor location
      */
-    public boolean checkIfGreen(int pos) {
-        float[] colors = senseColorsHSV(pos);
-        return colorInRange(colors, greenLowerHSV, greenHigherHSV);
+    public boolean checkIfGreen(float[] colorsHSV) {
+        return colorInRange(colorsHSV, greenLowerHSV, greenHigherHSV);
     }
-    public boolean checkIfPurple(int pos) {
-        float[] colors = senseColorsHSV(pos);
-        return colorInRange(colors, purpleLowerHSV, purpleHigherHSV);
+    public boolean checkIfPurple(float[] colorsHSV) {
+        return colorInRange(colorsHSV, purpleLowerHSV, purpleHigherHSV);
     }
-    public boolean checkIfWhite(int pos) {
-        float[] colors = senseColorsHSV(pos);
-        return colorInRange(colors, greenLowerHSV, greenHigherHSV);
+    public boolean checkIfWhite(float[] colorsHSV) {
+        return colorInRange(colorsHSV, new float[]{0f, 0.99f, 0.99f}, new float[]{360f, 1f, 1f});
     }
+
 
 
 
