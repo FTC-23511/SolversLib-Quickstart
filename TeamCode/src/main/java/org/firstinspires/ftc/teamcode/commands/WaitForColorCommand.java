@@ -22,6 +22,6 @@ public class WaitForColorCommand extends CommandBase {
     }
     @Override
     public boolean isFinished() {
-        return colorSubsystem.checkIfGreen(colorSubsystem.senseColorsHSV(1)) || colorSubsystem.checkIfPurple(colorSubsystem.senseColorsHSV(1)) || colorSubsystem.checkIfWhite(colorSubsystem.senseColorsHSV(1));
+        return ColorSensorsSubsystem.checkIfGreen(colorSubsystem.senseColorsHSV(1)) || ColorSensorsSubsystem.checkIfPurple(colorSubsystem.senseColorsHSV(1)) || ColorSensorsSubsystem.checkIfWhite(colorSubsystem.senseColorsHSV(1));
     }
 }
