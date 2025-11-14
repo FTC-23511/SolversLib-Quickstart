@@ -2,9 +2,7 @@ package org.firstinspires.ftc.teamcode.subsystems;
 
 import static com.seattlesolvers.solverslib.util.MathUtils.clamp;
 import static org.firstinspires.ftc.teamcode.RobotConstants.*;
-import static org.firstinspires.ftc.teamcode.RobotConstants.ballColors.*;
-
-import android.util.Log;
+import static org.firstinspires.ftc.teamcode.RobotConstants.BallColors.*;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -21,7 +19,7 @@ public class SpindexerSubsystem extends SubsystemBase {
     private final DcMotor spindexer;
 
     //Store what balls are in the spindexer
-    public ballColors[] balls = {NONE, NONE, NONE};
+    public BallColors[] balls = {NONE, NONE, NONE};
     //Store what state the spindexer is in
 //    public enum SpindexerState {ONE, TWO, THREE} //unused i think??
 //    public SpindexerState spindexerState = SpindexerState.ONE;
@@ -111,10 +109,10 @@ public class SpindexerSubsystem extends SubsystemBase {
     public boolean availableToSenseColor() {
         return true; //TODO: return true if spindexer is almost at its target position and it is not moving a lot
     }
-    public void setBalls(ballColors[] balls) {
+    public void setBalls(BallColors[] balls) {
         this.balls = balls;
     }
-    public ballColors[] getBalls(ballColors[] balls) {
+    public BallColors[] getBalls() {
         return balls;
     }
     //forward = spindexer forward, vice versa
@@ -122,7 +120,7 @@ public class SpindexerSubsystem extends SubsystemBase {
         n = ((n % 3) + 3) % 3; // normalize n to 0, 1, or 2
         if (n == 0) return;
 
-        ballColors a = balls[0], b = balls[1], c = balls[2];
+        BallColors a = balls[0], b = balls[1], c = balls[2];
 
         if (n == 1) {
             // [0,5,2] -> [5,2,0]

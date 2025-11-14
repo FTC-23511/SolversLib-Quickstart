@@ -1,7 +1,6 @@
 package org.firstinspires.ftc.teamcode.commands;
 
 import com.seattlesolvers.solverslib.command.CommandBase;
-import com.seattlesolvers.solverslib.command.Robot;
 
 import org.firstinspires.ftc.teamcode.RobotConstants;
 import org.firstinspires.ftc.teamcode.subsystems.ColorSensorsSubsystem;
@@ -10,8 +9,8 @@ import org.firstinspires.ftc.teamcode.subsystems.SpindexerSubsystem;
 public class LoadBallCommand extends CommandBase {
     private SpindexerSubsystem spindexerSubsystem;
     private ColorSensorsSubsystem colorSensorsSubsystem; //idk if we need, delete if not
-    private RobotConstants.ballColors targetColor;
-    public LoadBallCommand(SpindexerSubsystem spindexerSubsystem, ColorSensorsSubsystem colorSensorsSubsystem, RobotConstants.ballColors targetColor) {
+    private RobotConstants.BallColors targetColor;
+    public LoadBallCommand(SpindexerSubsystem spindexerSubsystem, ColorSensorsSubsystem colorSensorsSubsystem, RobotConstants.BallColors targetColor) {
         this.spindexerSubsystem = spindexerSubsystem;
         this.colorSensorsSubsystem = colorSensorsSubsystem;
         this.targetColor = targetColor;

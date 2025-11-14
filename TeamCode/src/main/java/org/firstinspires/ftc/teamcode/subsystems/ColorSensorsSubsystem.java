@@ -7,6 +7,8 @@ import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
 import com.qualcomm.robotcore.hardware.NormalizedRGBA;
 import com.seattlesolvers.solverslib.command.SubsystemBase;
 
+import org.firstinspires.ftc.teamcode.RobotConstants;
+
 public class ColorSensorsSubsystem extends SubsystemBase {
     private NormalizedColorSensor colorSensor1; // Color sensor in pos 1. see spindexer subsystem comment
     private NormalizedColorSensor colorSensor2; // pos 2
@@ -82,7 +84,13 @@ public class ColorSensorsSubsystem extends SubsystemBase {
     public static boolean checkIfWhite(float[] colorsHSV) {
         return colorInRange(colorsHSV, new float[]{0f, 0.99f, 0.99f}, new float[]{360f, 1f, 1f});
     }
-    public static boolean g
+    public static RobotConstants.BallColors colorsHSVToBallsColors(float[] colorsHSV) {
+        if (checkIfGreen(colorsHSV))  return RobotConstants.BallColors.GREEN;
+        if (checkIfPurple(colorsHSV)) return RobotConstants.BallColors.PURPLE;
+        if (checkIfWhite(colorsHSV))  return RobotConstants.BallColors.UNKNOWN;
+        return RobotConstants.BallColors.NONE;
+    }
+
 
 
 
