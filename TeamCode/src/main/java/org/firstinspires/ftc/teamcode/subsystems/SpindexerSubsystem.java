@@ -149,5 +149,7 @@ public class SpindexerSubsystem extends SubsystemBase {
             balls[2] = b;
         }
     }
-
+    public void setBallAt(int index, BallColors color) {
+        balls[index] = color;
+    }
 }
