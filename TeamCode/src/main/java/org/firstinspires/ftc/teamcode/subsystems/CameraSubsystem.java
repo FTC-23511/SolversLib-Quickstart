@@ -9,6 +9,7 @@ import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.GainCon
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
+import org.opencv.core.Point;
 
 import java.util.Arrays;
 import java.util.List;
@@ -64,17 +65,39 @@ public class CameraSubsystem extends SubsystemBase {
 
     public int detectMotif() {
         List<AprilTagDetection> myAprilTagDetections;
+        double area;
 
         myAprilTagDetections = myAprilTagProcessor.getDetections();
         if (myAprilTagDetections.isEmpty()) {
             return -1;
         }
         AprilTagDetection max = myAprilTagDetections.get(0);
+        double max_area = 0.5*Math.abs(
+                        (max.corners[0].x * max.corners[1].y)
+                        + (max.corners[1].x * max.corners[2].y)
+                        + (max.corners[2].x * max.corners[3].y)
+                        + (max.corners[3].x * max.corners[0].y)
+                        - (max.corners[1].x * max.corners[0].y)
+                        - (max.corners[2].x * max.corners[1].y)
+                        - (max.corners[3].x * max.corners[2].y)
+                        - (max.corners[0].x * max.corners[3].y)
+        );
         // Step through the list of detected tags and look for a matching tag
         for (AprilTagDetection detection : myAprilTagDetections) {
             // Look to see if we have size info on this tag.
             if (DESIRED_TAG_ID.contains(detection.id)) {
-                if (detection.metadata.tagsize > max.metadata.tagsize) {
+                area = 0.5*Math.abs(
+                        (detection.corners[0].x * detection.corners[1].y)
+                        + (detection.corners[1].x * detection.corners[2].y)
+                        + (detection.corners[2].x * detection.corners[3].y)
+                        + (detection.corners[3].x * detection.corners[0].y)
+                        - (detection.corners[1].x * detection.corners[0].y)
+                        - (detection.corners[2].x * detection.corners[1].y)
+                        - (detection.corners[3].x * detection.corners[2].y)
+                        - (detection.corners[0].x * detection.corners[3].y)
+                );
+                if (area > max_area) {
+                    max_area = area;
                     max = detection;
                 }
             }
