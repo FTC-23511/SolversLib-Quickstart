@@ -5,6 +5,7 @@ import static org.firstinspires.ftc.teamcode.RobotConstants.*;
 import static org.firstinspires.ftc.teamcode.RobotConstants.BallColors.*;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.seattlesolvers.solverslib.command.SubsystemBase;
@@ -16,7 +17,7 @@ public class SpindexerSubsystem extends SubsystemBase {
         The spindexer state can be 1-3. When the spindexer motor moves, the state also increases
         The balls in the spindexer are 1 2 and 3 starting from the intake and ending at the shooter
      */
-    private final DcMotor spindexer;
+    private final DcMotorEx spindexer;
 
     //Store what balls are in the spindexer
     public BallColors[] balls = {NONE, NONE, NONE};
@@ -51,7 +52,7 @@ public class SpindexerSubsystem extends SubsystemBase {
     private double output = 0;
 
     public SpindexerSubsystem(final HardwareMap hm) {
-        spindexer = hm.get(DcMotor.class, "spindexer");
+        spindexer = hm.get(DcMotorEx.class, "spindexer");
         pid = new PIDController(kP, kI, kD);
         pid.setPID(kP, kI, kD);
         spindexer.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -106,8 +107,22 @@ public class SpindexerSubsystem extends SubsystemBase {
         kP = (voltage / 13.5) * -0.0004;
     }
     //@return boolean if spindexer is not moving and at a target position.
+
+    public boolean checkSpindexerPosition() {
+        return (Math.abs(spindexer.getTargetPosition() - spindexer.getCurrentPosition()) < (SPINDEXER_TICKS_PER_DEG * 5));
+    }
+
+    public boolean checkSpindexerVelocity() {
+        return spindexer.getVelocity() < (SPINDEXER_TICKS_PER_DEG * 120)/5.0;
+    }
+
     public boolean availableToSenseColor() {
-        return true; //TODO: return true if spindexer is almost at its target position and it is not moving a lot
+        if (checkSpindexerPosition() && checkSpindexerVelocity()) {
+            return true;
+        }
+        else {
+            return false;
+        }
     }
     public void setBalls(BallColors[] balls) {
         this.balls = balls;
