@@ -11,11 +11,11 @@ public class ColorSensorsSubsystem extends SubsystemBase {
     private NormalizedColorSensor colorSensor1; // Color sensor in pos 1. see spindexer subsystem comment
     private NormalizedColorSensor colorSensor2; // pos 2
 
-    public float[] greenHigherHSV = {175f, 0.9f, 0.95f};
-    public float[] greenLowerHSV  = {135f, 0.2f, 0.2f};
+    public final static float[] greenHigherHSV = {175f, 0.9f, 0.95f};
+    public final static float[] greenLowerHSV  = {135f, 0.2f, 0.2f};
 
-    public float[] purpleHigherHSV = {248f, 0.9f, 0.95f};
-    public float[] purpleLowerHSV  = {208f, 0.2f, 0.28f};
+    public final static float[] purpleHigherHSV = {248f, 0.9f, 0.95f};
+    public final static float[] purpleLowerHSV  = {208f, 0.2f, 0.28f};
 
     public ColorSensorsSubsystem(final HardwareMap hMap) {
         colorSensor1 = hMap.get(NormalizedColorSensor.class, "colorsensor1");
@@ -76,13 +76,13 @@ public class ColorSensorsSubsystem extends SubsystemBase {
     /**
     @param colorsHSV Takes in an array in the form of [hue 0-360, saturation 0-1, value 0-1]. No longer accepts a number for color sensor location
      */
-    public boolean checkIfGreen(float[] colorsHSV) {
+    public static boolean checkIfGreen(float[] colorsHSV) {
         return colorInRange(colorsHSV, greenLowerHSV, greenHigherHSV);
     }
-    public boolean checkIfPurple(float[] colorsHSV) {
+    public static boolean checkIfPurple(float[] colorsHSV) {
         return colorInRange(colorsHSV, purpleLowerHSV, purpleHigherHSV);
     }
-    public boolean checkIfWhite(float[] colorsHSV) {
+    public static boolean checkIfWhite(float[] colorsHSV) {
         return colorInRange(colorsHSV, new float[]{0f, 0.99f, 0.99f}, new float[]{360f, 1f, 1f});
     }
 
