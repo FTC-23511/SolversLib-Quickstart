@@ -7,6 +7,8 @@ import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
 import com.qualcomm.robotcore.hardware.NormalizedRGBA;
 import com.seattlesolvers.solverslib.command.SubsystemBase;
 
+import org.firstinspires.ftc.teamcode.RobotConstants;
+
 public class ColorSensorsSubsystem extends SubsystemBase {
     private NormalizedColorSensor colorSensor1; // Color sensor in pos 1. see spindexer subsystem comment
     private NormalizedColorSensor colorSensor2; // pos 2
@@ -23,7 +25,6 @@ public class ColorSensorsSubsystem extends SubsystemBase {
         colorSensor1.setGain(27.0f);
         colorSensor2.setGain(27.0f);
     }
-
     /**
     * @param sensorNum Sensor num- 1 is intake and 2 is other
      */
@@ -41,8 +42,6 @@ public class ColorSensorsSubsystem extends SubsystemBase {
         //return hsv values as float
         return rgbToHsv(rgb);
     }
-
-
     // Function to convert RGB to HSV
     public float[] rgbToHsv(float[] colors) {
         float r = colors[0];
@@ -85,6 +84,13 @@ public class ColorSensorsSubsystem extends SubsystemBase {
     public static boolean checkIfWhite(float[] colorsHSV) {
         return colorInRange(colorsHSV, new float[]{0f, 0.99f, 0.99f}, new float[]{360f, 1f, 1f});
     }
+    public static RobotConstants.BallColors colorsHSVToBallsColors(float[] colorsHSV) {
+        if (checkIfGreen(colorsHSV))  return RobotConstants.BallColors.GREEN;
+        if (checkIfPurple(colorsHSV)) return RobotConstants.BallColors.PURPLE;
+        if (checkIfWhite(colorsHSV))  return RobotConstants.BallColors.UNKNOWN;
+        return RobotConstants.BallColors.NONE;
+    }
+
 
 
 

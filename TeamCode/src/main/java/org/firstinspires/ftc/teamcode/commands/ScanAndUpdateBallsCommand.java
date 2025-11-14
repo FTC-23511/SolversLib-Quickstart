@@ -6,6 +6,10 @@ import org.firstinspires.ftc.teamcode.RobotConstants;
 import org.firstinspires.ftc.teamcode.subsystems.ColorSensorsSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.SpindexerSubsystem;
 
+/**
+ * @author michael
+ *
+ */
 public class ScanAndUpdateBallsCommand extends CommandBase {
     private ColorSensorsSubsystem colorSensorsSubsystem;
     private SpindexerSubsystem spindexerSubsystem;
@@ -17,10 +21,17 @@ public class ScanAndUpdateBallsCommand extends CommandBase {
 
     @Override
     public void initialize() {
-            //TODO: sense color and update arrays w/ spiundexer's setBalls method
-            //TODO (hard): how do we prevent false positives / negatives?
-            //example on how to set balls below
-            //spindexerSubsystem.setBalls(new RobotConstants.ballColors[]{RobotConstants.ballColors.GREEN, RobotConstants.ballColors.GREEN, RobotConstants.ballColors.GREEN});
+        float[] colorsReadSensor1 = colorSensorsSubsystem.senseColorsHSV(1);
+        float[] colorsReadSensor2 = colorSensorsSubsystem.senseColorsHSV(2);
+        RobotConstants.BallColors ball1 = ColorSensorsSubsystem.colorsHSVToBallsColors(colorsReadSensor1);
+        RobotConstants.BallColors ball2 = ColorSensorsSubsystem.colorsHSVToBallsColors(colorsReadSensor2);
+        spindexerSubsystem.setBalls(
+                new RobotConstants.BallColors[]{
+                        ball1,
+                        ball2,
+                        spindexerSubsystem.getBalls()[2]
+                }
+        );
     }
     @Override
     public boolean isFinished() {
