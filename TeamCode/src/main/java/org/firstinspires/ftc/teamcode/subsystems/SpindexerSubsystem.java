@@ -86,16 +86,16 @@ public class SpindexerSubsystem extends SubsystemBase {
     }
     //@return boolean if spindexer is not moving and at a target position.
 
-    public boolean checkSpindexerPosition() {
+    public boolean isNearTargetPosition() {
         return (Math.abs(spindexer.getTargetPosition() - spindexer.getCurrentPosition()) < (SPINDEXER_TICKS_PER_DEG * 5));
     }
 
-    public boolean checkSpindexerVelocity() {
+    public boolean isNotMovingFr() {
         return spindexer.getVelocity() < (SPINDEXER_TICKS_PER_DEG * 120)/5.0;
     }
 
     public boolean availableToSenseColor() {
-        if (checkSpindexerPosition() && checkSpindexerVelocity()) {
+        if (isNearTargetPosition() && isNotMovingFr()) {
             return true;
         }
         else {
