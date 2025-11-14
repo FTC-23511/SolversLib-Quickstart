@@ -25,7 +25,6 @@ public class LoadBallCommand extends CommandBase {
         //if none of them are the target color or UNKNOWN, dont do anything
         //if targetColor is UNKNOWN, then that means supply any color ball -> dont do anything
         //supply means move to position 3 because then if we advance spindexer then the ball will be shot
-
     }
     @Override
     public boolean isFinished() {

@@ -1,0 +1,32 @@
+package org.firstinspires.ftc.teamcode.commands;
+
+import static org.firstinspires.ftc.teamcode.RobotConstants.SPINDEXER_TICKS_PER_DEG;
+
+import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.seattlesolvers.solverslib.command.CommandBase;
+
+import org.firstinspires.ftc.teamcode.RobotConstants;
+import org.firstinspires.ftc.teamcode.subsystems.GateSubsystem;
+import org.firstinspires.ftc.teamcode.subsystems.SpindexerSubsystem;
+
+public class MoveSpindexerCommand extends CommandBase {
+    private SpindexerSubsystem spindexerSubsystem;
+    private GateSubsystem gateSubsystem;
+    public int number;
+
+    public MoveSpindexerCommand(SpindexerSubsystem spindexerSubsystem, GateSubsystem gateSubsystem, int num) {
+        this.spindexerSubsystem = spindexerSubsystem;
+        this.gateSubsystem = gateSubsystem;
+        addRequirements(gateSubsystem, spindexerSubsystem);
+        number = num;
+    }
+
+    @Override
+    public void initialize() {
+        if (Math.abs(gateSubsystem.DOWN - gateSubsystem.getGatePosition()) < 0.1) {
+            spindexerSubsystem.setBallAt(2, RobotConstants.BallColors.NONE);
+        }
+        spindexerSubsystem.moveSpindexerBy(SPINDEXER_TICKS_PER_DEG * 120 * number);
+        spindexerSubsystem.shiftBallsArrayBy(number);
+    }
+}

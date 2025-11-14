@@ -58,28 +58,6 @@ public class SpindexerSubsystem extends SubsystemBase {
         spindexer.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         spindexer.setDirection(DcMotorSimple.Direction.REVERSE);
     }
-
-    public void advanceSpindexer() {
-        targetPosition += SPINDEXER_TICKS_PER_DEG * 120;
-
-//        switch (spindexerState) {
-//            case ONE:   spindexerState = SpindexerState.TWO;   break;
-//            case TWO:   spindexerState = SpindexerState.THREE; break;
-//            case THREE: spindexerState = SpindexerState.ONE;   break;
-//        }
-        //TODO: if gate is down then set that ball to NONE
-        shiftBallsBy(1);
-    }
-    public void reverseSpindexer() {
-        targetPosition -= SPINDEXER_TICKS_PER_DEG * 120;
-
-//        switch (spindexerState) {
-//            case ONE:   spindexerState = SpindexerState.THREE;   break;
-//            case TWO:   spindexerState = SpindexerState.ONE; break;
-//            case THREE: spindexerState = SpindexerState.TWO;   break;
-//        }
-        shiftBallsBy(-1);
-    }
     public void moveSpindexerBy(double x) {
         targetPosition += x;
     }
@@ -131,7 +109,7 @@ public class SpindexerSubsystem extends SubsystemBase {
         return balls;
     }
     //forward = spindexer forward, vice versa
-    public void shiftBallsBy(int n) {
+    public void shiftBallsArrayBy(int n) {
         n = ((n % 3) + 3) % 3; // normalize n to 0, 1, or 2
         if (n == 0) return;
 
