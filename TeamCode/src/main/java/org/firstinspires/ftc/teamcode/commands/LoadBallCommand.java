@@ -1,33 +1,54 @@
 package org.firstinspires.ftc.teamcode.commands;
 
+import static org.firstinspires.ftc.teamcode.RobotConstants.SPINDEXER_TICKS_PER_DEG;
+
 import com.seattlesolvers.solverslib.command.CommandBase;
 
 import org.firstinspires.ftc.teamcode.RobotConstants;
 import org.firstinspires.ftc.teamcode.subsystems.ColorSensorsSubsystem;
+import org.firstinspires.ftc.teamcode.subsystems.GateSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.SpindexerSubsystem;
 
-public class LoadBallCommand extends CommandBase {
+import java.util.Arrays;
+
+public class LoadBallCommand extends CommandBase { //Assumes gate is up - pls
     private SpindexerSubsystem spindexerSubsystem;
     private ColorSensorsSubsystem colorSensorsSubsystem; //idk if we need, delete if not
+    private GateSubsystem gateSubsystem;
     private RobotConstants.BallColors targetColor;
-    public LoadBallCommand(SpindexerSubsystem spindexerSubsystem, ColorSensorsSubsystem colorSensorsSubsystem, RobotConstants.BallColors targetColor) {
+    public LoadBallCommand(SpindexerSubsystem spindexerSubsystem, GateSubsystem gateSubsystem, ColorSensorsSubsystem colorSensorsSubsystem, RobotConstants.BallColors targetColor) {
         this.spindexerSubsystem = spindexerSubsystem;
         this.colorSensorsSubsystem = colorSensorsSubsystem;
+        this.gateSubsystem = gateSubsystem;
         this.targetColor = targetColor;
-        addRequirements(colorSensorsSubsystem, spindexerSubsystem);
+        addRequirements(spindexerSubsystem, colorSensorsSubsystem, gateSubsystem);
     }
 
     @Override
     public void initialize() {
-        //TODO (medium): implement this command
-        //Cycle balls until the target color is in position 3
-        //edge case: if none of them are the target color, cycle until an UNKNOWN color is in position 3
-        //if none of them are the target color or UNKNOWN, dont do anything
-        //if targetColor is UNKNOWN, then that means supply any color ball -> dont do anything
-        //supply means move to position 3 because then if we advance spindexer then the ball will be shot
+        RobotConstants.BallColors[] balls = spindexerSubsystem.getBalls();
+
+        boolean ballsContainsTarget = false;
+        for (RobotConstants.BallColors color : balls) { //idk why java doesnt have a .contains method for arrays :(
+            if (color == targetColor) {
+                ballsContainsTarget = true;
+                break;
+            }
+        }
+        if (!ballsContainsTarget) {
+            targetColor = RobotConstants.BallColors.UNKNOWN;
+        }
+
+        if (balls[1] == targetColor) {
+            spindexerSubsystem.moveSpindexerBy(SPINDEXER_TICKS_PER_DEG * 120);
+            spindexerSubsystem.shiftBallsArrayBy(1);
+        } else if (balls[0] == targetColor) {
+            spindexerSubsystem.moveSpindexerBy(SPINDEXER_TICKS_PER_DEG * 240); //Forward because it will fly out of intake
+            spindexerSubsystem.shiftBallsArrayBy(2);
+        }
     }
     @Override
     public boolean isFinished() {
-        //TODO: return true when spindexer is done (?) maybe???
+        return (spindexerSubsystem.isNearTargetPosition() && spindexerSubsystem.isNotMovingFr());
     }
 }
