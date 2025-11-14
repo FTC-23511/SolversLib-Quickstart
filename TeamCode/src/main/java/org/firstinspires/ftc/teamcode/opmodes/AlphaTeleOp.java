@@ -346,6 +346,9 @@ public class AlphaTeleOp extends CommandOpMode {
         telemetry.addData("spindexer setpoint", spindexer.getPIDSetpoint());
         telemetry.addData("spindexer pos", spindexer.getCurrentPosition());
         telemetry.addData("spindexer tick adjustment degrees", spindexerAdjustmentCount);
+        telemetry.addData("is spindexer ready to read color ", spindexer.availableToSenseColor());
+        telemetry.addData("current motif", motifs);
+        telemetry.addData("spindexer's balls", spindexer.getBalls());
 
         telemetry.addData("------------------",null);
 
