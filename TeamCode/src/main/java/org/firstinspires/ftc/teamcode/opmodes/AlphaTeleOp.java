@@ -101,6 +101,8 @@ public class AlphaTeleOp extends CommandOpMode {
         }
     }
 
+    //ShootMotif command
+
 
     @Override
     public void initialize () {
@@ -269,11 +271,7 @@ public class AlphaTeleOp extends CommandOpMode {
                             shooter.setTargetVelocity(-300);
                         })
                 );
-
-
     }
-
-
 
     @Override
     public void run() {
