@@ -12,13 +12,13 @@ public class GateSubsystem extends SubsystemBase {
         gate = new ServoEx(hMap, "gate");
         gate.setInverted(false);
     }
-    public void gateUp() {
+    public void up() {
         gate.set(UP);
     }
-    public void gateDown() {
+    public void down() {
         gate.set(DOWN);
     }
-    public double getGatePosition() {
+    public double getPosition() {
         return gate.getRawPosition();
     }
 }

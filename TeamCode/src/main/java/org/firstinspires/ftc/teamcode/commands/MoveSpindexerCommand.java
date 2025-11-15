@@ -2,7 +2,6 @@ package org.firstinspires.ftc.teamcode.commands;
 
 import static org.firstinspires.ftc.teamcode.RobotConstants.SPINDEXER_TICKS_PER_DEG;
 
-import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.seattlesolvers.solverslib.command.CommandBase;
 
 import org.firstinspires.ftc.teamcode.RobotConstants;
@@ -23,10 +22,15 @@ public class MoveSpindexerCommand extends CommandBase {
 
     @Override
     public void initialize() {
-        if (Math.abs(gateSubsystem.DOWN - gateSubsystem.getGatePosition()) < 0.1) {
+        if (Math.abs(gateSubsystem.DOWN - gateSubsystem.getPosition()) < 0.1) {
             spindexerSubsystem.setBallAt(2, RobotConstants.BallColors.NONE);
         }
         spindexerSubsystem.moveSpindexerBy(SPINDEXER_TICKS_PER_DEG * 120 * number);
         spindexerSubsystem.shiftBallsArrayBy(number);
+    }
+
+    @Override
+    public boolean isFinished() {
+        return spindexerSubsystem.isNearTargetPosition();
     }
 }

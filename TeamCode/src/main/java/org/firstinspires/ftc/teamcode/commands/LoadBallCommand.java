@@ -13,15 +13,11 @@ import java.util.Arrays;
 
 public class LoadBallCommand extends CommandBase { //Assumes gate is up - pls
     private SpindexerSubsystem spindexerSubsystem;
-    private ColorSensorsSubsystem colorSensorsSubsystem; //idk if we need, delete if not
-    private GateSubsystem gateSubsystem;
     private RobotConstants.BallColors targetColor;
-    public LoadBallCommand(SpindexerSubsystem spindexerSubsystem, GateSubsystem gateSubsystem, ColorSensorsSubsystem colorSensorsSubsystem, RobotConstants.BallColors targetColor) {
+    public LoadBallCommand(SpindexerSubsystem spindexerSubsystem, RobotConstants.BallColors targetColor) {
         this.spindexerSubsystem = spindexerSubsystem;
-        this.colorSensorsSubsystem = colorSensorsSubsystem;
-        this.gateSubsystem = gateSubsystem;
         this.targetColor = targetColor;
-        addRequirements(spindexerSubsystem, colorSensorsSubsystem, gateSubsystem);
+        addRequirements(spindexerSubsystem);
     }
 
     @Override

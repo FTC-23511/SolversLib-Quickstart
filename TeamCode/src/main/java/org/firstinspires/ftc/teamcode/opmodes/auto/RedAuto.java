@@ -8,28 +8,26 @@ import com.pedropathing.geometry.BezierLine;
 import com.pedropathing.geometry.Pose;
 import com.pedropathing.paths.PathChain;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.seattlesolvers.solverslib.command.CommandOpMode;
+import com.seattlesolvers.solverslib.command.ConditionalCommand;
 import com.seattlesolvers.solverslib.command.InstantCommand;
-import com.seattlesolvers.solverslib.command.ParallelCommandGroup;
-import com.seattlesolvers.solverslib.command.ParallelRaceGroup;
-import com.seattlesolvers.solverslib.command.RunCommand;
 import com.seattlesolvers.solverslib.command.SequentialCommandGroup;
 import com.seattlesolvers.solverslib.command.WaitCommand;
-import com.seattlesolvers.solverslib.pedroCommand.FollowPathCommand;
 
-import org.firstinspires.ftc.teamcode.commands.WaitForColorCommand;
-import org.firstinspires.ftc.teamcode.commands.WaitForShooterCommand;
+import org.firstinspires.ftc.teamcode.RobotConstants;
+import org.firstinspires.ftc.teamcode.commands.LoadBallCommand;
+import org.firstinspires.ftc.teamcode.commands.MoveSpindexerCommand;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 import org.firstinspires.ftc.teamcode.subsystems.ColorSensorsSubsystem;
+import org.firstinspires.ftc.teamcode.subsystems.GateSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.IntakeSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.LEDSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.ShooterSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.SpindexerSubsystem;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-
 
 
 /*
@@ -44,34 +42,17 @@ import java.util.Arrays;
 
  */
 @Config
-@Autonomous(name = "Red🦅", group = "angryBirds", preselectTeleOp = "Alpha Teleop")
+@Autonomous(name = "Red 12ball real🦅", group = "angryBirds", preselectTeleOp = "Alpha Teleop")
 public class RedAuto extends CommandOpMode {
     //paths
-    /*
-    public PathChain Path1;
-    public PathChain Path2;
-    public PathChain Path3;
-    public PathChain Path4;
-    public PathChain Path5;
-    public PathChain Path6;
-    public PathChain Path7;
-    public PathChain Path8;
-    public PathChain Path9;
-     */
-
-
     private final ArrayList<PathChain> paths = new ArrayList<>();
 
-    //stuff
-
+    //voltage compensation
+    public VoltageSensor voltageSensor;
+    double currentVoltage = 14;
+    private boolean slowMode = false;
+    public ElapsedTime lastVoltageCheck = new ElapsedTime();
     private ElapsedTime timer;
-
-    //private final ArrayList<PathChain> paths = new ArrayList<>();
-
-    //private DashboardPoseTracker dashboardPoseTracker; they had this in github code and I thought it might be useful later
-
-    //subsytems and pedro
-
     private Follower follower;
 
     //update starting pose
@@ -80,6 +61,7 @@ public class RedAuto extends CommandOpMode {
     private ShooterSubsystem shooter;
     private SpindexerSubsystem spindexer;
     private ColorSensorsSubsystem colorsensor;
+    private GateSubsystem gate;
     private LEDSubsystem led;
 
     public void buildPaths(Follower follower) {
@@ -167,6 +149,29 @@ public class RedAuto extends CommandOpMode {
 
     }
     //preset command methods
+    public SequentialCommandGroup shootArtifacts(RobotConstants.Motifs motif) {
+        if (motif.equals(RobotConstants.Motifs.PPG)) {
+            return new SequentialCommandGroup(
+                    new InstantCommand(gate::up), //redundant, for safety b/c gate should already be up.
+                    new ConditionalCommand( //is purple loaded?
+                            new SequentialCommandGroup( //onTrue, gate down
+                                    new InstantCommand(gate::down),
+                                    new WaitCommand(300)
+                            ),
+                            new SequentialCommandGroup( //onFalse, load purple then gate down
+                                    new LoadBallCommand(spindexer, RobotConstants.BallColors.PURPLE),
+                                    new InstantCommand(gate::down),
+                                    new WaitCommand(300)
+                            ),
+                            () -> spindexer.getBalls()[2] == RobotConstants.BallColors.PURPLE // condition as booleanSupplier
+                    ),
+                    new MoveSpindexerCommand(spindexer, gate, 1) //shoot ball
+
+
+            );
+        }
+        return new SequentialCommandGroup(); //delete
+    }
 //    public SequentialCommandGroup shootArtifacts() {
 //        return new SequentialCommandGroup(
 //                new InstantCommand(() -> spindexer.advanceSpindexer()),
@@ -220,17 +225,23 @@ public class RedAuto extends CommandOpMode {
         shooter = new ShooterSubsystem(hardwareMap);
         spindexer = new SpindexerSubsystem(hardwareMap);
         colorsensor = new ColorSensorsSubsystem(hardwareMap);
+        gate = new GateSubsystem(hardwareMap);
+        voltageSensor = hardwareMap.get(VoltageSensor.class, "Control Hub");
+        lastVoltageCheck.reset();
         led = new LEDSubsystem(hardwareMap);
+
 
         // DO NOT REMOVE! Resetting FTCLib Command Scheduler
         //Idk what this is but I think it's important it was from the github code
         super.reset();
 
         // Initialize subsystems
-        register(intake, spindexer, shooter, colorsensor, led);
+        register(intake, spindexer, shooter, colorsensor, led, gate);
 
         //init paths
         buildPaths(follower);
+
+
 
 
         //schedule commands
@@ -304,27 +315,39 @@ public class RedAuto extends CommandOpMode {
         else {
             led.setColor(LEDSubsystem.LEDState.GREEN);
         }
+        //Voltage compensation code
+        if (lastVoltageCheck.milliseconds() > 500) { //check every 500ms
+            currentVoltage = voltageSensor.getVoltage();
+            spindexer.updatePIDVoltage(currentVoltage);
+            shooter.updatePIDVoltage(currentVoltage);
+            lastVoltageCheck.reset();
+        }
 
-//        telemetry.addData("stuck?", follower.isRobotStuck());
-//
-//        telemetry.addData("current pos", String.format("X: %8.2f, Y: %8.2f", follower.getPose().getX(), follower.getPose().getY()));
-//        telemetry.addData("current heading", String.format("Heading (deg): %.4f", Math.toDegrees(follower.getPose().getHeading())));
-//
-//        telemetry.addData("spindexer output", spindexer.getOutput());
-//        telemetry.addData("spindexer setpoint", spindexer.getPIDSetpoint());
-//        telemetry.addData("spindexer pos", spindexer.getCurrentPosition());
-//
-//        telemetry.addData("------------------",null);
-//
-//        telemetry.addData("shooter target velocity", shooter.getTargetVelocity());
-//        telemetry.addData("shooter actual velocity", shooter.getActualVelocity());
-//        telemetry.addData("1st colors detected", Arrays.toString(colorsensor.senseColorsHSV(1)));
-//        telemetry.addData("2nd colors detected", Arrays.toString(colorsensor.senseColorsHSV(2)));
-//        telemetry.addData("green color detected?", colorsensor.checkIfGreen(1));
-//        telemetry.addData("purple color detected?", colorsensor.checkIfPurple(1));
-//
-//        follower.update();
-//        telemetry.update();
+
+        telemetry.addData("Loop Time", timer.milliseconds());
+
+        telemetry.addData("spindexer output", spindexer.getOutput());
+        telemetry.addData("spindexer setpoint", spindexer.getPIDSetpoint());
+        telemetry.addData("spindexer pos", spindexer.getCurrentPosition());
+        telemetry.addData("is spindexer ready to read color ", spindexer.availableToSenseColor());
+        telemetry.addData("spindexer's balls", spindexer.getBalls());
+
+        telemetry.addData("------------------",null);
+
+        telemetry.addData("shooter target velocity", shooter.getTargetVelocity());
+        telemetry.addData("shooter actual velocity", shooter.getActualVelocity());
+
+        telemetry.addData("------------------",null);
+
+        telemetry.addData("current pos", String.format("X: %8.2f, Y: %8.2f", follower.getPose().getX(), follower.getPose().getY()));
+        telemetry.addData("current heading", String.format("Heading: %.4f", follower.getPose().getHeading()));
+        telemetry.addData("t value", follower.getCurrentTValue());
+        telemetry.addData("------------------",null);
+
+        timer.reset();
+        telemetry.update();
+        super.run();
+
         super.run();
     }
 }
