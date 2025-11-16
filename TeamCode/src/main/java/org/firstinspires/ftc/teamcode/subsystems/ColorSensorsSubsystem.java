@@ -11,7 +11,6 @@ import org.firstinspires.ftc.teamcode.RobotConstants;
 
 public class ColorSensorsSubsystem extends SubsystemBase {
     private NormalizedColorSensor colorSensor1; // Color sensor in pos 1. see spindexer subsystem comment
-    private NormalizedColorSensor colorSensor2; // pos 2
 
     public final static float[] greenHigherHSV = {175f, 0.9f, 0.95f};
     public final static float[] greenLowerHSV  = {135f, 0.2f, 0.2f};
@@ -21,18 +20,14 @@ public class ColorSensorsSubsystem extends SubsystemBase {
 
     public ColorSensorsSubsystem(final HardwareMap hMap) {
         colorSensor1 = hMap.get(NormalizedColorSensor.class, "colorsensor1");
-        colorSensor2 = hMap.get(NormalizedColorSensor.class, "colorsensor1");
         colorSensor1.setGain(27.0f);
-        colorSensor2.setGain(27.0f);
     }
     /**
-    * @param sensorNum Sensor num- 1 is intake and 2 is other
+    * @param sensorNum Sensor num- 1 is intake - only one color sensor now
      */
     public float[] senseColorsHSV(int sensorNum) {
         //Select which NormalizedRGBA
-        NormalizedRGBA normalizedColors = (sensorNum == 1)
-                ? colorSensor1.getNormalizedColors()
-                : colorSensor2.getNormalizedColors();
+        NormalizedRGBA normalizedColors = colorSensor1.getNormalizedColors();
         // build rgb array
         float[] rgb = {
                 normalizedColors.red,

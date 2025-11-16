@@ -26,17 +26,17 @@ public class ColorSensorTuning extends OpMode {
         boolean isGreen1 = ColorSensorsSubsystem.checkIfGreen(sensedColor1);
         boolean isPurple1 = ColorSensorsSubsystem.checkIfPurple(sensedColor1);
 
-        float[] sensedColor2 = colorSensor.senseColorsHSV(2);
-        boolean isGreen2 = ColorSensorsSubsystem.checkIfGreen(sensedColor2);
-        boolean isPurple2 = ColorSensorsSubsystem.checkIfPurple(sensedColor2);
+//        float[] sensedColor2 = colorSensor.senseColorsHSV(2);
+//        boolean isGreen2 = ColorSensorsSubsystem.checkIfGreen(sensedColor2);
+//        boolean isPurple2 = ColorSensorsSubsystem.checkIfPurple(sensedColor2);
 
         telemetry.addData("#1 sensed color hsv ", Arrays.toString(sensedColor1));
         telemetry.addData("#1 detects green ", isGreen1);
         telemetry.addData("#1 detects purple ", isPurple1);
 
-        telemetry.addData("#2 sensed color hsv ", Arrays.toString(sensedColor2));
-        telemetry.addData("#2 detects green ", isGreen2);
-        telemetry.addData("#2 detects purple ", isPurple2);
+//        telemetry.addData("#2 sensed color hsv ", Arrays.toString(sensedColor2));
+//        telemetry.addData("#2 detects green ", isGreen2);
+//        telemetry.addData("#2 detects purple ", isPurple2);
 
     }
 }

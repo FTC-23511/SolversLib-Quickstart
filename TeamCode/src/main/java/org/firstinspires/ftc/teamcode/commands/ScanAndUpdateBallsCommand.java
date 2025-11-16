@@ -22,13 +22,13 @@ public class ScanAndUpdateBallsCommand extends CommandBase {
     @Override
     public void initialize() {
         float[] colorsReadSensor1 = colorSensorsSubsystem.senseColorsHSV(1);
-        float[] colorsReadSensor2 = colorSensorsSubsystem.senseColorsHSV(2);
+//        float[] colorsReadSensor2 = colorSensorsSubsystem.senseColorsHSV(2);
         RobotConstants.BallColors ball1 = ColorSensorsSubsystem.colorsHSVToBallsColors(colorsReadSensor1);
-        RobotConstants.BallColors ball2 = ColorSensorsSubsystem.colorsHSVToBallsColors(colorsReadSensor2);
+//        RobotConstants.BallColors ball2 = ColorSensorsSubsystem.colorsHSVToBallsColors(colorsReadSensor2);
         spindexerSubsystem.setBalls(
                 new RobotConstants.BallColors[]{
                         ball1,
-                        ball2,
+                        spindexerSubsystem.getBalls()[1],
                         spindexerSubsystem.getBalls()[2]
                 }
         );
