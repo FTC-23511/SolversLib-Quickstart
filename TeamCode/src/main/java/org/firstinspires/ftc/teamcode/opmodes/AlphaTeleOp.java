@@ -17,6 +17,7 @@ import com.seattlesolvers.solverslib.gamepad.GamepadEx;
 import com.seattlesolvers.solverslib.gamepad.GamepadKeys;
 
 import org.firstinspires.ftc.teamcode.RobotConstants.*;
+import org.firstinspires.ftc.teamcode.commands.MoveSpindexerCommand;
 import org.firstinspires.ftc.teamcode.commands.ScanAndUpdateBallsCommand;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 import org.firstinspires.ftc.teamcode.subsystems.ColorSensorsSubsystem;
@@ -26,6 +27,7 @@ import org.firstinspires.ftc.teamcode.subsystems.LEDSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.ShooterSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.SpindexerSubsystem;
 
+import java.util.Arrays;
 import java.util.function.Supplier;
 
 @TeleOp (name = "Alpha Teleop", group = "!")
@@ -118,9 +120,11 @@ public class AlphaTeleOp extends CommandOpMode {
         gate = new GateSubsystem(hardwareMap);
         voltageSensor = hardwareMap.get(VoltageSensor.class, "Control Hub");
 
+        shooter.setHood(0.56);
+
         super.reset();
         lastVoltageCheck.reset();
-        register(intake, shooter, spindexer);
+        register(intake, shooter, spindexer, gate, colorSensors, led);
 
         //pedro and gamepad wrapper
         follower.startTeleopDrive();
@@ -148,16 +152,12 @@ public class AlphaTeleOp extends CommandOpMode {
                     new SelectCommand(this::intakeCommand).schedule();
                 })
         );
-//        driver1.getGamepadButton(GamepadKeys.Button.CIRCLE).whenPressed(
-//                new InstantCommand(() -> {
-//                    spindexer.advanceSpindexer();
-//                })
-//        );
-//        driver1.getGamepadButton(GamepadKeys.Button.SQUARE).whenPressed(
-//                new InstantCommand(() -> {
-//                    spindexer.reverseSpindexer();
-//                })
-//        );
+        driver1.getGamepadButton(GamepadKeys.Button.CIRCLE).whenPressed(
+                new MoveSpindexerCommand(spindexer, gate, 1, true)
+        );
+        driver1.getGamepadButton(GamepadKeys.Button.SQUARE).whenPressed(
+                new MoveSpindexerCommand(spindexer, gate, -1, true)
+        );
         driver1.getGamepadButton(GamepadKeys.Button.DPAD_UP).whenPressed(
                 new InstantCommand(() -> {
                     goToSavedPose();
@@ -187,12 +187,12 @@ public class AlphaTeleOp extends CommandOpMode {
         );
         driver2.getGamepadButton(GamepadKeys.Button.OPTIONS).whenPressed(
                 new InstantCommand(() -> {
-                    shooter.increasePivotPosition(1);
+                    shooter.setHood(Math.max(0.56, 1.0));
                 })
         );
         driver2.getGamepadButton(GamepadKeys.Button.SHARE).whenPressed(
                 new InstantCommand(() -> {
-                    shooter.decreasePivotPosition(1);
+                    shooter.setHood(Math.max(shooter.getHoodPos() - 0.01, 1.0));
                 })
         );
         driver2.getGamepadButton(GamepadKeys.Button.DPAD_RIGHT).whenPressed(
@@ -337,16 +337,16 @@ public class AlphaTeleOp extends CommandOpMode {
             lastVoltageCheck.reset();
         }
 
+        telemetry.addData("BALLS", Arrays.toString(spindexer.getBalls()));
 
         telemetry.addData("Loop Time", timer.milliseconds());
 
+        telemetry.addData("current motif", motifs);
         telemetry.addData("spindexer output", spindexer.getOutput());
         telemetry.addData("spindexer setpoint", spindexer.getPIDSetpoint());
         telemetry.addData("spindexer pos", spindexer.getCurrentPosition());
         telemetry.addData("spindexer tick adjustment degrees", spindexerAdjustmentCount);
         telemetry.addData("is spindexer ready to read color ", spindexer.availableToSenseColor());
-        telemetry.addData("current motif", motifs);
-        telemetry.addData("spindexer's balls", spindexer.getBalls());
 
         telemetry.addData("------------------",null);
 

@@ -12,12 +12,13 @@ public class MoveSpindexerCommand extends CommandBase {
     private SpindexerSubsystem spindexerSubsystem;
     private GateSubsystem gateSubsystem;
     public int number;
-
-    public MoveSpindexerCommand(SpindexerSubsystem spindexerSubsystem, GateSubsystem gateSubsystem, int num) {
+    private boolean instant = false;
+    public MoveSpindexerCommand(SpindexerSubsystem spindexerSubsystem, GateSubsystem gateSubsystem, int num, boolean instant) {
         this.spindexerSubsystem = spindexerSubsystem;
         this.gateSubsystem = gateSubsystem;
-        addRequirements(gateSubsystem, spindexerSubsystem);
         number = num;
+        this.instant = instant;
+
     }
 
     @Override
@@ -31,6 +32,9 @@ public class MoveSpindexerCommand extends CommandBase {
 
     @Override
     public boolean isFinished() {
+        if (instant) {
+            return true;
+        }
         return spindexerSubsystem.isNearTargetPosition();
     }
 }

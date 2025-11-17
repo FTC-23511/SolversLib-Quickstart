@@ -29,7 +29,7 @@ public class SpindexerSubsystem extends SubsystemBase {
 
 
     // PIDF Coefficients
-    private double kP = -0.0004;
+    private double kP = -0.00140;
     private final double kI = 0.000000;
     private final double kD = 0.000001;
     private final double kF = 0.000;
@@ -67,12 +67,12 @@ public class SpindexerSubsystem extends SubsystemBase {
         pid.setP(kP);
         currentPosition = spindexer.getCurrentPosition();
         output = pid.calculate(currentPosition, targetPosition);
-        spindexer.setPower(clamp(output, -0.4, 1));
+        spindexer.setPower(clamp(output, -1, 1));
     }
 
     // Get current PID output
     public String getOutput() {
-        return output + " | " + clamp(output, -0.5, 1);
+        return output + " | " + clamp(output, -1, 1);
     }
 
 
@@ -82,12 +82,12 @@ public class SpindexerSubsystem extends SubsystemBase {
     }
 
     public void updatePIDVoltage(double voltage) {
-        kP = (voltage / 13.5) * -0.0004;
+        kP = (voltage / 13.5) * -0.00140;
     }
     //@return boolean if spindexer is not moving and at a target position.
 
     public boolean isNearTargetPosition() {
-        return (Math.abs(spindexer.getTargetPosition() - spindexer.getCurrentPosition()) < (SPINDEXER_TICKS_PER_DEG * 5));
+        return (Math.abs(targetPosition - spindexer.getCurrentPosition()) < (SPINDEXER_TICKS_PER_DEG * 15));
     }
 
     public boolean isNotMovingFr() {

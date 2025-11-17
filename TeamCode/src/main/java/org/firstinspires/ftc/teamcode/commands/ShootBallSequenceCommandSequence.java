@@ -10,8 +10,6 @@ import org.firstinspires.ftc.teamcode.subsystems.GateSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.ShooterSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.SpindexerSubsystem;
 
-import kotlin.time.Instant;
-
 public class ShootBallSequenceCommandSequence extends SequentialCommandGroup {
     public ShootBallSequenceCommandSequence(ShooterSubsystem shooterSubsystem, SpindexerSubsystem spindexerSubsystem, GateSubsystem gateSubsystem, RobotConstants.BallColors[] targetBallSequence) {
         addCommands(
@@ -29,7 +27,7 @@ public class ShootBallSequenceCommandSequence extends SequentialCommandGroup {
                         ),
                         () -> spindexerSubsystem.getBalls()[2] == targetBallSequence[0] || targetBallSequence[0] == RobotConstants.BallColors.UNKNOWN //ball is already loaded or we don't care . condition as booleanSupplier
                 ),
-                new MoveSpindexerCommand(spindexerSubsystem, gateSubsystem, 1), //shoot ball
+                new MoveSpindexerCommand(spindexerSubsystem, gateSubsystem, 1, false), //shoot ball
                 //ball 2 logic is a bit different- we don't want to move gate up if a ball is already loaded
                 new ConditionalCommand( //is targetBallSequence[1] loaded?
                         new InstantCommand(), //onTrue, do nothing as gate is already down
@@ -42,7 +40,7 @@ public class ShootBallSequenceCommandSequence extends SequentialCommandGroup {
                         ),
                         () -> spindexerSubsystem.getBalls()[2] == targetBallSequence[1] || targetBallSequence[1] == RobotConstants.BallColors.UNKNOWN //ball is already loaded or we don't care . condition as booleanSupplier
                 ),
-                new MoveSpindexerCommand(spindexerSubsystem, gateSubsystem, 1), //shoot ball
+                new MoveSpindexerCommand(spindexerSubsystem, gateSubsystem, 1, false), //shoot ball
                 //ball 3 logic
                 new ConditionalCommand( //is targetBallSequence[2] loaded?
                     new InstantCommand(), //onTrue, do nothing as gate is already down
@@ -55,7 +53,7 @@ public class ShootBallSequenceCommandSequence extends SequentialCommandGroup {
                     ),
                     () -> spindexerSubsystem.getBalls()[2] == targetBallSequence[2] || targetBallSequence[2] == RobotConstants.BallColors.UNKNOWN //ball is already loaded or we don't care . condition as booleanSupplier
                 ),
-                new MoveSpindexerCommand(spindexerSubsystem, gateSubsystem, 1), //shoot ball
+                new MoveSpindexerCommand(spindexerSubsystem, gateSubsystem, 1, false), //shoot ball
                 new InstantCommand(gateSubsystem::up)
         );
         addRequirements(shooterSubsystem, spindexerSubsystem, gateSubsystem);

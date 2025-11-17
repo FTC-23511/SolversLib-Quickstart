@@ -12,43 +12,32 @@ public class ShooterSubsystem extends SubsystemBase {
 
     Motor shooter1;
     Motor shooter2;
+    ServoEx hood;
     MotorGroup shooter;
     public double getTargetVelocity() {
         return flywheelController.getSetPoint();
     }
     public double getActualVelocity() {
-        return shooter.getCorrectedVelocity();
+        return shooter1.getCorrectedVelocity();
     }
     double kPOriginal = 0.0100;
     double kFOriginal = 0.00061;
     double kP = kPOriginal;
     double kF = kFOriginal;
     private final PIDFController flywheelController = new PIDFController(kPOriginal, 0, 0, kFOriginal);
-    ServoEx pivot;
-
-    public double MIN_TICKS = 0.0;
-    public double MAX_TICKS = 1.0;
-    public double OFFSET = 0.0; //set the ticks to make 0 degrees
-    public double pivotCurrentPos = MIN_TICKS + OFFSET;
-    //degrees change on pivot bar (silver gear) convert to gold gear ticks: (6*degrees)/(1675)
-    public double degreesToTicks(double degrees) {
-        return ((6 * degrees) / 1675);
-    }
     public ShooterSubsystem(final HardwareMap hMap) {
         shooter1 = new Motor(hMap, "shooter1", Motor.GoBILDA.RPM_312);
         shooter2 = new Motor(hMap, "shooter2", Motor.GoBILDA.RPM_312);
-        pivot = new ServoEx(hMap, "pivot", MIN_TICKS, MAX_TICKS);
+        hood = new ServoEx(hMap, "pivot");
 
         shooter1.setInverted(true); //one has to be backwards
         shooter2.setInverted(false);
-        pivot.setInverted(false);
+        hood.setInverted(false);
 
         shooter = new MotorGroup(shooter1, shooter2);
 
         shooter.setRunMode(Motor.RunMode.RawPower);
-        shooter.set(MIN_TICKS);
-        pivot.set(pivotCurrentPos);
-
+        shooter.set(0);
         shooter.setZeroPowerBehavior(Motor.ZeroPowerBehavior.FLOAT);
     }
 
@@ -59,39 +48,22 @@ public class ShooterSubsystem extends SubsystemBase {
         kP = (voltage / 13.5) * kPOriginal;
         kF = (voltage / 13.5) * kFOriginal;
     }
-
-    public void increasePivotPosition(double degrees) {
-        if (pivotCurrentPos + degreesToTicks(degrees) <= MAX_TICKS) {
-            pivotCurrentPos += degreesToTicks(degrees);
-            pivot.set(pivotCurrentPos);
-        }
-        else{
-            pivot.set(pivotCurrentPos);
-        }
+    public void setHood(double ticks) {
+        hood.set(ticks);
     }
 
-    public void decreasePivotPosition(double degrees) {
-        if (pivotCurrentPos - degreesToTicks(degrees) >= MIN_TICKS) {
-            pivotCurrentPos -= degreesToTicks(degrees);
-            pivot.set(pivotCurrentPos);
-        }
-        else{
-            pivot.set(pivotCurrentPos);
-        }
-    }
-
-    public void setPivotPosition(double pivotDegrees) {
-        pivot.set(degreesToTicks(pivotDegrees)+OFFSET);
-    }
-
-    public double getPivotPosition() {
-        return pivot.getRawPosition();
+    /**
+     *
+     * @return last commanded hood pos
+     */
+    public double getHoodPos() {
+        return hood.get();
     }
 
     public void periodic() {
         flywheelController.setF(kF);
         flywheelController.setP(kP);
-        shooter.set(flywheelController.calculate(shooter.getCorrectedVelocity()));
+        shooter.set(flywheelController.calculate(shooter1.getCorrectedVelocity()));
     }
 
 }

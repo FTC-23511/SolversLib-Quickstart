@@ -13,7 +13,6 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.seattlesolvers.solverslib.command.CommandOpMode;
-import com.seattlesolvers.solverslib.command.ConditionalCommand;
 import com.seattlesolvers.solverslib.command.InstantCommand;
 import com.seattlesolvers.solverslib.command.ParallelCommandGroup;
 import com.seattlesolvers.solverslib.command.ParallelRaceGroup;
@@ -23,7 +22,6 @@ import com.seattlesolvers.solverslib.command.WaitCommand;
 import com.seattlesolvers.solverslib.pedroCommand.FollowPathCommand;
 
 import org.firstinspires.ftc.teamcode.RobotConstants;
-import org.firstinspires.ftc.teamcode.commands.LoadBallCommand;
 import org.firstinspires.ftc.teamcode.commands.MoveSpindexerCommand;
 import org.firstinspires.ftc.teamcode.commands.ShootBallSequenceCommandSequence;
 import org.firstinspires.ftc.teamcode.commands.WaitForColorCommand;
@@ -185,12 +183,12 @@ public class RedAuto extends CommandOpMode {
                         new WaitForColorCommand(colorsensor),
                         new WaitCommand(1500)
                 ),
-                new MoveSpindexerCommand(spindexer, gate, 1),
+                new MoveSpindexerCommand(spindexer, gate, 1, false),
                 new ParallelRaceGroup(
                         new WaitForColorCommand(colorsensor),
                         new WaitCommand(500)
                 ),
-                new MoveSpindexerCommand(spindexer, gate, 1),
+                new MoveSpindexerCommand(spindexer, gate, 1, false),
                 new ParallelRaceGroup(
                         new WaitForColorCommand(colorsensor),
                         new WaitCommand(500)
@@ -240,7 +238,7 @@ public class RedAuto extends CommandOpMode {
                 new SequentialCommandGroup(
                         new InstantCommand(() -> {
                             shooter.setTargetVelocity(1150);
-                            shooter.setPivotPosition(70); //Placeholder
+                            shooter.setHood(0.56); //Placeholder
                             gate.up();
                             follower.setMaxPower(1);
                         }), //start shoot
