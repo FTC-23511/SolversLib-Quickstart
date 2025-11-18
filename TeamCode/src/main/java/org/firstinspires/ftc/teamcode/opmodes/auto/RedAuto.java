@@ -36,17 +36,7 @@ import org.firstinspires.ftc.teamcode.subsystems.SpindexerSubsystem;
 import java.util.ArrayList;
 
 
-/*
 
-    Since so much changed between alpha and beta bot, whoever writes this auto should just start from scratch.
-    Theres stuff changed in telemetry, theres new mechanisms, and the way we use spindexer is fundameltnally differnet
-
-
-
-
-
-
- */
 @Config
 @Autonomous(name = "Red 12ball real🦅", group = "angryBirds", preselectTeleOp = "Alpha Teleop")
 public class RedAuto extends CommandOpMode {
@@ -108,6 +98,7 @@ public class RedAuto extends CommandOpMode {
                 .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(45))
                 .build()
         );
+        //Cycle 2
 
         paths.add(follower
                 .pathBuilder()
@@ -140,6 +131,42 @@ public class RedAuto extends CommandOpMode {
                 .pathBuilder()
                 .addPath(
                         new BezierLine(new Pose(125.000, 60.000), new Pose(84, 84))
+                )
+                .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(45))
+                .build()
+        );
+        //Cycle 3
+        paths.add(follower
+                .pathBuilder()
+                .addPath(
+                        new BezierLine(new Pose(84,  84), new Pose(95.000, 36.000))
+                )
+                .setLinearHeadingInterpolation(Math.toRadians(45), Math.toRadians(0))
+                .build()
+        );
+
+        paths.add(follower
+                .pathBuilder()
+                .addPath(
+                        new BezierLine(new Pose(95.000, 36.000), new Pose(140.000, 36.000))
+                )
+                .setTangentHeadingInterpolation()
+                .build()
+        );
+
+        paths.add(follower
+                .pathBuilder()
+                .addPath(
+                        new BezierLine(new Pose(140.000, 36.000), new Pose(125.000, 36.000))
+                )
+                .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(0))
+                .build()
+        );
+
+        paths.add(follower
+                .pathBuilder()
+                .addPath(
+                        new BezierLine(new Pose(125.000, 36.000), new Pose(84, 84))
                 )
                 .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(45))
                 .build()
@@ -279,9 +306,26 @@ public class RedAuto extends CommandOpMode {
                         new FollowPathCommand(follower, paths.get(7), true), //return to shooting pos
                         new ShootBallSequenceCommandSequence(shooter, spindexer, gate, motif), //shoot motif
 
-                        //TODO: Someone add 3rd line of balls
+                        //cycle three
+                        new FollowPathCommand(follower, paths.get(8), true), //drives to balls and lines itself up to intake
+                        new ParallelCommandGroup(
+                                new InstantCommand(() -> follower.setMaxPower(0.7)),
+                                intakeArtifacts(),
+                                new ParallelRaceGroup(
+                                        new FollowPathCommand(follower, paths.get(5), true), //drive and pick up balls
+//                                        new WaitForRobotStuckCommand(follower)
+                                        new WaitCommand(3000)
+                                )
+                        ),
+                        //needs extra step to back out from the wall because it will collide with the exit of the ramp
+                        new InstantCommand(() -> follower.setMaxPower(1)),
+                        new FollowPathCommand(follower, paths.get(9), true),
+
+                        new FollowPathCommand(follower, paths.get(10), true), //return to shooting pos
+                        new ShootBallSequenceCommandSequence(shooter, spindexer, gate, motif), //shoot motif
+
                         //move off shooting line so that you get extra points theoretically
-                        new FollowPathCommand(follower, paths.get(8), true),
+                        new FollowPathCommand(follower, paths.get(11), true),
 
                         new InstantCommand(() -> {shooter.setTargetVelocity(0);})
                 )
