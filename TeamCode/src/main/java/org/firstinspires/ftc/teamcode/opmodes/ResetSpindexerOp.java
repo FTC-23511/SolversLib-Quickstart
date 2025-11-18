@@ -37,7 +37,7 @@ public class ResetSpindexerOp extends CommandOpMode {
         double max = 0.722;
         double amplitude = (max - min) / 2.0;
         double midpoint = (max + min) / 2.0;
-        double speed = 1.0; // cycles per second — increase for faster transitions
+        double speed = 4.0; // cycles per second — increase for faster transitions
 
         // Oscillate servo position smoothly with sine wave
         double position = midpoint + amplitude * Math.sin(2 * Math.PI * speed * t);
