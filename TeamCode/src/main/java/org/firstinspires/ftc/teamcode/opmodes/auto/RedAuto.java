@@ -183,26 +183,6 @@ public class RedAuto extends CommandOpMode {
 
     }
 
-//    public SequentialCommandGroup shootArtifacts() {
-//        return new SequentialCommandGroup(
-//                new InstantCommand(() -> spindexer.advanceSpindexer()),
-//                new ParallelRaceGroup(
-//                        new WaitForShooterCommand(shooter),
-//                        new WaitCommand(1000)
-//                ),
-//                new InstantCommand(() -> spindexer.advanceSpindexer()),
-//                new ParallelRaceGroup(
-//                        new WaitForShooterCommand(shooter),
-//                        new WaitCommand(1000)
-//                ),
-//                new InstantCommand(() -> spindexer.advanceSpindexer()),
-//                new ParallelRaceGroup(
-//                        new WaitForShooterCommand(shooter),
-//                        new WaitCommand(1000)
-//                )
-//        );
-//    }
-
     private SequentialCommandGroup intakeArtifacts() {
         return new SequentialCommandGroup(
                 new InstantCommand(() -> intake.setSpeed(IntakeSubsystem.IntakeState.INTAKING)),
@@ -378,6 +358,5 @@ public class RedAuto extends CommandOpMode {
         telemetry.update();
         super.run();
 
-        super.run();
     }
 }
