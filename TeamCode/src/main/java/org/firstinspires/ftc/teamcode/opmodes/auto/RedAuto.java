@@ -248,6 +248,7 @@ public class RedAuto extends CommandOpMode {
                             shooter.setHood(0.56); //Placeholder
                             gate.up();
                             follower.setMaxPower(1);
+                            spindexer.setBalls(new RobotConstants.BallColors[] {PURPLE, PURPLE, PURPLE});
                         }), //start shoot
                         new FollowPathCommand(follower, paths.get(0), true), //drive to shooting pos
                         new ShootBallSequenceCommandSequence(shooter, spindexer, gate, motif), //shoot motif
@@ -263,9 +264,11 @@ public class RedAuto extends CommandOpMode {
                                 )
 
                         ),
-                        new InstantCommand(() -> follower.setMaxPower(1)),
+                        new InstantCommand(() -> {
+                            follower.setMaxPower(1);
+                            spindexer.setBalls(new RobotConstants.BallColors[] {GREEN, PURPLE, PURPLE});
+                        }),
                         new FollowPathCommand(follower, paths.get(3), true), // returning to shooting pos
-                        //needs time for shooter to ramp up
                         new ShootBallSequenceCommandSequence(shooter, spindexer, gate, motif), //shoot motif
 
                         //cycle two
@@ -280,7 +283,10 @@ public class RedAuto extends CommandOpMode {
                                 )
                         ),
                         //needs extra step to back out from the wall because it will collide with the exit of the ramp
-                        new InstantCommand(() -> follower.setMaxPower(1)),
+                        new InstantCommand(() -> {
+                            follower.setMaxPower(1);
+                            spindexer.setBalls(new RobotConstants.BallColors[] {PURPLE, GREEN, PURPLE});
+                        }),
                         new FollowPathCommand(follower, paths.get(6), true),
 
                         new FollowPathCommand(follower, paths.get(7), true), //return to shooting pos
@@ -298,7 +304,10 @@ public class RedAuto extends CommandOpMode {
                                 )
                         ),
                         //needs extra step to back out from the wall because it will collide with the exit of the ramp
-                        new InstantCommand(() -> follower.setMaxPower(1)),
+                        new InstantCommand(() -> {
+                            follower.setMaxPower(1);
+                            spindexer.setBalls(new RobotConstants.BallColors[] {PURPLE, PURPLE, GREEN});
+                        }),
                         new FollowPathCommand(follower, paths.get(9), true),
 
                         new FollowPathCommand(follower, paths.get(10), true), //return to shooting pos
