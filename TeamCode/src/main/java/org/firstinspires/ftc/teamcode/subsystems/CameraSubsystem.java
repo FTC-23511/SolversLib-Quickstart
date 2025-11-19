@@ -106,25 +106,40 @@ public class CameraSubsystem extends SubsystemBase {
         return max.id;
     }
 
-    public int detectGoalDistance() {
+    /**
+     * @return camera's direct (point-to-point) distance to the tag center as a double or null if nothing is found
+     * */
+    public Object detectGoalDistance() {
         List<AprilTagDetection> myAprilTagDetections;
-        double area;
 
         myAprilTagDetections = myAprilTagProcessor.getDetections();
-        if (myAprilTagDetections.isEmpty()) {
-            return -1;
-        }
 
         // check to see if detected tag id matches the available motifs
         for (AprilTagDetection detection : myAprilTagDetections) {
-            // Look to see if we have size info on this tag.
-            if (detection.id == 20) {
-                
-            }
-            else if (detection.id == 24) {
-
+            // april tag pose
+            if (DISTANCE_TAG_IDS.contains(detection.id)) {
+                return detection.ftcPose.range;
             }
         }
+        return null;
+    }
+
+    /**
+     * @return camera's horizontal distance from tag center as a double or null if nothing is found
+     * */
+    public Object detectGoalXDistance() {
+        List<AprilTagDetection> myAprilTagDetections;
+
+        myAprilTagDetections = myAprilTagProcessor.getDetections();
+
+        // check to see if detected tag id matches the available motifs
+        for (AprilTagDetection detection : myAprilTagDetections) {
+            // april tag pose
+            if (DISTANCE_TAG_IDS.contains(detection.id)) {
+                return detection.ftcPose.x;
+            }
+        }
+        return null;
     }
 
     /*
