@@ -341,29 +341,49 @@ public class AlphaTeleOp extends CommandOpMode {
 
         telemetry.addData("Loop Time", timer.milliseconds());
 
-        telemetry.addData("current motif", motifs);
-        telemetry.addData("spindexer output", spindexer.getOutput());
-        telemetry.addData("spindexer setpoint", spindexer.getPIDSetpoint());
-        telemetry.addData("spindexer pos", spindexer.getCurrentPosition());
-        telemetry.addData("spindexer tick adjustment degrees", spindexerAdjustmentCount);
+        telemetry.addData("current motif ", motifs);
+        telemetry.addData("spindexer output ", spindexer.getOutput());
+        telemetry.addData("spindexer setpoint ", spindexer.getPIDSetpoint());
+        telemetry.addData("spindexer pos ", spindexer.getCurrentPosition());
+        telemetry.addData("spindexer tick adjustment degrees ", spindexerAdjustmentCount);
         telemetry.addData("is spindexer ready to read color ", spindexer.availableToSenseColor());
 
         telemetry.addData("------------------",null);
 
-        telemetry.addData("shooter close amount", closeShooterTarget);
-        telemetry.addData("shooter target velocity", shooter.getTargetVelocity());
-        telemetry.addData("shooter actual velocity", shooter.getActualVelocity());
+        telemetry.addData("shooter close amount ", closeShooterTarget);
+        telemetry.addData("shooter target velocity ", shooter.getTargetVelocity());
+        telemetry.addData("shooter actual velocity ", shooter.getActualVelocity());
 
         telemetry.addData("------------------",null);
 
-        telemetry.addData("current pos", String.format("X: %8.2f, Y: %8.2f", follower.getPose().getX(), follower.getPose().getY()));
-        telemetry.addData("current heading", String.format("Heading: %.4f", follower.getPose().getHeading()));
-        telemetry.addData("saved pos", String.format("X: %8.2f, Y: %8.2f", savedPose.getX(), savedPose.getY()));
-        telemetry.addData("saved heading", String.format("Heading: %.4f", savedPose.getHeading()));
-        telemetry.addData("t value", follower.getCurrentTValue());
+        telemetry.addData("current pos ", String.format("X: %8.2f, Y: %8.2f", follower.getPose().getX(), follower.getPose().getY()));
+        telemetry.addData("current heading ", String.format("Heading: %.4f", follower.getPose().getHeading()));
+        telemetry.addData("saved pos ", String.format("X: %8.2f, Y: %8.2f", savedPose.getX(), savedPose.getY()));
+        telemetry.addData("saved heading ", String.format("Heading: %.4f", savedPose.getHeading()));
+        telemetry.addData("t value ", follower.getCurrentTValue());
         telemetry.addData("!follower.isBusy() || (gamepad1.touchpad_finger_1 && gamepad1.touchpad_finger_2)", !follower.isBusy() || (gamepad1.touchpad_finger_1 && gamepad1.touchpad_finger_2));
-        telemetry.addData("slowmode", slowMode);
+        telemetry.addData("slowmode ", slowMode);
+
         telemetry.addData("------------------",null);
+
+        if (colorSensors.checkIfPurple(colorSensors.senseColorsHSV(1)) == true) {
+            telemetry.addData("detecting purple, raw value: ", colorSensors.senseColorsHSV(1));
+        }
+        else if (colorSensors.checkIfPurple(colorSensors.senseColorsHSV(2)) == true) {
+            telemetry.addData("detecting purple, raw value: ", colorSensors.senseColorsHSV(2));
+        }
+        if (colorSensors.checkIfGreen(colorSensors.senseColorsHSV(1)) == true) {
+            telemetry.addData("detecting green, raw value: ", colorSensors.senseColorsHSV(1));
+        }
+        else if (colorSensors.checkIfGreen(colorSensors.senseColorsHSV(2)) == true) {
+            telemetry.addData("detecting green, raw value: ", colorSensors.senseColorsHSV(2));
+        }
+        if (colorSensors.checkIfWhite(colorSensors.senseColorsHSV(1)) == true) {
+            telemetry.addData("detecting white, raw value: ", colorSensors.senseColorsHSV(1));
+        }
+        else if (colorSensors.checkIfWhite(colorSensors.senseColorsHSV(2)) == true) {
+            telemetry.addData("detecting white, raw value: ", colorSensors.senseColorsHSV(2));
+        }
 
         timer.reset();
         telemetry.update();
