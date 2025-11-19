@@ -30,8 +30,8 @@ public class ShooterSubsystem extends SubsystemBase {
         shooter2 = new Motor(hMap, "shooter2", Motor.GoBILDA.RPM_312);
         hood = new ServoEx(hMap, "pivot");
 
-        shooter1.setInverted(true); //one has to be backwards
-        shooter2.setInverted(false);
+        shooter1.setInverted(false); //one has to be backwards
+        shooter2.setInverted(true);
         hood.setInverted(false);
 
         shooter = new MotorGroup(shooter1, shooter2);
