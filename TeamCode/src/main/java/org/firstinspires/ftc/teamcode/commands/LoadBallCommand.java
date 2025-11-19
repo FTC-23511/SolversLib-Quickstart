@@ -5,11 +5,7 @@ import static org.firstinspires.ftc.teamcode.RobotConstants.SPINDEXER_TICKS_PER_
 import com.seattlesolvers.solverslib.command.CommandBase;
 
 import org.firstinspires.ftc.teamcode.RobotConstants;
-import org.firstinspires.ftc.teamcode.subsystems.ColorSensorsSubsystem;
-import org.firstinspires.ftc.teamcode.subsystems.GateSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.SpindexerSubsystem;
-
-import java.util.Arrays;
 
 public class LoadBallCommand extends CommandBase { //Assumes gate is up - pls
     private SpindexerSubsystem spindexerSubsystem;
@@ -45,6 +41,6 @@ public class LoadBallCommand extends CommandBase { //Assumes gate is up - pls
     }
     @Override
     public boolean isFinished() {
-        return (spindexerSubsystem.isNearTargetPosition() && spindexerSubsystem.isNotMovingFr());
+        return (spindexerSubsystem.isNearTargetPosition() && spindexerSubsystem.isLowVelocity());
     }
 }

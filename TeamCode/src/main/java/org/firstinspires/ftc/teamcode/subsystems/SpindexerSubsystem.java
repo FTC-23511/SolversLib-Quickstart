@@ -4,6 +4,7 @@ import static com.seattlesolvers.solverslib.util.MathUtils.clamp;
 import static org.firstinspires.ftc.teamcode.RobotConstants.*;
 import static org.firstinspires.ftc.teamcode.RobotConstants.BallColors.*;
 
+import com.qualcomm.robotcore.hardware.AnalogInput;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -18,9 +19,10 @@ public class SpindexerSubsystem extends SubsystemBase {
         The balls in the spindexer are 1 2 and 3 starting from the intake and ending at the shooter
      */
     private final DcMotorEx spindexer;
+    private final AnalogInput absoluteEncoder;
 
     //Store what balls are in the spindexer
-    public BallColors[] balls = {NONE, NONE, NONE};
+    private BallColors[] balls = {NONE, NONE, NONE};
     //Store what state the spindexer is in
 //    public enum SpindexerState {ONE, TWO, THREE} //unused i think??
 //    public SpindexerState spindexerState = SpindexerState.ONE;
@@ -34,11 +36,9 @@ public class SpindexerSubsystem extends SubsystemBase {
     private final double kD = 0.000001;
     private final double kF = 0.000;
 
-    public int getCurrentPosition() {
-        return currentPosition;
-    }
-
-    public int currentPosition = 0;
+    private int currentPosition = 0;
+    private double currentAnalogPosition = 0;
+    private double offset = 0; //0 degrees. If you want to use a negative offset, just add some multiple of 360 so that the offset evaluates to be positive.
 
 
     // Target position for PIDF 
@@ -53,6 +53,7 @@ public class SpindexerSubsystem extends SubsystemBase {
 
     public SpindexerSubsystem(final HardwareMap hm) {
         spindexer = hm.get(DcMotorEx.class, "spindexer");
+        absoluteEncoder = hm.get(AnalogInput.class, "encoder");
         pid = new PIDController(kP, kI, kD);
         pid.setPID(kP, kI, kD);
         spindexer.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -61,20 +62,26 @@ public class SpindexerSubsystem extends SubsystemBase {
     public void moveSpindexerBy(double x) {
         targetPosition += x;
     }
-
     @Override
     public void periodic() {
         pid.setP(kP);
         currentPosition = spindexer.getCurrentPosition();
+        currentAnalogPosition = (absoluteEncoder.getVoltage() / 3.2 * 360 + offset) % 360;
         output = pid.calculate(currentPosition, targetPosition);
         spindexer.setPower(clamp(output, -1, 1));
+    }
+    /**@return quadrature/relative position, updated once every periodic() call*/
+    public int getCurrentPosition() {
+        return currentPosition;
+    }
+    public double getCurrentAnalogPosition() {
+        return currentAnalogPosition;
     }
 
     // Get current PID output
     public String getOutput() {
         return output + " | " + clamp(output, -1, 1);
     }
-
 
     // Return current setpoint (your tracked target position)
     public double getPIDSetpoint() {
@@ -84,23 +91,18 @@ public class SpindexerSubsystem extends SubsystemBase {
     public void updatePIDVoltage(double voltage) {
         kP = (voltage / 13.5) * -0.00140;
     }
-    //@return boolean if spindexer is not moving and at a target position.
-
     public boolean isNearTargetPosition() {
         return (Math.abs(targetPosition - spindexer.getCurrentPosition()) < (SPINDEXER_TICKS_PER_DEG * 15));
     }
 
-    public boolean isNotMovingFr() {
+    public boolean isLowVelocity() {
         return spindexer.getVelocity() < (SPINDEXER_TICKS_PER_DEG * 120)/5.0;
     }
-
+    /**
+     * @return true if spindexer is not moving and at a target position.
+     * */
     public boolean availableToSenseColor() {
-        if (isNearTargetPosition() && isNotMovingFr()) {
-            return true;
-        }
-        else {
-            return false;
-        }
+        return isNearTargetPosition() && isLowVelocity();
     }
     public void setBalls(BallColors[] balls) {
         this.balls = balls;
