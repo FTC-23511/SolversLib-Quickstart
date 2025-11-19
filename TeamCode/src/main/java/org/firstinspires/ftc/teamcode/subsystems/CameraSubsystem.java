@@ -1,4 +1,9 @@
 package org.firstinspires.ftc.teamcode.subsystems;
+import static org.firstinspires.ftc.teamcode.RobotConstants.Motifs.GPP;
+import static org.firstinspires.ftc.teamcode.RobotConstants.Motifs.PGP;
+import static org.firstinspires.ftc.teamcode.RobotConstants.Motifs.PPG;
+import static org.firstinspires.ftc.teamcode.RobotConstants.Motifs.PPP;
+
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.seattlesolvers.solverslib.command.SubsystemBase;
 
@@ -9,12 +14,14 @@ import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.GainCon
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
+import org.firstinspires.ftc.teamcode.RobotConstants.*;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 public class CameraSubsystem extends SubsystemBase {
+    public Motifs motifs = PPP;
     private static final boolean USE_WEBCAM = true;
     private static final List<Integer> MOTIF_TAG_IDS = Arrays.asList(21, 22, 23); // Tags we should detect for motif
     private static final List<Integer> DISTANCE_TAG_IDS = Arrays.asList(20, 24); // Tags we should detect for goal distance
@@ -101,6 +108,15 @@ public class CameraSubsystem extends SubsystemBase {
                     max = detection;
                 }
             }
+        }
+        if (max.id == 21) {
+            motifs = GPP;
+        }
+        if (max.id == 22) {
+            motifs = PGP;
+        }
+        if (max.id == 23) {
+            motifs = PPG;
         }
         // check to see if detected tag id matches the available motifs
         return max.id;
