@@ -20,6 +20,7 @@ import com.seattlesolvers.solverslib.gamepad.GamepadKeys;
 import org.firstinspires.ftc.teamcode.RobotConstants.*;
 import org.firstinspires.ftc.teamcode.commands.MoveSpindexerCommand;
 import org.firstinspires.ftc.teamcode.commands.ScanAndUpdateBallsCommand;
+import org.firstinspires.ftc.teamcode.commands.ScheduleGateCommand;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 import org.firstinspires.ftc.teamcode.subsystems.ColorSensorsSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.GateSubsystem;
@@ -121,7 +122,7 @@ public class AlphaTeleOp extends CommandOpMode {
         gate = new GateSubsystem(hardwareMap);
         voltageSensor = hardwareMap.get(VoltageSensor.class, "Control Hub");
 
-        spindexer.set(70);
+        spindexer.set(50);
         shooter.setHood(0.56);
 
         super.reset();
@@ -178,14 +179,10 @@ public class AlphaTeleOp extends CommandOpMode {
                 .whenInactive(new InstantCommand(() -> slowMode = false));
         //Driver 2
         driver2.getGamepadButton(GamepadKeys.Button.CIRCLE).whenPressed(
-                new InstantCommand(() -> {
-                    gate.up();
-                })
+                new ScheduleGateCommand(spindexer, gate, gate::up)
         );
         driver2.getGamepadButton(GamepadKeys.Button.SQUARE).whenPressed(
-                new InstantCommand(() -> {
-                    gate.down();
-                })
+                new ScheduleGateCommand(spindexer, gate, gate::down)
         );
         driver2.getGamepadButton(GamepadKeys.Button.OPTIONS).whenPressed(
                 new InstantCommand(() -> {

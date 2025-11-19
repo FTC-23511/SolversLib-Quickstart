@@ -12,21 +12,30 @@ import com.seattlesolvers.solverslib.command.SubsystemBase;
 import com.seattlesolvers.solverslib.controller.PIDController;
 
 public class SpindexerSubsystem extends SubsystemBase {
+
     private final DcMotorEx spindexer;
     private final AnalogInput absoluteEncoder;
 
-    private BallColors[] balls = {NONE, NONE, NONE};
+    private BallColors[] balls = { NONE, NONE, NONE };
 
-    // PID coefficients (tuned for degrees)
-    private double kP = -0.0159;
-    private final double kI = 0;
-    private final double kD = 0;
-
-    private double currentPositionDeg = 0;
-    private double targetPositionDeg = 0;
-    private double offset = 340; // in degrees
+    // PID (tune these)
+    private double kP = 0.0159;
+    public void updatePIDVoltage(double voltage) {
+        kP = (voltage / 13.5) * 0.0159;
+    }
+    private double kI = 0;
+    private double kD = 0.0000114;
 
     private final PIDController pid;
+
+    // Absolute values
+    private double currentDeg = 0;         // unwrapped actual angle
+    private double lastWrappedDeg = 0;     // internal tracker
+    public double offset = 0;
+
+    // IMPORTANT: unbounded target
+    private double targetDeg = 0;
+
     private double output = 0;
 
     public SpindexerSubsystem(HardwareMap hm) {
@@ -34,63 +43,82 @@ public class SpindexerSubsystem extends SubsystemBase {
         absoluteEncoder = hm.get(AnalogInput.class, "spindexerAnalog");
 
         pid = new PIDController(kP, kI, kD);
+
         spindexer.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
-        spindexer.setDirection(DcMotorSimple.Direction.FORWARD);
+        spindexer.setDirection(DcMotorSimple.Direction.REVERSE);
 
-        // Initialize target to current position
-        currentPositionDeg = getAbsolutePosition();
-        targetPositionDeg = currentPositionDeg;
+        // Initialize starting position
+        double initial = getAbsolutePosition360();
+        lastWrappedDeg = initial;
+        currentDeg = initial;
+        targetDeg = initial;
     }
 
-    /** Move spindexer by degrees (absolute control) */
-    public void moveSpindexerBy(double degrees) {
-        targetPositionDeg = (targetPositionDeg + degrees) % 360;
-        if (targetPositionDeg < 0) targetPositionDeg += 360;
+    /** Moves spindexer by a number of degrees while keeping direction consistent */
+    public void moveSpindexerBy(double deltaDegrees) {
+        targetDeg += deltaDegrees;  // unbounded — preserves direction!
     }
 
+    /** Set absolute target (but still unbounded) */
     public void set(double degrees) {
-        targetPositionDeg = degrees;
+        double current = currentDeg;
+        double wrappedTarget = degrees % 360;
+
+        // Compute shortest path
+        double diff = wrappedTarget - (current % 360);
+        diff = ((diff + 180) % 360 + 360) % 360 - 180;
+
+        targetDeg = current + diff;
     }
 
     @Override
     public void periodic() {
-        currentPositionDeg = getAbsolutePosition();
 
-        // Compute shortest angular difference [-180, 180]
-        double error = targetPositionDeg - currentPositionDeg;
-        error = ((error + 180) % 360 + 360) % 360 - 180;
+        // Step 1: read 0–360°
+        double wrapped = getAbsolutePosition360();
 
-        // PID using wrapped error
-        output = pid.calculate(0, error);  // or use a custom simple P controller
+        // Step 2: unwrap into continuous range
+        double base = (lastWrappedDeg % 360 + 360) % 360;
+        double delta = wrapped - base;
+
+        if (delta > 180) delta -= 360;
+        if (delta < -180) delta += 360;
+
+        lastWrappedDeg += delta;
+        currentDeg = lastWrappedDeg;
+
+        // Step 3: PD control on continuous error
+        double error = targetDeg - currentDeg;
+        output = pid.calculate(0, error);
+
+        // Clamp power
         output = clamp(output, -1, 1);
+
 
         spindexer.setPower(output);
     }
 
-
-    /** Converts analog voltage to absolute position in degrees [0,360) */
-    private double getAbsolutePosition() {
+    /** Converts analog voltage to 0–360° */
+    private double getAbsolutePosition360() {
         return (absoluteEncoder.getVoltage() / 3.2 * 360 + offset) % 360;
     }
 
     public double getCurrentPosition() {
-        return currentPositionDeg;
+        return currentDeg;
     }
-
     public double getPIDSetpoint() {
-        return targetPositionDeg;
+        return targetDeg;
     }
-
     public double getOutput() {
         return output;
     }
 
     public boolean isNearTargetPosition() {
-        return Math.abs(((targetPositionDeg - currentPositionDeg + 180) % 360 + 360) % 360 - 180) < 5; // 5° tolerance
+        return Math.abs(targetDeg - currentDeg) < 5;
     }
 
     public boolean isLowVelocity() {
-        return spindexer.getVelocity() < 20; // tune as needed
+        return spindexer.getVelocity() < 20;
     }
 
     public boolean availableToSenseColor() {
@@ -108,17 +136,14 @@ public class SpindexerSubsystem extends SubsystemBase {
     public void shiftBallsArrayBy(int n) {
         n = ((n % 3) + 3) % 3;
         if (n == 0) return;
+
         BallColors a = balls[0], b = balls[1], c = balls[2];
-        if (n == 1) { balls[0]=b; balls[1]=c; balls[2]=a; }
-        else if (n == 2) { balls[0]=c; balls[1]=a; balls[2]=b; }
+        if (n == 1) { balls[0] = b; balls[1] = c; balls[2] = a; }
+        else if (n == 2) { balls[0] = c; balls[1] = a; balls[2] = b; }
     }
 
     public void setBallAt(int index, BallColors color) {
         balls[index] = color;
     }
-    public void updatePIDVoltage(double voltage) {
-        kP = (voltage / 13.5) * -0.0159;
-    }
-
 
 }
