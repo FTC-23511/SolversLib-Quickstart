@@ -18,9 +18,9 @@ public class SpindexerSubsystem extends SubsystemBase {
     private BallColors[] balls = {NONE, NONE, NONE};
 
     // PID coefficients (tuned for degrees)
-    private double kP = -0.01;
+    private double kP = -0.0159;
     private final double kI = 0;
-    private final double kD = 0.0005;
+    private final double kD = 0.0000114;
 
     private double currentPositionDeg = 0;
     private double targetPositionDeg = 0;
