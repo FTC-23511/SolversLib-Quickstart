@@ -187,7 +187,7 @@ public class AlphaTeleOp extends CommandOpMode {
         );
         driver2.getGamepadButton(GamepadKeys.Button.OPTIONS).whenPressed(
                 new InstantCommand(() -> {
-                    shooter.setHood(Math.max(0.56, 1.0));
+                    shooter.setHood(Math.max(shooter.getHoodPos() + 0.01, 1.0));
                 })
         );
         driver2.getGamepadButton(GamepadKeys.Button.SHARE).whenPressed(
@@ -353,6 +353,8 @@ public class AlphaTeleOp extends CommandOpMode {
         telemetry.addData("shooter close amount ", closeShooterTarget);
         telemetry.addData("shooter target velocity ", shooter.getTargetVelocity());
         telemetry.addData("shooter actual velocity ", shooter.getActualVelocity());
+        telemetry.addData("shooter hood pos ", shooter.getHoodPos());
+        
 
         telemetry.addData("------------------",null);
 

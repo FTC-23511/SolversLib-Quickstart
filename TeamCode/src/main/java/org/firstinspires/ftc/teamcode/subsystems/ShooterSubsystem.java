@@ -10,10 +10,11 @@ import com.seattlesolvers.solverslib.hardware.motors.MotorGroup;
 
 public class ShooterSubsystem extends SubsystemBase {
 
-    Motor shooter1;
-    Motor shooter2;
-    ServoEx hood;
-    MotorGroup shooter;
+    private Motor shooter1;
+    private Motor shooter2;
+    private ServoEx hood;
+    private MotorGroup shooter;
+    private double hoodPos = 0.6;
     public double getTargetVelocity() {
         return flywheelController.getSetPoint();
     }
@@ -49,7 +50,7 @@ public class ShooterSubsystem extends SubsystemBase {
         kF = (voltage / 13.5) * kFOriginal;
     }
     public void setHood(double ticks) {
-        hood.set(ticks);
+        hoodPos = ticks;
     }
 
     /**
@@ -57,12 +58,13 @@ public class ShooterSubsystem extends SubsystemBase {
      * @return last commanded hood pos
      */
     public double getHoodPos() {
-        return hood.get();
+        return hoodPos;
     }
 
     public void periodic() {
         flywheelController.setF(kF);
         flywheelController.setP(kP);
+        hood.set(hoodPos);
         shooter.set(flywheelController.calculate(shooter1.getCorrectedVelocity()));
     }
 
