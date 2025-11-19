@@ -13,18 +13,22 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.seattlesolvers.solverslib.controller.PIDController;
 
 @Config
-@TeleOp (name = "Spindexer pid tuning", group = "tuning")
+@TeleOp(name = "Spindexer PID Tuning Absolute", group = "tuning")
 public class SpindexerPIDTuning extends OpMode {
     private PIDController controller;
 
-    public static double p=-0.0004, i=0.00000, d=0.00000;
-    public static double f=0;
-    public static double clamp = 0.4;
-    public static int target=0;
+    // PID constants to tune
+    public static double p = 0.0159, i = 0.0, d = 0.0000114;
+    public static double clampPower = 0.4;
+    public static double targetDeg = 0; // target in degrees
+    public static double offset = 0;    // analog offset
 
     private DcMotor spindexer;
     private AnalogInput analogInput;
-    public static double offset = 0;
+    private double currentDeg = 0;
+    private double output = 0;
+    private double lastError = 0;
+
     @Override
     public void init() {
         controller = new PIDController(p, i, d);
@@ -32,24 +36,47 @@ public class SpindexerPIDTuning extends OpMode {
 
         spindexer = hardwareMap.get(DcMotor.class, "spindexer");
         analogInput = hardwareMap.get(AnalogInput.class, "spindexerAnalog");
+
         spindexer.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         spindexer.setDirection(DcMotorSimple.Direction.REVERSE);
+
+        currentDeg = getAbsolutePosition();
+        targetDeg = currentDeg; // start at current position
     }
 
     @Override
     public void loop() {
         controller.setPID(p, i, d);
-        int spindexerPos = spindexer.getCurrentPosition();
-        double pid = controller.calculate(spindexerPos, target);
-        double ff = 0.0;
 
-        double power = pid + ff;
+        currentDeg = getAbsolutePosition();
 
-        spindexer.setPower(power);
-        telemetry.addData("pos ", spindexerPos);
-        telemetry.addData("target ", target);
-        telemetry.addData("analog voltage ", analogInput.getVoltage());
-        telemetry.addData("analog deg", (analogInput.getVoltage() / 3.2 * 360 + offset) % 360);
+        // Compute shortest-path error [-180, 180]
+        double error = targetDeg - currentDeg;
+        error = ((error + 180) % 360 + 360) % 360 - 180;
+
+        // Optional derivative term manually (if PIDController doesn't do it)
+        double derivative = error - lastError;
+        lastError = error;
+
+        output = controller.calculate(0, error); // simple P controller
+        output = clamp(output, -clampPower, clampPower);
+
+        // Deadband to reduce jitter
+        if (Math.abs(output) < 0.02) output = 0;
+
+        spindexer.setPower(output);
+
+        // Telemetry
+        telemetry.addData("Analog Deg", currentDeg);
+        telemetry.addData("Target Deg", targetDeg);
+        telemetry.addData("Error", error);
+        telemetry.addData("PID Output", output);
+        telemetry.addData("Analog Voltage", analogInput.getVoltage());
         telemetry.update();
+    }
+
+    /** Converts analog voltage to absolute degrees [0, 360) */
+    private double getAbsolutePosition() {
+        return (analogInput.getVoltage() / 3.2 * 360 + offset) % 360;
     }
 }

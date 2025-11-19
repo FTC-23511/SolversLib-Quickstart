@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.opmodes;
 
+import static com.seattlesolvers.solverslib.util.MathUtils.clamp;
 import static org.firstinspires.ftc.teamcode.RobotConstants.Motifs.*;
 
 import com.pedropathing.follower.Follower;
@@ -120,6 +121,7 @@ public class AlphaTeleOp extends CommandOpMode {
         gate = new GateSubsystem(hardwareMap);
         voltageSensor = hardwareMap.get(VoltageSensor.class, "Control Hub");
 
+        spindexer.set(70);
         shooter.setHood(0.56);
 
         super.reset();
@@ -187,12 +189,12 @@ public class AlphaTeleOp extends CommandOpMode {
         );
         driver2.getGamepadButton(GamepadKeys.Button.OPTIONS).whenPressed(
                 new InstantCommand(() -> {
-                    shooter.setHood(Math.max(shooter.getHoodPos() + 0.01, 1.0));
+                    shooter.setHood(clamp(shooter.getHoodPos() + 0.01, 0.0, 1.0));
                 })
         );
         driver2.getGamepadButton(GamepadKeys.Button.SHARE).whenPressed(
                 new InstantCommand(() -> {
-                    shooter.setHood(Math.max(shooter.getHoodPos() - 0.01, 1.0));
+                    shooter.setHood(clamp(shooter.getHoodPos() - 0.01, 0.0, 1.0));
                 })
         );
         driver2.getGamepadButton(GamepadKeys.Button.DPAD_RIGHT).whenPressed(

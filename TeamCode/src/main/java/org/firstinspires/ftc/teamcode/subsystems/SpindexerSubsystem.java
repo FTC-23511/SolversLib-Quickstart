@@ -20,11 +20,11 @@ public class SpindexerSubsystem extends SubsystemBase {
     // PID coefficients (tuned for degrees)
     private double kP = -0.0159;
     private final double kI = 0;
-    private final double kD = 0.0000114;
+    private final double kD = 0;
 
     private double currentPositionDeg = 0;
     private double targetPositionDeg = 0;
-    private double offset = 0; // in degrees
+    private double offset = 340; // in degrees
 
     private final PIDController pid;
     private double output = 0;
@@ -35,7 +35,7 @@ public class SpindexerSubsystem extends SubsystemBase {
 
         pid = new PIDController(kP, kI, kD);
         spindexer.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
-        spindexer.setDirection(DcMotorSimple.Direction.REVERSE);
+        spindexer.setDirection(DcMotorSimple.Direction.FORWARD);
 
         // Initialize target to current position
         currentPositionDeg = getAbsolutePosition();
@@ -48,6 +48,10 @@ public class SpindexerSubsystem extends SubsystemBase {
         if (targetPositionDeg < 0) targetPositionDeg += 360;
     }
 
+    public void set(double degrees) {
+        targetPositionDeg = degrees;
+    }
+
     @Override
     public void periodic() {
         currentPositionDeg = getAbsolutePosition();
@@ -56,24 +60,28 @@ public class SpindexerSubsystem extends SubsystemBase {
         double error = targetPositionDeg - currentPositionDeg;
         error = ((error + 180) % 360 + 360) % 360 - 180;
 
-        output = pid.calculate(0, error);
-        spindexer.setPower(clamp(output, -1, 1));
+        // PID using wrapped error
+        output = pid.calculate(0, error);  // or use a custom simple P controller
+        output = clamp(output, -1, 1);
+
+        spindexer.setPower(output);
     }
+
 
     /** Converts analog voltage to absolute position in degrees [0,360) */
     private double getAbsolutePosition() {
         return (absoluteEncoder.getVoltage() / 3.2 * 360 + offset) % 360;
     }
 
-    public double getCurrentPositionDeg() {
+    public double getCurrentPosition() {
         return currentPositionDeg;
     }
 
-    public double getTargetPositionDeg() {
+    public double getPIDSetpoint() {
         return targetPositionDeg;
     }
 
-    public double getPIDOutput() {
+    public double getOutput() {
         return output;
     }
 
@@ -108,4 +116,9 @@ public class SpindexerSubsystem extends SubsystemBase {
     public void setBallAt(int index, BallColors color) {
         balls[index] = color;
     }
+    public void updatePIDVoltage(double voltage) {
+        kP = (voltage / 13.5) * -0.0159;
+    }
+
+
 }

@@ -30,7 +30,7 @@ public class ScheduleGateCommand extends CommandBase {
     @Override
     public void execute() {
         for (double targetPosition : targetPositions) {
-            if (Math.abs(spindexerSubsystem.getCurrentAnalogPosition() - targetPosition) < tolerance) {
+            if (Math.abs(spindexerSubsystem.getCurrentPosition() - targetPosition) < tolerance) {
                 action.run();
                 actionHasRan = true;
             }
