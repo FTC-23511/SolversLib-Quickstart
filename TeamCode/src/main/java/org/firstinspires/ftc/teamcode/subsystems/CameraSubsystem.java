@@ -114,39 +114,17 @@ public class CameraSubsystem extends SubsystemBase {
         if (myAprilTagDetections.isEmpty()) {
             return -1;
         }
-        AprilTagDetection max = myAprilTagDetections.get(0);
-        double max_area = 0.5*Math.abs(
-                (max.corners[0].x * max.corners[1].y)
-                        + (max.corners[1].x * max.corners[2].y)
-                        + (max.corners[2].x * max.corners[3].y)
-                        + (max.corners[3].x * max.corners[0].y)
-                        - (max.corners[1].x * max.corners[0].y)
-                        - (max.corners[2].x * max.corners[1].y)
-                        - (max.corners[3].x * max.corners[2].y)
-                        - (max.corners[0].x * max.corners[3].y)
-        );
-        // Step through the list of detected tags and look for a matching tag
+
+        // check to see if detected tag id matches the available motifs
         for (AprilTagDetection detection : myAprilTagDetections) {
             // Look to see if we have size info on this tag.
-            if (DISTANCE_TAG_IDS.contains(detection.id)) {
-                area = 0.5*Math.abs(
-                        (detection.corners[0].x * detection.corners[1].y)
-                                + (detection.corners[1].x * detection.corners[2].y)
-                                + (detection.corners[2].x * detection.corners[3].y)
-                                + (detection.corners[3].x * detection.corners[0].y)
-                                - (detection.corners[1].x * detection.corners[0].y)
-                                - (detection.corners[2].x * detection.corners[1].y)
-                                - (detection.corners[3].x * detection.corners[2].y)
-                                - (detection.corners[0].x * detection.corners[3].y)
-                );
-                if (area > max_area) {
-                    max_area = area;
-                    max = detection;
-                }
+            if (detection.id == 20) {
+                
+            }
+            else if (detection.id == 24) {
+
             }
         }
-        // check to see if detected tag id matches the available motifs
-        return max.id;
     }
 
     /*
