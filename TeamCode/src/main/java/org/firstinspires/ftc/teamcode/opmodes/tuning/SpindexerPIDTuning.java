@@ -7,6 +7,7 @@ import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.AnalogInput;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.seattlesolvers.solverslib.controller.PIDController;
@@ -22,12 +23,15 @@ public class SpindexerPIDTuning extends OpMode {
     public static int target=0;
 
     private DcMotor spindexer;
+    private AnalogInput analogInput;
+    public static double offset = 0;
     @Override
     public void init() {
         controller = new PIDController(p, i, d);
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
         spindexer = hardwareMap.get(DcMotor.class, "spindexer");
+        analogInput = hardwareMap.get(AnalogInput.class, "spindexerAnalog");
         spindexer.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         spindexer.setDirection(DcMotorSimple.Direction.REVERSE);
     }
@@ -41,9 +45,11 @@ public class SpindexerPIDTuning extends OpMode {
 
         double power = pid + ff;
 
-        spindexer.setPower(clamp(power, -clamp, clamp));
+        spindexer.setPower(power);
         telemetry.addData("pos ", spindexerPos);
         telemetry.addData("target ", target);
+        telemetry.addData("analog voltage ", analogInput.getVoltage());
+        telemetry.addData("analog deg", (analogInput.getVoltage() / 3.2 * 360 + offset) % 360);
         telemetry.update();
     }
 }
