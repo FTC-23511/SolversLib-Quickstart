@@ -53,7 +53,7 @@ public class SpindexerSubsystem extends SubsystemBase {
 
     public SpindexerSubsystem(final HardwareMap hm) {
         spindexer = hm.get(DcMotorEx.class, "spindexer");
-        absoluteEncoder = hm.get(AnalogInput.class, "encoder");
+        absoluteEncoder = hm.get(AnalogInput.class, "spindexerAnalog");
         pid = new PIDController(kP, kI, kD);
         pid.setPID(kP, kI, kD);
         spindexer.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
