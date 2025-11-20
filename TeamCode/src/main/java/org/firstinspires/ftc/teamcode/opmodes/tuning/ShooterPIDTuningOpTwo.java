@@ -10,7 +10,7 @@ import com.seattlesolvers.solverslib.controller.PIDFController;
 import com.seattlesolvers.solverslib.hardware.motors.Motor;
 
 @Config
-@TeleOp(name = "Shooter pid tuning", group = "tuning")
+@TeleOp(name = "Shooter pid tuning shooter 1", group = "tuning")
 public class ShooterPIDTuningOpTwo extends OpMode {
 
     public static double p = 0.00, i = 0.0, d = 0.0;
