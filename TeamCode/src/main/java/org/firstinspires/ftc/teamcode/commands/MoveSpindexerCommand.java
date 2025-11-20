@@ -26,7 +26,7 @@ public class MoveSpindexerCommand extends CommandBase {
         if (Math.abs(gateSubsystem.DOWN - gateSubsystem.getPosition()) < 0.1) {
             spindexerSubsystem.setBallAt(2, RobotConstants.BallColors.NONE);
         }
-        spindexerSubsystem.moveSpindexerBy(SPINDEXER_TICKS_PER_DEG * 120 * number);
+        spindexerSubsystem.moveSpindexerBy(120 * number);
         spindexerSubsystem.shiftBallsArrayBy(number);
     }
 

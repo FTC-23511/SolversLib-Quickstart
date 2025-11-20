@@ -12,32 +12,49 @@ import org.firstinspires.ftc.teamcode.subsystems.SpindexerSubsystem;
  * @class "schedules" the gate to move either up or down, only when spindexer.getCurrentAnalogPosition() is within 5 degrees of the 60deg position.
  */
 public class ScheduleGateCommand extends CommandBase {
-    private GateSubsystem gateSubsystem;
-    private SpindexerSubsystem spindexerSubsystem;
-    private Runnable action;
+    private final SpindexerSubsystem spindexer;
+    private final Runnable action;
 
-    private double[] targetPositions = {60.0, 180.0, 300.0};
-    private double tolerance = 5.0;
-    private boolean actionHasRan;
+    private final double[] targets = {60, 180, 300};
+    private final double tolerance = 1;  // bigger tolerance ALWAYS fixes jumpiness
 
-    public ScheduleGateCommand(SpindexerSubsystem spindexerSubsystem, GateSubsystem gateSubsystem, Runnable action) {
-        this.spindexerSubsystem = spindexerSubsystem;
-        this.gateSubsystem = gateSubsystem;
+    private boolean triggered = false;
+    private double prevPos;
+
+    public ScheduleGateCommand(SpindexerSubsystem spindexer, GateSubsystem gate, Runnable action) {
+        this.spindexer = spindexer;
         this.action = action;
-        actionHasRan = false;
+
+    }
+
+    @Override
+    public void initialize() {
+        prevPos = spindexer.getWrappedPosition();
+        triggered = false;
     }
 
     @Override
     public void execute() {
-        for (double targetPosition : targetPositions) {
-            if (Math.abs(spindexerSubsystem.getCurrentAnalogPosition() - targetPosition) < tolerance) {
+        double pos = spindexer.getWrappedPosition();
+
+        for (double target : targets) {
+
+            boolean wasOutside = Math.abs(prevPos - target) > tolerance;
+            boolean nowInside = Math.abs(pos - target) <= tolerance;
+
+            // Only trigger when entering the band, not just being in it
+            if (wasOutside && nowInside && !triggered) {
                 action.run();
-                actionHasRan = true;
+                triggered = true;
+                break;
             }
         }
+
+        prevPos = spindexer.getCurrentPosition();
     }
+
     @Override
     public boolean isFinished() {
-        return actionHasRan;
+        return triggered;
     }
 }
