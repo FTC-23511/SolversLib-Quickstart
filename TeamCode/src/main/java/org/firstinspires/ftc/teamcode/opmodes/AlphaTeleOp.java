@@ -122,7 +122,7 @@ public class AlphaTeleOp extends CommandOpMode {
         gate = new GateSubsystem(hardwareMap);
         voltageSensor = hardwareMap.get(VoltageSensor.class, "Control Hub");
 
-        spindexer.set(50);
+        spindexer.set(75);
         shooter.setHood(0.56);
 
         super.reset();
@@ -179,10 +179,10 @@ public class AlphaTeleOp extends CommandOpMode {
                 .whenInactive(new InstantCommand(() -> slowMode = false));
         //Driver 2
         driver2.getGamepadButton(GamepadKeys.Button.CIRCLE).whenPressed(
-                new ScheduleGateCommand(spindexer, gate, gate::up)
+                gate::up
         );
         driver2.getGamepadButton(GamepadKeys.Button.SQUARE).whenPressed(
-                new ScheduleGateCommand(spindexer, gate, gate::down)
+                gate::down
         );
         driver2.getGamepadButton(GamepadKeys.Button.OPTIONS).whenPressed(
                 new InstantCommand(() -> {

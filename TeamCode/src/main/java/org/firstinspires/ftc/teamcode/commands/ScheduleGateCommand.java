@@ -16,7 +16,7 @@ public class ScheduleGateCommand extends CommandBase {
     private final Runnable action;
 
     private final double[] targets = {60, 180, 300};
-    private final double tolerance = 10;  // bigger tolerance ALWAYS fixes jumpiness
+    private final double tolerance = 1;  // bigger tolerance ALWAYS fixes jumpiness
 
     private boolean triggered = false;
     private double prevPos;
