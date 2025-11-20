@@ -75,6 +75,7 @@ public class AlphaTeleOp extends CommandOpMode {
 
     //variable shooter target
     double closeShooterTarget = 1200;
+    double farShooterTarget = 1500;
 
     //looptime
     private ElapsedTime timer = new ElapsedTime();
@@ -123,7 +124,7 @@ public class AlphaTeleOp extends CommandOpMode {
         voltageSensor = hardwareMap.get(VoltageSensor.class, "Control Hub");
 
         spindexer.set(75);
-        shooter.setHood(0.61);
+        shooter.setHood(0.46);
 
         super.reset();
         lastVoltageCheck.reset();
@@ -235,18 +236,6 @@ public class AlphaTeleOp extends CommandOpMode {
                     gamepad2.rumbleBlips(1);
                 })
         );*/
-        driver2.getGamepadButton(GamepadKeys.Button.TRIANGLE).whenPressed(
-                new InstantCommand(() -> {
-                    closeShooterTarget += 20;
-                    gamepad2.rumbleBlips(1);
-                })
-        );
-        driver2.getGamepadButton(GamepadKeys.Button.CROSS).whenPressed(
-                new InstantCommand(() -> {
-                    closeShooterTarget -= 20;
-                    gamepad2.rumbleBlips(1);
-                })
-        );
         driver2.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER).whenPressed( //close distance
                 new InstantCommand(() -> {
                     shooter.setTargetVelocity(closeShooterTarget);
@@ -255,7 +244,7 @@ public class AlphaTeleOp extends CommandOpMode {
         new Trigger(
                 () -> driver2.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) > 0.5) //far distance
                     .whileActiveContinuous(new InstantCommand(() -> {
-                        shooter.setTargetVelocity(1500);
+                        shooter.setTargetVelocity(farShooterTarget);
                     })
                 );
         driver2.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER).whenPressed(  //turn off shooter
@@ -267,7 +256,33 @@ public class AlphaTeleOp extends CommandOpMode {
         new Trigger(
                 () -> driver2.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) > 0.5) //intake
                 .whenActive(new InstantCommand(() -> {
-                            shooter.setTargetVelocity(-300);
+                    driver2.getGamepadButton(GamepadKeys.Button.TRIANGLE).whenPressed(
+                            new InstantCommand(() -> {
+                                farShooterTarget += 20;
+                                gamepad2.rumbleBlips(1);
+                            })
+                    );
+                    driver2.getGamepadButton(GamepadKeys.Button.CROSS).whenPressed(
+                            new InstantCommand(() -> {
+                                farShooterTarget -= 20;
+                                gamepad2.rumbleBlips(1);
+                            })
+                    );
+                        })
+                )
+                .whenInactive(new InstantCommand(() -> {
+                    driver2.getGamepadButton(GamepadKeys.Button.TRIANGLE).whenPressed(
+                            new InstantCommand(() -> {
+                                closeShooterTarget += 20;
+                                gamepad2.rumbleBlips(1);
+                            })
+                    );
+                    driver2.getGamepadButton(GamepadKeys.Button.CROSS).whenPressed(
+                            new InstantCommand(() -> {
+                                closeShooterTarget -= 20;
+                                gamepad2.rumbleBlips(1);
+                            })
+                    );
                         })
                 );
     }
