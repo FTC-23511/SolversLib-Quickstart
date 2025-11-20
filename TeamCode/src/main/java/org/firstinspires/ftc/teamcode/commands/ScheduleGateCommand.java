@@ -29,13 +29,13 @@ public class ScheduleGateCommand extends CommandBase {
 
     @Override
     public void initialize() {
-        prevPos = spindexer.getCurrentPosition() % 360.0;
+        prevPos = spindexer.getWrappedPosition();
         triggered = false;
     }
 
     @Override
     public void execute() {
-        double pos = spindexer.getCurrentPosition() % 360.0;
+        double pos = spindexer.getWrappedPosition();
 
         for (double target : targets) {
 

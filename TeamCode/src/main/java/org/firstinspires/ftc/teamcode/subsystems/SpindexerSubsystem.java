@@ -59,6 +59,7 @@ public class SpindexerSubsystem extends SubsystemBase {
         targetDeg += deltaDegrees;  // unbounded — preserves direction!
     }
 
+
     /** Set absolute target (but still unbounded) */
     public void set(double degrees) {
         double current = currentDeg;
@@ -106,6 +107,10 @@ public class SpindexerSubsystem extends SubsystemBase {
     public double getCurrentPosition() {
         return currentDeg;
     }
+    public double getWrappedPosition() {
+        return (currentDeg % 360 + 360) % 360;
+    }
+
     public double getPIDSetpoint() {
         return targetDeg;
     }
