@@ -124,7 +124,7 @@ public class AlphaTeleOp extends CommandOpMode {
         voltageSensor = hardwareMap.get(VoltageSensor.class, "Control Hub");
 
         spindexer.set(75);
-        shooter.setHood(0.46);
+        shooter.setHood(0.45);
 
         super.reset();
         lastVoltageCheck.reset();
