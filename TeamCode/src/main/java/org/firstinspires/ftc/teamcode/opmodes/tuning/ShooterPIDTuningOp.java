@@ -29,11 +29,11 @@ public class ShooterPIDTuningOp extends OpMode {
         shooter = new Motor(hardwareMap, "shooter1", Motor.GoBILDA.RPM_312);
         shooter.setRunMode(Motor.RunMode.RawPower);
         shooter.setZeroPowerBehavior(Motor.ZeroPowerBehavior.FLOAT);
-        shooter.setInverted(false);
+        shooter.setInverted(true);
         shooter2 = new Motor(hardwareMap, "shooter2", Motor.GoBILDA.RPM_312);
         shooter2.setRunMode(Motor.RunMode.RawPower);
         shooter2.setZeroPowerBehavior(Motor.ZeroPowerBehavior.FLOAT);
-        shooter2.setInverted(true);
+        shooter2.setInverted(false);
 
         // Initialize custom PIDF controller (same as ShooterSubSystem)
         flywheelController = new PIDFController(p, i, d, f);
