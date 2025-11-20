@@ -220,6 +220,16 @@ public class AlphaTeleOp extends CommandOpMode {
                     }
                 })
         );
+        driver2.getGamepadButton(GamepadKeys.Button.RIGHT_STICK_BUTTON).whenPressed(
+                new InstantCommand(() -> {
+                    shooter.setHood(0.80);
+                })
+        );
+        driver2.getGamepadButton(GamepadKeys.Button.LEFT_STICK_BUTTON).whenPressed(
+                new InstantCommand(() -> {
+                    shooter.setHood(0.40);
+                })
+        );
         /*
         driver2.getGamepadButton(GamepadKeys.Button.CIRCLE).whenPressed(
                 new InstantCommand(() -> {

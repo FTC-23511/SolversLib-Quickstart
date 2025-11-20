@@ -21,8 +21,8 @@ public class ShooterSubsystem extends SubsystemBase {
     public double getActualVelocity() {
         return shooter1.getCorrectedVelocity();
     }
-    double kPOriginal = 0.0100;
-    double kFOriginal = 0.00061;
+    double kPOriginal = -0.008;
+    double kFOriginal = -0.00052;
     double kP = kPOriginal;
     double kF = kFOriginal;
     private final PIDFController flywheelController = new PIDFController(kPOriginal, 0, 0, kFOriginal);

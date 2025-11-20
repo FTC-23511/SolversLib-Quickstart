@@ -13,8 +13,8 @@ import com.seattlesolvers.solverslib.hardware.motors.Motor;
 @TeleOp(name = "Shooter pid tuning", group = "tuning")
 public class ShooterPIDTuningOp extends OpMode {
 
-    public static double p = 0.00, i = 0.0, d = 0.0;
-    public static double f = 0.000;
+    public static double p = -0.008, i = 0.0, d = 0.0;
+    public static double f = -0.00052;
     public static double targetVelocity = 000; // ticks per second
 
     Motor shooter;
