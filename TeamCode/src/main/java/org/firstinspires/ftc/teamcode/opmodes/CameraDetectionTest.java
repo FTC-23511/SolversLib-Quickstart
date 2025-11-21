@@ -3,9 +3,11 @@ package org.firstinspires.ftc.teamcode.opmodes;
 
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.seattlesolvers.solverslib.command.CommandOpMode;
-import com.seattlesolvers.solverslib.gamepad.GamepadEx;
 
 import org.firstinspires.ftc.teamcode.subsystems.CameraSubsystem;
+import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
+
+import java.util.List;
 
 @TeleOp(name = "Camera Detection Test")
 public class CameraDetectionTest extends CommandOpMode {
@@ -17,6 +19,11 @@ public class CameraDetectionTest extends CommandOpMode {
 
     @Override
     public void run() {
-        camera.detectMotif();
+        List<AprilTagDetection> detections = camera.detectAprilTags();
+        telemetry.addData("detected motif: ", camera.detectMotif(detections));
+        telemetry.addData("goal point-to-point distance: ", camera.detectGoalDistance(detections));
+        telemetry.addData("goal horizontal distance: ", camera.detectGoalXDistance(detections));
+        telemetry.addData("april tag: ", camera.findAprilTag(detections));
+        telemetry.update();
     }
 }

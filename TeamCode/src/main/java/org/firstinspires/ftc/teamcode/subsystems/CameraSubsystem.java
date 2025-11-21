@@ -24,7 +24,7 @@ public class CameraSubsystem extends SubsystemBase {
     public Motifs motifs = PPP;
     private static final boolean USE_WEBCAM = true;
     private static final List<Integer> MOTIF_TAG_IDS = Arrays.asList(21, 22, 23); // Tags we should detect for motif
-    private static final List<Integer> DISTANCE_TAG_IDS = Arrays.asList(20, 24); // Tags we should detect for goal distance
+    private static final List<Integer> GOAL_TAG_IDS = Arrays.asList(20, 24); // Tags we should detect for goal distance
     private VisionPortal visionPortal; // Used to manage the video source.
     private AprilTagProcessor myAprilTagProcessor; // Used for managing the AprilTag detection process.
     //private AprilTagDetection myAprilTagDetection = null; // Used to hold the data for a detected AprilTag
@@ -70,15 +70,24 @@ public class CameraSubsystem extends SubsystemBase {
         }
     }
 
-    public int detectMotif() {
+    /**
+     * @return performs hardware call on camera to return list of detections
+     * */
+    public List<AprilTagDetection> detectAprilTags() {
         List<AprilTagDetection> myAprilTagDetections;
-        double area;
-
         myAprilTagDetections = myAprilTagProcessor.getDetections();
-        if (myAprilTagDetections.isEmpty()) {
-            return -1;
+        return myAprilTagDetections;
+    }
+
+    /**
+     * @return pass in list of april tag detections (to not use hardware call in method) to detect motif as a Motifs object
+     * */
+    public Motifs detectMotif(List<AprilTagDetection> aprilTag) {
+        double area;
+        if (aprilTag.isEmpty()) {
+            return null;
         }
-        AprilTagDetection max = myAprilTagDetections.get(0);
+        AprilTagDetection max = aprilTag.get(0);
         double max_area = 0.5*Math.abs(
                         (max.corners[0].x * max.corners[1].y)
                         + (max.corners[1].x * max.corners[2].y)
@@ -90,7 +99,7 @@ public class CameraSubsystem extends SubsystemBase {
                         - (max.corners[0].x * max.corners[3].y)
         );
         // Step through the list of detected tags and look for a matching tag
-        for (AprilTagDetection detection : myAprilTagDetections) {
+        for (AprilTagDetection detection : aprilTag) {
             // Look to see if we have size info on this tag.
             if (MOTIF_TAG_IDS.contains(detection.id)) {
                 area = 0.5*Math.abs(
@@ -119,21 +128,17 @@ public class CameraSubsystem extends SubsystemBase {
             motifs = PPG;
         }
         // check to see if detected tag id matches the available motifs
-        return max.id;
+        return motifs;
     }
 
     /**
-     * @return camera's direct (point-to-point) distance to the tag center as a double or null if nothing is found
+     * @return pass in list of april tag detections (to not use hardware call in method) to get camera's direct (point-to-point) distance to the tag center as a double or null if nothing is found
      * */
-    public Object detectGoalDistance() {
-        List<AprilTagDetection> myAprilTagDetections;
-
-        myAprilTagDetections = myAprilTagProcessor.getDetections();
-
+    public Object detectGoalDistance(List<AprilTagDetection> aprilTag) {
         // check to see if detected tag id matches the available motifs
-        for (AprilTagDetection detection : myAprilTagDetections) {
+        for (AprilTagDetection detection : aprilTag) {
             // april tag pose
-            if (DISTANCE_TAG_IDS.contains(detection.id)) {
+            if (GOAL_TAG_IDS.contains(detection.id)) {
                 return detection.ftcPose.range;
             }
         }
@@ -141,18 +146,28 @@ public class CameraSubsystem extends SubsystemBase {
     }
 
     /**
-     * @return camera's horizontal distance from tag center as a double or null if nothing is found
+     * @return pass in list of april tag detections (to not use hardware call in method) to  get camera's horizontal distance from tag center as a double or null if nothing is found
      * */
-    public Object detectGoalXDistance() {
-        List<AprilTagDetection> myAprilTagDetections;
-
-        myAprilTagDetections = myAprilTagProcessor.getDetections();
-
+    public Object detectGoalXDistance(List<AprilTagDetection> aprilTag) {
         // check to see if detected tag id matches the available motifs
-        for (AprilTagDetection detection : myAprilTagDetections) {
+        for (AprilTagDetection detection : aprilTag) {
             // april tag pose
-            if (DISTANCE_TAG_IDS.contains(detection.id)) {
+            if (GOAL_TAG_IDS.contains(detection.id)) {
                 return detection.ftcPose.x;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * @return pass in list of april tag detections (to not use hardware call in method) to get the detected apriltag as an AprilTagDetection or null if none is found
+     * */
+    public Object findAprilTag(List<AprilTagDetection> aprilTag) {
+        // check to see if detected tag id matches the available motifs
+        for (AprilTagDetection detection : aprilTag) {
+            // april tag pose
+            if (GOAL_TAG_IDS.contains(detection.id)) {
+                return detection;
             }
         }
         return null;
