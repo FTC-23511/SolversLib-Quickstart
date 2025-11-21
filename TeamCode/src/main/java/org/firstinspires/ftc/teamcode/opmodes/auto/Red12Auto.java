@@ -68,7 +68,7 @@ public class Red12Auto extends CommandOpMode {
         paths.add(follower
                 .pathBuilder()
                 .addPath(
-                        new BezierLine(new Pose(122.361, 121.175), new Pose(84, 84))
+                        new BezierLine(new Pose(122.361, 121.175), new Pose(88, 84))
                 )
                 .setLinearHeadingInterpolation(Math.toRadians(45), Math.toRadians(45))
                 .build()
@@ -79,7 +79,7 @@ public class Red12Auto extends CommandOpMode {
         paths.add(follower
                 .pathBuilder()
                 .addPath(
-                        new BezierLine(new Pose(84, 84), new Pose(101.000, 84.000))
+                        new BezierLine(new Pose(88, 84), new Pose(101.000, 82.000))
                 )
                 .setLinearHeadingInterpolation(Math.toRadians(45), Math.toRadians(0))
                 .build()
@@ -89,7 +89,7 @@ public class Red12Auto extends CommandOpMode {
         paths.add(follower
                 .pathBuilder()
                 .addPath(
-                        new BezierLine(new Pose(101.000, 84.000), new Pose(120.000, 84.000))
+                        new BezierLine(new Pose(101.000, 82.000), new Pose(120.000, 82.000))
                 )
                 .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(0))
                 .build()
@@ -99,7 +99,7 @@ public class Red12Auto extends CommandOpMode {
         paths.add(follower
                 .pathBuilder()
                 .addPath(
-                        new BezierLine(new Pose(120.000, 84.000), new Pose(84, 84))
+                        new BezierLine(new Pose(120.000, 82.000), new Pose(88, 84))
                 )
                 .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(45))
                 .build()
@@ -109,7 +109,7 @@ public class Red12Auto extends CommandOpMode {
         paths.add(follower
                 .pathBuilder()
                 .addPath(
-                        new BezierLine(new Pose(84,  84), new Pose(101, 58))
+                        new BezierLine(new Pose(88,  84), new Pose(101, 58))
                 )
                 .setLinearHeadingInterpolation(Math.toRadians(45), Math.toRadians(0))
                 .build()
@@ -140,7 +140,7 @@ public class Red12Auto extends CommandOpMode {
         paths.add(follower
                 .pathBuilder()
                 .addPath(
-                        new BezierLine(new Pose(120.000, 58), new Pose(84, 84))
+                        new BezierLine(new Pose(120.000, 58), new Pose(87, 84))
                 )
                 .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(45))
                 .build()
@@ -150,7 +150,7 @@ public class Red12Auto extends CommandOpMode {
         paths.add(follower
                 .pathBuilder()
                 .addPath(
-                        new BezierLine(new Pose(84, 84), new Pose(101, 35))
+                        new BezierLine(new Pose(87, 84), new Pose(101, 35))
                 )
                 .setLinearHeadingInterpolation(Math.toRadians(45), Math.toRadians(0))
                 .build()
@@ -181,7 +181,7 @@ public class Red12Auto extends CommandOpMode {
         paths.add(follower
                 .pathBuilder()
                 .addPath(
-                        new BezierLine(new Pose(125, 35), new Pose(84, 84))
+                        new BezierLine(new Pose(125, 35), new Pose(87, 84))
                 )
                 .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(45))
                 .build()
@@ -192,9 +192,9 @@ public class Red12Auto extends CommandOpMode {
         paths.add(follower
                 .pathBuilder()
                 .addPath(
-                        new BezierLine(new Pose(84, 84), new Pose(84, 108))
+                        new BezierLine(new Pose(87, 84), new Pose(95, 82))
                 )
-                .setLinearHeadingInterpolation(Math.toRadians(45), Math.toRadians(0))
+                .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(45))
                 .build()
         );
 
@@ -263,14 +263,18 @@ public class Red12Auto extends CommandOpMode {
                         new InstantCommand(() -> {
                             shooter.setTargetVelocity(1200);
                             shooter.setHood(0.45); //Placeholder
-                            gate.up();
-                            follower.setMaxPower(1);
+                            gate.down();
+                            follower.setMaxPower(0.8);
                             spindexer.setBalls(new RobotConstants.BallColors[] {PURPLE, PURPLE, PURPLE});
                         }), //start shoot
                         new FollowPathCommand(follower, paths.get(0), true), //drive to shooting pos
                         new ShootBallSequenceCommandSequence(shooter, spindexer, gate, motif), //shoot motif
+                        new InstantCommand(() -> {follower.setMaxPower(1);}),
                         //cycle one
-                        new FollowPathCommand(follower, paths.get(1), true), //drives to balls and lines itself up to intake
+                        new ParallelCommandGroup(
+                                new InstantCommand(() -> {intake.setSpeed(IntakeSubsystem.IntakeState.INTAKING);}),
+                                new FollowPathCommand(follower, paths.get(1), true) //drives to balls and lines itself up to intake
+                        ),
                         new ParallelCommandGroup(
                                 new InstantCommand(() -> follower.setMaxPower(0.7)),
                                 intakeArtifacts(),
@@ -289,7 +293,10 @@ public class Red12Auto extends CommandOpMode {
                         new ShootBallSequenceCommandSequence(shooter, spindexer, gate, motif), //shoot motif
 
                         //cycle two
-                        new FollowPathCommand(follower, paths.get(4), true), //drives to balls and lines itself up to intake
+                        new ParallelCommandGroup(
+                                new InstantCommand(() -> {intake.setSpeed(IntakeSubsystem.IntakeState.INTAKING);}),
+                                new FollowPathCommand(follower, paths.get(4), true) //drives to balls and lines itself up to intake
+                        ),
                         new ParallelCommandGroup(
                                 new InstantCommand(() -> follower.setMaxPower(0.7)),
                                 intakeArtifacts(),
@@ -310,7 +317,10 @@ public class Red12Auto extends CommandOpMode {
                         new ShootBallSequenceCommandSequence(shooter, spindexer, gate, motif), //shoot motif
 
                         //cycle three
-                        new FollowPathCommand(follower, paths.get(8), true), //drives to balls and lines itself up to intake
+                        new ParallelCommandGroup(
+                                new InstantCommand(() -> {intake.setSpeed(IntakeSubsystem.IntakeState.INTAKING);}),
+                                new FollowPathCommand(follower, paths.get(8), true) //drives to balls and lines itself up to intake
+                        ),
                         new ParallelCommandGroup(
                                 new InstantCommand(() -> follower.setMaxPower(0.7)),
                                 intakeArtifacts(),
