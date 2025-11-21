@@ -373,13 +373,13 @@ public class AlphaTeleOp extends CommandOpMode {
             }
         }
         else if (!intakeState.equals(IntakeState.STOP)){ //intaking mode
-            if (colorSensors.checkIfGreen(colorSensors.senseColorsHSV(1))) {
+            if (colorSensors.checkIfGreen(3)) {
                 led.setColor(LEDSubsystem.LEDState.GREEN);
             }
-            else if (colorSensors.checkIfPurple(colorSensors.senseColorsHSV(1))) {
+            else if (colorSensors.checkIfPurple(3)) {
                 led.setColor(LEDSubsystem.LEDState.VIOLET);
             }
-            else if (colorSensors.checkIfWhite(colorSensors.senseColorsHSV(1))){
+            else if (colorSensors.checkIfWhite(3)){
                 led.setColor(LEDSubsystem.LEDState.WHITE);
             }
             else {
@@ -433,22 +433,22 @@ public class AlphaTeleOp extends CommandOpMode {
 
         telemetry.addData("------------------",null);
 
-        if (colorSensors.checkIfPurple(colorSensors.senseColorsHSV(1)) == true) {
+        if (colorSensors.checkIfPurple(1) == true) {
             telemetry.addData("detecting purple, raw value: ", colorSensors.senseColorsHSV(1));
         }
-        else if (colorSensors.checkIfPurple(colorSensors.senseColorsHSV(2)) == true) {
+        else if (colorSensors.checkIfPurple(2) == true) {
             telemetry.addData("detecting purple, raw value: ", colorSensors.senseColorsHSV(2));
         }
-        if (colorSensors.checkIfGreen(colorSensors.senseColorsHSV(1)) == true) {
+        if (colorSensors.checkIfGreen(1) == true) {
             telemetry.addData("detecting green, raw value: ", colorSensors.senseColorsHSV(1));
         }
-        else if (colorSensors.checkIfGreen(colorSensors.senseColorsHSV(2)) == true) {
+        else if (colorSensors.checkIfGreen(2) == true) {
             telemetry.addData("detecting green, raw value: ", colorSensors.senseColorsHSV(2));
         }
-        if (colorSensors.checkIfWhite(colorSensors.senseColorsHSV(1)) == true) {
+        if (colorSensors.checkIfWhite(1) == true) {
             telemetry.addData("detecting white, raw value: ", colorSensors.senseColorsHSV(1));
         }
-        else if (colorSensors.checkIfWhite(colorSensors.senseColorsHSV(2)) == true) {
+        else if (colorSensors.checkIfWhite(2) == true) {
             telemetry.addData("detecting white, raw value: ", colorSensors.senseColorsHSV(2));
         }
 

@@ -12,22 +12,36 @@ import org.firstinspires.ftc.teamcode.RobotConstants;
 public class ColorSensorsSubsystem extends SubsystemBase {
     private NormalizedColorSensor colorSensor1; // Color sensor in pos 1. see spindexer subsystem comment
 
+    private NormalizedColorSensor colorSensor2; // Color sensor in pos 2. see spindexer subsystem comment
+
     public final static float[] greenHigherHSV = {174f, 0.86f, 0.31f};
     public final static float[] greenLowerHSV  = {134f, 0.46f, 0.0f};
 
-    public final static float[] purpleHigherHSV = {248f, 0.9f, 0.95f};
-    public final static float[] purpleLowerHSV  = {208f, 0.2f, 0.28f};
+    public final static float[] purpleHigherHSV = {238.11765f, 0.5617021f, 0.29681849f};
+    public final static float[] purpleLowerHSV  = {198.11765f, 0.1617021f, 0.0f};
 
     public ColorSensorsSubsystem(final HardwareMap hMap) {
         colorSensor1 = hMap.get(NormalizedColorSensor.class, "colorsensor1");
         colorSensor1.setGain(27.0f);
+
+        colorSensor2 = hMap.get(NormalizedColorSensor.class, "colorsensor2");
+        colorSensor2.setGain(27.0f);
     }
     /**
-    * @param sensorNum Sensor num- 1 is intake - only one color sensor now
+    * @param sensorNum Sensor num- 1 is left, num- 2 is right if you give anything else it will default to the left
+     * @return float[] HSV, hardware call to the color sensors
      */
     public float[] senseColorsHSV(int sensorNum) {
-        //Select which NormalizedRGBA
-        NormalizedRGBA normalizedColors = colorSensor1.getNormalizedColors();
+        NormalizedRGBA normalizedColors = null;
+
+        //Select which NormalizedRGBA color sensor
+        if (sensorNum == 1) {
+            normalizedColors = colorSensor1.getNormalizedColors();
+        } else if (sensorNum == 2) {
+            normalizedColors = colorSensor2.getNormalizedColors();
+        } else {
+            normalizedColors = colorSensor1.getNormalizedColors();
+        }
         // build rgb array
         float[] rgb = {
                 normalizedColors.red,
@@ -70,19 +84,47 @@ public class ColorSensorsSubsystem extends SubsystemBase {
     /**
     @param colorsHSV Takes in an array in the form of [hue 0-360, saturation 0-1, value 0-1]. No longer accepts a number for color sensor location
      */
-    public static boolean checkIfGreen(float[] colorsHSV) {
+    private static boolean colorIsGreen(float[] colorsHSV) {
         return colorInRange(colorsHSV, greenLowerHSV, greenHigherHSV);
     }
-    public static boolean checkIfPurple(float[] colorsHSV) {
+    private static boolean colorIsPurple(float[] colorsHSV) {
         return colorInRange(colorsHSV, purpleLowerHSV, purpleHigherHSV);
     }
-    public static boolean checkIfWhite(float[] colorsHSV) {
+    private static boolean colorIsWhite(float[] colorsHSV) {
         return colorInRange(colorsHSV, new float[]{0f, 0.99f, 0.99f}, new float[]{360f, 1f, 1f});
     }
+
+    /**
+    * @param sensorNum Takes in an int that tells it which color it needs to check: 1 is left, 2 is right, 3 or anything else will default to both (if any of them sense the color)
+     **/
+    public boolean checkIfGreen(int sensorNum) {
+        if (sensorNum > 2 || sensorNum < 1) {
+            return colorIsGreen(senseColorsHSV(1)) || colorIsGreen(senseColorsHSV(2));
+        }
+        return colorIsGreen(senseColorsHSV(sensorNum));
+    }
+    /**
+     * @param sensorNum Takes in an int that tells it which color it needs to check: 1 is left, 2 is right, 3 or anything else will default to both (if any of them sense the color)
+     **/
+    public boolean checkIfPurple(int sensorNum) {
+        if (sensorNum > 2 || sensorNum < 1) {
+            return colorIsPurple(senseColorsHSV(1)) || colorIsPurple(senseColorsHSV(2));
+        }
+        return colorIsPurple(senseColorsHSV(sensorNum));
+    }
+    /**
+     * @param sensorNum Takes in an int that tells it which color it needs to check: 1 is left, 2 is right, 3 or anything else will default to both (if any of them sense the color)
+     **/
+    public boolean checkIfWhite(int sensorNum) {
+        if (sensorNum > 2 || sensorNum < 1) {
+            return colorIsWhite(senseColorsHSV(1)) || colorIsWhite(senseColorsHSV(2));
+        }
+        return colorIsWhite(senseColorsHSV(sensorNum));
+    }
     public static RobotConstants.BallColors colorsHSVToBallsColors(float[] colorsHSV) {
-        if (checkIfGreen(colorsHSV))  return RobotConstants.BallColors.GREEN;
-        if (checkIfPurple(colorsHSV)) return RobotConstants.BallColors.PURPLE;
-        if (checkIfWhite(colorsHSV))  return RobotConstants.BallColors.UNKNOWN;
+        if (colorIsGreen(colorsHSV))  return RobotConstants.BallColors.GREEN;
+        if (colorIsPurple(colorsHSV)) return RobotConstants.BallColors.PURPLE;
+        if (colorIsWhite(colorsHSV))  return RobotConstants.BallColors.UNKNOWN;
         return RobotConstants.BallColors.NONE;
     }
 
