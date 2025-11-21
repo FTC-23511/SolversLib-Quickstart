@@ -14,7 +14,11 @@ public class ShootBallSequenceCommandSequence extends SequentialCommandGroup {
     public ShootBallSequenceCommandSequence(ShooterSubsystem shooterSubsystem, SpindexerSubsystem spindexerSubsystem, GateSubsystem gateSubsystem, RobotConstants.BallColors[] targetBallSequence) {
         addCommands(
                 new InstantCommand(gateSubsystem::down), //redundant, for safety b/c gate should already be up.
+                new MoveSpindexerCommand(spindexerSubsystem, gateSubsystem, 1, false),
+                new MoveSpindexerCommand(spindexerSubsystem, gateSubsystem, 1, false),
+                new MoveSpindexerCommand(spindexerSubsystem, gateSubsystem, 1, false),
                 //ball 1 logic
+                /*
                 new ConditionalCommand( //is targetBallSequence[0] loaded?
                         new SequentialCommandGroup( //onTrue, gate down
                                 new InstantCommand(gateSubsystem::down),
@@ -54,6 +58,7 @@ public class ShootBallSequenceCommandSequence extends SequentialCommandGroup {
                     () -> spindexerSubsystem.getBalls()[2] == targetBallSequence[2] || targetBallSequence[2] == RobotConstants.BallColors.UNKNOWN //ball is already loaded or we don't care . condition as booleanSupplier
                 ),
                 new MoveSpindexerCommand(spindexerSubsystem, gateSubsystem, 1, false), //shoot ball
+                */
                 new InstantCommand(gateSubsystem::down)
         );
         addRequirements(shooterSubsystem, spindexerSubsystem, gateSubsystem);
