@@ -66,7 +66,7 @@ public class Red12AutoGate extends CommandOpMode {
         follower.setStartingPose(startingPose);
         shimmy = follower.pathBuilder()
                 .addPath(
-                        new BezierCurve(new Pose(120.000, 82.000), new Pose(88.000, 77.000), new Pose(123.000, 71.000))
+                        new BezierCurve(new Pose(120.000, 82.000), new Pose(88.000, 77.000), new Pose(123.000, 70))
                 )
                 .setConstantHeadingInterpolation(Math.toRadians(0))
                 .build();
@@ -106,7 +106,7 @@ public class Red12AutoGate extends CommandOpMode {
         paths.add(follower
                 .pathBuilder()
                 .addPath(
-                        new BezierLine(new Pose(120.000, 82.000), new Pose(90, 84))
+                        new BezierLine(new Pose(123, 70), new Pose(90, 84))
                 )
                 .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(45))
                 .build()
@@ -116,7 +116,7 @@ public class Red12AutoGate extends CommandOpMode {
         paths.add(follower
                 .pathBuilder()
                 .addPath(
-                        new BezierLine(new Pose(90,  84), new Pose(96, 58))
+                        new BezierLine(new Pose(90,  84), new Pose(96, 59))
                 )
                 .setLinearHeadingInterpolation(Math.toRadians(45), Math.toRadians(0))
                 .build()
@@ -127,7 +127,7 @@ public class Red12AutoGate extends CommandOpMode {
         paths.add(follower
                 .pathBuilder()
                 .addPath(
-                        new BezierLine(new Pose(96, 58), new Pose(130.000, 58))
+                        new BezierLine(new Pose(96, 59), new Pose(130.000, 59))
                 )
                 .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(0))
                 .build()
@@ -137,7 +137,7 @@ public class Red12AutoGate extends CommandOpMode {
         paths.add(follower
                 .pathBuilder()
                 .addPath(
-                        new BezierLine(new Pose(130.000, 58), new Pose(120.000, 58))
+                        new BezierLine(new Pose(130.000, 59), new Pose(120.000, 59))
                 )
                 .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(0))
                 .build()
@@ -147,7 +147,7 @@ public class Red12AutoGate extends CommandOpMode {
         paths.add(follower
                 .pathBuilder()
                 .addPath(
-                        new BezierLine(new Pose(120.000, 58), new Pose(88, 84))
+                        new BezierLine(new Pose(120.000, 59), new Pose(88, 84))
                 )
                 .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(45))
                 .build()
@@ -296,7 +296,13 @@ public class Red12AutoGate extends CommandOpMode {
                             follower.setMaxPower(1);
                             spindexer.setBalls(new RobotConstants.BallColors[] {GREEN, PURPLE, PURPLE});
                         }),
+                        new InstantCommand(() -> {
+                            follower.setMaxPower(0.6);
+                        }),
                         new FollowPathCommand(follower, shimmy, true),
+                        new InstantCommand(() -> {
+                            follower.setMaxPower(1);
+                        }),
                         new FollowPathCommand(follower, paths.get(3), true), // returning to shooting pos
                         new ShootBallSequenceCommandSequence(shooter, spindexer, gate, motif), //shoot motif
 
