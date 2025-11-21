@@ -6,6 +6,7 @@ import android.annotation.SuppressLint;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.pedropathing.follower.Follower;
+import com.pedropathing.geometry.BezierCurve;
 import com.pedropathing.geometry.BezierLine;
 import com.pedropathing.geometry.Pose;
 import com.pedropathing.paths.PathChain;
@@ -38,7 +39,7 @@ import java.util.ArrayList;
 
 
 @Config
-@Autonomous(name = "Red 12ball real🦅", group = "angryBirds", preselectTeleOp = "Alpha Teleop")
+@Autonomous(name = "Red 12ball no gate🦅", group = "angryBirds", preselectTeleOp = "Alpha Teleop")
 public class Red12Auto extends CommandOpMode {
     //paths
     private final ArrayList<PathChain> paths = new ArrayList<>();
@@ -60,9 +61,15 @@ public class Red12Auto extends CommandOpMode {
     private GateSubsystem gate;
     private LEDSubsystem led;
     private RobotConstants.BallColors[] motif = new RobotConstants.BallColors[]{UNKNOWN,UNKNOWN,UNKNOWN};
-
+    PathChain shimmy;
     public void buildPaths(Follower follower) {
         follower.setStartingPose(startingPose);
+        shimmy = follower.pathBuilder()
+                .addPath(
+                        new BezierCurve(new Pose(120.000, 82.000), new Pose(80.000, 77.000), new Pose(123.000, 70))
+                )
+                .setConstantHeadingInterpolation(Math.toRadians(0))
+                .build();
         //shoot first
         //0
         paths.add(follower
@@ -99,7 +106,7 @@ public class Red12Auto extends CommandOpMode {
         paths.add(follower
                 .pathBuilder()
                 .addPath(
-                        new BezierLine(new Pose(120.000, 82.000), new Pose(90, 84))
+                        new BezierLine(new Pose(123, 70), new Pose(90, 84))
                 )
                 .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(45))
                 .build()
@@ -109,7 +116,7 @@ public class Red12Auto extends CommandOpMode {
         paths.add(follower
                 .pathBuilder()
                 .addPath(
-                        new BezierLine(new Pose(90,  84), new Pose(96, 58))
+                        new BezierLine(new Pose(90,  84), new Pose(96, 55))
                 )
                 .setLinearHeadingInterpolation(Math.toRadians(45), Math.toRadians(0))
                 .build()
@@ -120,7 +127,7 @@ public class Red12Auto extends CommandOpMode {
         paths.add(follower
                 .pathBuilder()
                 .addPath(
-                        new BezierLine(new Pose(96, 58), new Pose(130.000, 58))
+                        new BezierLine(new Pose(96, 55), new Pose(130.000, 55))
                 )
                 .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(0))
                 .build()
@@ -130,7 +137,7 @@ public class Red12Auto extends CommandOpMode {
         paths.add(follower
                 .pathBuilder()
                 .addPath(
-                        new BezierLine(new Pose(130.000, 58), new Pose(120.000, 58))
+                        new BezierLine(new Pose(130.000, 55), new Pose(115.000, 55))
                 )
                 .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(0))
                 .build()
@@ -140,7 +147,7 @@ public class Red12Auto extends CommandOpMode {
         paths.add(follower
                 .pathBuilder()
                 .addPath(
-                        new BezierLine(new Pose(120.000, 58), new Pose(88, 84))
+                        new BezierLine(new Pose(115.000, 55), new Pose(88, 84))
                 )
                 .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(45))
                 .build()
@@ -150,7 +157,7 @@ public class Red12Auto extends CommandOpMode {
         paths.add(follower
                 .pathBuilder()
                 .addPath(
-                        new BezierLine(new Pose(88, 84), new Pose(96, 35))
+                        new BezierLine(new Pose(88, 84), new Pose(96, 31))
                 )
                 .setLinearHeadingInterpolation(Math.toRadians(45), Math.toRadians(0))
                 .build()
@@ -161,7 +168,7 @@ public class Red12Auto extends CommandOpMode {
         paths.add(follower
                 .pathBuilder()
                 .addPath(
-                        new BezierLine(new Pose(96, 35), new Pose(130, 35))
+                        new BezierLine(new Pose(96, 31), new Pose(130, 31))
                 )
                 .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(0))
                 .build()
@@ -171,7 +178,7 @@ public class Red12Auto extends CommandOpMode {
         paths.add(follower
                 .pathBuilder()
                 .addPath(
-                        new BezierLine(new Pose(130, 35), new Pose(125, 35))
+                        new BezierLine(new Pose(130, 31), new Pose(125, 31))
                 )
                 .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(0))
                 .build()
@@ -181,7 +188,7 @@ public class Red12Auto extends CommandOpMode {
         paths.add(follower
                 .pathBuilder()
                 .addPath(
-                        new BezierLine(new Pose(125, 35), new Pose(88, 84))
+                        new BezierLine(new Pose(125, 31), new Pose(88, 84))
                 )
                 .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(45))
                 .build()
@@ -207,12 +214,12 @@ public class Red12Auto extends CommandOpMode {
                         new WaitForColorCommand(colorsensor),
                         new WaitCommand(1500)
                 ),
-                new MoveSpindexerCommand(spindexer, gate, 1, false),
+                new MoveSpindexerCommand(spindexer, gate, 1, true),
                 new ParallelRaceGroup(
                         new WaitForColorCommand(colorsensor),
                         new WaitCommand(500)
                 ),
-                new MoveSpindexerCommand(spindexer, gate, 1, false),
+                new MoveSpindexerCommand(spindexer, gate, 1, true),
                 new ParallelRaceGroup(
                         new WaitForColorCommand(colorsensor),
                         new WaitCommand(500)
@@ -281,7 +288,7 @@ public class Red12Auto extends CommandOpMode {
                                 new ParallelRaceGroup(
                                         new FollowPathCommand(follower, paths.get(2), true), //drive and pick up balls
 //                                        new WaitForRobotStuckCommand(follower) //does not work for some reason
-                                        new WaitCommand(3000)
+                                        new WaitCommand(2000)
                                 )
 
                         ),
@@ -289,21 +296,28 @@ public class Red12Auto extends CommandOpMode {
                             follower.setMaxPower(1);
                             spindexer.setBalls(new RobotConstants.BallColors[] {GREEN, PURPLE, PURPLE});
                         }),
+                        new InstantCommand(() -> {
+                            follower.setMaxPower(0.6);
+                        }),
+//                        new FollowPathCommand(follower, shimmy, true),
+                        new InstantCommand(() -> {
+                            follower.setMaxPower(1);
+                        }),
                         new FollowPathCommand(follower, paths.get(3), true), // returning to shooting pos
                         new ShootBallSequenceCommandSequence(shooter, spindexer, gate, motif), //shoot motif
 
                         //cycle two
                         new ParallelCommandGroup(
+                                new InstantCommand(() -> follower.setMaxPower(0.7)),
                                 new InstantCommand(() -> {intake.setSpeed(IntakeSubsystem.IntakeState.INTAKING);}),
                                 new FollowPathCommand(follower, paths.get(4), true) //drives to balls and lines itself up to intake
                         ),
                         new ParallelCommandGroup(
-                                new InstantCommand(() -> follower.setMaxPower(0.7)),
                                 intakeArtifacts(),
                                 new ParallelRaceGroup(
                                         new FollowPathCommand(follower, paths.get(5), true), //drive and pick up balls
 //                                        new WaitForRobotStuckCommand(follower)
-                                        new WaitCommand(3000)
+                                        new WaitCommand(2000)
                                 )
                         ),
                         //needs extra step to back out from the wall because it will collide with the exit of the ramp
@@ -318,16 +332,16 @@ public class Red12Auto extends CommandOpMode {
 
                         //cycle three
                         new ParallelCommandGroup(
+                                new InstantCommand(() -> follower.setMaxPower(0.7)),
                                 new InstantCommand(() -> {intake.setSpeed(IntakeSubsystem.IntakeState.INTAKING);}),
                                 new FollowPathCommand(follower, paths.get(8), true) //drives to balls and lines itself up to intake
                         ),
                         new ParallelCommandGroup(
-                                new InstantCommand(() -> follower.setMaxPower(0.7)),
                                 intakeArtifacts(),
                                 new ParallelRaceGroup(
                                         new FollowPathCommand(follower, paths.get(9), true), //drive and pick up balls
-//                                        new WaitForRobotStuckCommand(follower)
-                                        new WaitCommand(3000)
+//                                        new WaitForRobotStuckCommand(follower),
+                                        new WaitCommand(2000)
                                 )
                         ),
                         //needs extra step to back out from the wall because it will collide with the exit of the ramp
