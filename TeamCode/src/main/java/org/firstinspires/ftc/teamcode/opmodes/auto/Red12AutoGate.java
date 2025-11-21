@@ -1,8 +1,6 @@
 package org.firstinspires.ftc.teamcode.opmodes.auto;
 
-import static org.firstinspires.ftc.teamcode.RobotConstants.BallColors.GREEN;
-import static org.firstinspires.ftc.teamcode.RobotConstants.BallColors.PURPLE;
-import static org.firstinspires.ftc.teamcode.RobotConstants.BallColors.UNKNOWN;
+import static org.firstinspires.ftc.teamcode.RobotConstants.BallColors.*;
 
 import android.annotation.SuppressLint;
 
@@ -39,9 +37,10 @@ import org.firstinspires.ftc.teamcode.subsystems.SpindexerSubsystem;
 import java.util.ArrayList;
 
 
+
 @Config
-@Autonomous(name = "Red 12ball real🦅", group = "angryBirds", preselectTeleOp = "Alpha Teleop")
-public class Red12AutoGateFlush extends CommandOpMode {
+@Autonomous(name = "Red 12ball + gate🦅", group = "angryBirds", preselectTeleOp = "Alpha Teleop")
+public class Red12AutoGate extends CommandOpMode {
     //paths
     private final ArrayList<PathChain> paths = new ArrayList<>();
 
@@ -68,7 +67,6 @@ public class Red12AutoGateFlush extends CommandOpMode {
             )
             .setConstantHeadingInterpolation(Math.toRadians(0))
             .build();
-
     public void buildPaths(Follower follower) {
         follower.setStartingPose(startingPose);
         //shoot first
@@ -76,7 +74,7 @@ public class Red12AutoGateFlush extends CommandOpMode {
         paths.add(follower
                 .pathBuilder()
                 .addPath(
-                        new BezierLine(new Pose(122.361, 121.175), new Pose(88, 84))
+                        new BezierLine(new Pose(122.361, 121.175), new Pose(90, 84))
                 )
                 .setLinearHeadingInterpolation(Math.toRadians(45), Math.toRadians(45))
                 .build()
@@ -87,7 +85,7 @@ public class Red12AutoGateFlush extends CommandOpMode {
         paths.add(follower
                 .pathBuilder()
                 .addPath(
-                        new BezierLine(new Pose(88, 84), new Pose(96, 82.000))
+                        new BezierLine(new Pose(90, 84), new Pose(96, 82.000))
                 )
                 .setLinearHeadingInterpolation(Math.toRadians(45), Math.toRadians(0))
                 .build()
@@ -107,7 +105,7 @@ public class Red12AutoGateFlush extends CommandOpMode {
         paths.add(follower
                 .pathBuilder()
                 .addPath(
-                        new BezierLine(new Pose(120.000, 82.000), new Pose(88, 84))
+                        new BezierLine(new Pose(120.000, 82.000), new Pose(90, 84))
                 )
                 .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(45))
                 .build()
@@ -117,7 +115,7 @@ public class Red12AutoGateFlush extends CommandOpMode {
         paths.add(follower
                 .pathBuilder()
                 .addPath(
-                        new BezierLine(new Pose(88,  84), new Pose(96, 58))
+                        new BezierLine(new Pose(90,  84), new Pose(96, 58))
                 )
                 .setLinearHeadingInterpolation(Math.toRadians(45), Math.toRadians(0))
                 .build()
@@ -148,7 +146,7 @@ public class Red12AutoGateFlush extends CommandOpMode {
         paths.add(follower
                 .pathBuilder()
                 .addPath(
-                        new BezierLine(new Pose(120.000, 58), new Pose(87, 84))
+                        new BezierLine(new Pose(120.000, 58), new Pose(88, 84))
                 )
                 .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(45))
                 .build()
@@ -158,7 +156,7 @@ public class Red12AutoGateFlush extends CommandOpMode {
         paths.add(follower
                 .pathBuilder()
                 .addPath(
-                        new BezierLine(new Pose(87, 84), new Pose(96, 35))
+                        new BezierLine(new Pose(88, 84), new Pose(96, 35))
                 )
                 .setLinearHeadingInterpolation(Math.toRadians(45), Math.toRadians(0))
                 .build()
@@ -189,7 +187,7 @@ public class Red12AutoGateFlush extends CommandOpMode {
         paths.add(follower
                 .pathBuilder()
                 .addPath(
-                        new BezierLine(new Pose(125, 35), new Pose(87, 84))
+                        new BezierLine(new Pose(125, 35), new Pose(88, 84))
                 )
                 .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(45))
                 .build()
@@ -200,7 +198,7 @@ public class Red12AutoGateFlush extends CommandOpMode {
         paths.add(follower
                 .pathBuilder()
                 .addPath(
-                        new BezierLine(new Pose(87, 84), new Pose(97, 80))
+                        new BezierLine(new Pose(88, 84), new Pose(97, 80))
                 )
                 .setLinearHeadingInterpolation(Math.toRadians(45), Math.toRadians(45))
                 .build()
@@ -293,7 +291,6 @@ public class Red12AutoGateFlush extends CommandOpMode {
                                 )
 
                         ),
-
                         new InstantCommand(() -> {
                             follower.setMaxPower(1);
                             spindexer.setBalls(new RobotConstants.BallColors[] {GREEN, PURPLE, PURPLE});
