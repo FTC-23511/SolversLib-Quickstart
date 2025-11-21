@@ -22,6 +22,7 @@ import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 import org.firstinspires.ftc.teamcode.subsystems.CameraSubsystem;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 import org.firstinspires.ftc.vision.VisionPortal;
+import org.firstinspires.ftc.vision.apriltag.AprilTagGameDatabase;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 
 import java.util.List;
@@ -97,11 +98,11 @@ public class TeleopDrivetrainPIDTuningOp extends CommandOpMode {
         if (!cameraInitialized) {
             camera.setAprilTagProcessor(new AprilTagProcessor.Builder()
                     // The following default settings are available to un-comment and edit as needed.
-                    //.setDrawAxes(false)
-                    //.setDrawCubeProjection(false)
-                    //.setDrawTagOutline(true)
+                    .setDrawAxes(true)
+                    .setDrawCubeProjection(true)
+                    .setDrawTagOutline(true)
                     //.setTagFamily(AprilTagProcessor.TagFamily.TAG_36h11)
-                    //.setTagLibrary(AprilTagGameDatabase.getCenterStageTagLibrary())
+                    .setTagLibrary(AprilTagGameDatabase.getDecodeTagLibrary())
                     //.setOutputUnits(DistanceUnit.INCH, AngleUnit.DEGREES)
                     // == CAMERA CALIBRATION ==
                     // If you do not manually specify calibration parameters, the SDK will attempt
