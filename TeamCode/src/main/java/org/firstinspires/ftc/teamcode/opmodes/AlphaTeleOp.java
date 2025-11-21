@@ -32,6 +32,8 @@ import org.firstinspires.ftc.teamcode.subsystems.LEDSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.ShooterSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.SpindexerSubsystem;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
+import org.firstinspires.ftc.vision.VisionPortal;
+import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 
 import java.util.Arrays;
 import java.util.List;
@@ -59,6 +61,9 @@ public class AlphaTeleOp extends CommandOpMode {
     //gamepads
     public GamepadEx driver1;
     public GamepadEx driver2;
+
+    //vision
+    boolean cameraInitialized = false;
 
     //autodrive
     private boolean manualControl = true;
@@ -128,15 +133,17 @@ public class AlphaTeleOp extends CommandOpMode {
         colorSensors = new ColorSensorsSubsystem(hardwareMap);
         led = new LEDSubsystem(hardwareMap);
         gate = new GateSubsystem(hardwareMap);
-        camera = new CameraSubsystem(hardwareMap);
+        camera = new CameraSubsystem();
         voltageSensor = hardwareMap.get(VoltageSensor.class, "Control Hub");
 
-        spindexer.set(75);
-        shooter.setHood(0.45);
 
         super.reset();
         lastVoltageCheck.reset();
         register(intake, shooter, spindexer, gate, colorSensors, led, camera);
+
+        spindexer.set(75);
+        shooter.setHood(0.45);
+        gate.down();
 
         //pedro and gamepad wrapper
         follower.startTeleopDrive();
@@ -287,7 +294,29 @@ public class AlphaTeleOp extends CommandOpMode {
 
     @Override
     public void run() {
-        List <AprilTagDetection> detections = camera.detectAprilTags();
+        if (!cameraInitialized) {
+            camera.setAprilTagProcessor(new AprilTagProcessor.Builder()
+                    // The following default settings are available to un-comment and edit as needed.
+                    //.setDrawAxes(false)
+                    //.setDrawCubeProjection(false)
+                    //.setDrawTagOutline(true)
+                    //.setTagFamily(AprilTagProcessor.TagFamily.TAG_36h11)
+                    //.setTagLibrary(AprilTagGameDatabase.getCenterStageTagLibrary())
+                    //.setOutputUnits(DistanceUnit.INCH, AngleUnit.DEGREES)
+                    // == CAMERA CALIBRATION ==
+                    // If you do not manually specify calibration parameters, the SDK will attempt
+                    // to load a predefined calibration for your camera.
+                    //.setLensIntrinsics(578.272, 578.272, 402.145, 221.506)
+                    // ... these parameters are fx, fy, cx, cy.
+                    .build());
+            camera.setVisionPortal(new VisionPortal.Builder()
+                    .setCamera(hardwareMap.get(WebcamName.class, "Webcam 1"))
+                    .addProcessor(camera.getAprilTagProcessor())
+                    .build()
+            );
+            cameraInitialized = true;
+        }
+        gate.down(); //temp fix
 
         //While intake is on, scan color sensors
         if (!intakeState.equals(IntakeState.STOP) && spindexer.availableToSenseColor()) {
