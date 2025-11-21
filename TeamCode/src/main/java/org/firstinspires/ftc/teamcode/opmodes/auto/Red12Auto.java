@@ -79,7 +79,7 @@ public class Red12Auto extends CommandOpMode {
         paths.add(follower
                 .pathBuilder()
                 .addPath(
-                        new BezierLine(new Pose(88, 84), new Pose(101.000, 82.000))
+                        new BezierLine(new Pose(88, 84), new Pose(96, 82.000))
                 )
                 .setLinearHeadingInterpolation(Math.toRadians(45), Math.toRadians(0))
                 .build()
@@ -89,7 +89,7 @@ public class Red12Auto extends CommandOpMode {
         paths.add(follower
                 .pathBuilder()
                 .addPath(
-                        new BezierLine(new Pose(101.000, 82.000), new Pose(120.000, 82.000))
+                        new BezierLine(new Pose(96, 82.000), new Pose(120.000, 82.000))
                 )
                 .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(0))
                 .build()
@@ -109,7 +109,7 @@ public class Red12Auto extends CommandOpMode {
         paths.add(follower
                 .pathBuilder()
                 .addPath(
-                        new BezierLine(new Pose(88,  84), new Pose(101, 58))
+                        new BezierLine(new Pose(88,  84), new Pose(96, 58))
                 )
                 .setLinearHeadingInterpolation(Math.toRadians(45), Math.toRadians(0))
                 .build()
@@ -120,7 +120,7 @@ public class Red12Auto extends CommandOpMode {
         paths.add(follower
                 .pathBuilder()
                 .addPath(
-                        new BezierLine(new Pose(101, 58), new Pose(130.000, 58))
+                        new BezierLine(new Pose(96, 58), new Pose(130.000, 58))
                 )
                 .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(0))
                 .build()
@@ -150,7 +150,7 @@ public class Red12Auto extends CommandOpMode {
         paths.add(follower
                 .pathBuilder()
                 .addPath(
-                        new BezierLine(new Pose(87, 84), new Pose(101, 35))
+                        new BezierLine(new Pose(87, 84), new Pose(96, 35))
                 )
                 .setLinearHeadingInterpolation(Math.toRadians(45), Math.toRadians(0))
                 .build()
@@ -161,7 +161,7 @@ public class Red12Auto extends CommandOpMode {
         paths.add(follower
                 .pathBuilder()
                 .addPath(
-                        new BezierLine(new Pose(101, 35), new Pose(130, 35))
+                        new BezierLine(new Pose(96, 35), new Pose(130, 35))
                 )
                 .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(0))
                 .build()
@@ -192,9 +192,9 @@ public class Red12Auto extends CommandOpMode {
         paths.add(follower
                 .pathBuilder()
                 .addPath(
-                        new BezierLine(new Pose(87, 84), new Pose(95, 82))
+                        new BezierLine(new Pose(87, 84), new Pose(97, 80))
                 )
-                .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(45))
+                .setLinearHeadingInterpolation(Math.toRadians(45), Math.toRadians(45))
                 .build()
         );
 
@@ -216,8 +216,7 @@ public class Red12Auto extends CommandOpMode {
                 new ParallelRaceGroup(
                         new WaitForColorCommand(colorsensor),
                         new WaitCommand(500)
-                ),
-                new InstantCommand(() -> intake.setSpeed(IntakeSubsystem.IntakeState.REVERSE))
+                )
         );
     }
 
@@ -245,6 +244,7 @@ public class Red12Auto extends CommandOpMode {
 
         // Initialize subsystems
         register(intake, spindexer, shooter, colorsensor, led, gate);
+        spindexer.set(75);
 
         //init paths
         buildPaths(follower);

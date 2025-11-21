@@ -17,8 +17,8 @@ public class ColorSensorsSubsystem extends SubsystemBase {
     public final static float[] greenHigherHSV = {174f, 0.86f, 0.31f};
     public final static float[] greenLowerHSV  = {134f, 0.46f, 0.0f};
 
-    public final static float[] purpleHigherHSV = {248f, 0.9f, 0.95f};
-    public final static float[] purpleLowerHSV  = {208f, 0.2f, 0.28f};
+    public final static float[] purpleHigherHSV = {238.11765f, 0.5617021f, 0.29681849f};
+    public final static float[] purpleLowerHSV  = {198.11765f, 0.1617021f, 0.0f};
 
     public ColorSensorsSubsystem(final HardwareMap hMap) {
         colorSensor1 = hMap.get(NormalizedColorSensor.class, "colorsensor1");
