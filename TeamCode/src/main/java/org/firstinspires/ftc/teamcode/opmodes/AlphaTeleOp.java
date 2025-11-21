@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.opmodes;
 
+import static com.seattlesolvers.solverslib.util.MathUtils.clamp;
 import static org.firstinspires.ftc.teamcode.RobotConstants.Motifs.*;
 
 import com.pedropathing.follower.Follower;
@@ -19,6 +20,7 @@ import com.seattlesolvers.solverslib.gamepad.GamepadKeys;
 import org.firstinspires.ftc.teamcode.RobotConstants.*;
 import org.firstinspires.ftc.teamcode.commands.MoveSpindexerCommand;
 import org.firstinspires.ftc.teamcode.commands.ScanAndUpdateBallsCommand;
+import org.firstinspires.ftc.teamcode.commands.ScheduleGateCommand;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 import org.firstinspires.ftc.teamcode.subsystems.ColorSensorsSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.GateSubsystem;
@@ -72,7 +74,8 @@ public class AlphaTeleOp extends CommandOpMode {
     public ElapsedTime lastVoltageCheck = new ElapsedTime();
 
     //variable shooter target
-    double closeShooterTarget = 1100;
+    double closeShooterTarget = 1200;
+    double farShooterTarget = 1500;
 
     //looptime
     private ElapsedTime timer = new ElapsedTime();
@@ -120,11 +123,13 @@ public class AlphaTeleOp extends CommandOpMode {
         gate = new GateSubsystem(hardwareMap);
         voltageSensor = hardwareMap.get(VoltageSensor.class, "Control Hub");
 
-        shooter.setHood(0.56);
-
         super.reset();
         lastVoltageCheck.reset();
         register(intake, shooter, spindexer, gate, colorSensors, led);
+
+        spindexer.set(75);
+        shooter.setHood(0.45);
+        gate.down();
 
         //pedro and gamepad wrapper
         follower.startTeleopDrive();
@@ -176,23 +181,19 @@ public class AlphaTeleOp extends CommandOpMode {
                 .whenInactive(new InstantCommand(() -> slowMode = false));
         //Driver 2
         driver2.getGamepadButton(GamepadKeys.Button.CIRCLE).whenPressed(
-                new InstantCommand(() -> {
-                    gate.up();
-                })
+                gate::up
         );
         driver2.getGamepadButton(GamepadKeys.Button.SQUARE).whenPressed(
-                new InstantCommand(() -> {
-                    gate.down();
-                })
+                gate::down
         );
         driver2.getGamepadButton(GamepadKeys.Button.OPTIONS).whenPressed(
                 new InstantCommand(() -> {
-                    shooter.setHood(Math.max(0.56, 1.0));
+                    shooter.setHood(clamp(shooter.getHoodPos() + 0.01, 0.0, 1.0));
                 })
         );
         driver2.getGamepadButton(GamepadKeys.Button.SHARE).whenPressed(
                 new InstantCommand(() -> {
-                    shooter.setHood(Math.max(shooter.getHoodPos() - 0.01, 1.0));
+                    shooter.setHood(clamp(shooter.getHoodPos() - 0.01, 0.0, 1.0));
                 })
         );
         driver2.getGamepadButton(GamepadKeys.Button.DPAD_RIGHT).whenPressed(
@@ -236,27 +237,15 @@ public class AlphaTeleOp extends CommandOpMode {
                     gamepad2.rumbleBlips(1);
                 })
         );*/
-        driver2.getGamepadButton(GamepadKeys.Button.TRIANGLE).whenPressed(
+        driver2.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER).whenPressed( //close distance
                 new InstantCommand(() -> {
-                    closeShooterTarget += 20;
-                    gamepad2.rumbleBlips(1);
-                })
-        );
-        driver2.getGamepadButton(GamepadKeys.Button.CROSS).whenPressed(
-                new InstantCommand(() -> {
-                    closeShooterTarget -= 20;
-                    gamepad2.rumbleBlips(1);
-                })
-        );
-        driver2.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER).whenPressed( //close close distance
-                new InstantCommand(() -> {
-                    shooter.setTargetVelocity(1100);
+                    shooter.setTargetVelocity(closeShooterTarget);
                 })
         );
         new Trigger(
-                () -> driver2.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) > 0.5) //far close distance
+                () -> driver2.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) > 0.5) //far distance
                     .whileActiveContinuous(new InstantCommand(() -> {
-                        shooter.setTargetVelocity(closeShooterTarget);
+                        shooter.setTargetVelocity(farShooterTarget);
                     })
                 );
         driver2.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER).whenPressed(  //turn off shooter
@@ -268,13 +257,41 @@ public class AlphaTeleOp extends CommandOpMode {
         new Trigger(
                 () -> driver2.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) > 0.5) //intake
                 .whenActive(new InstantCommand(() -> {
-                            shooter.setTargetVelocity(-300);
+                    driver2.getGamepadButton(GamepadKeys.Button.TRIANGLE).whenPressed(
+                            new InstantCommand(() -> {
+                                farShooterTarget += 20;
+                                gamepad2.rumbleBlips(1);
+                            })
+                    );
+                    driver2.getGamepadButton(GamepadKeys.Button.CROSS).whenPressed(
+                            new InstantCommand(() -> {
+                                farShooterTarget -= 20;
+                                gamepad2.rumbleBlips(1);
+                            })
+                    );
+                        })
+                )
+                .whenInactive(new InstantCommand(() -> {
+                    driver2.getGamepadButton(GamepadKeys.Button.TRIANGLE).whenPressed(
+                            new InstantCommand(() -> {
+                                closeShooterTarget += 20;
+                                gamepad2.rumbleBlips(1);
+                            })
+                    );
+                    driver2.getGamepadButton(GamepadKeys.Button.CROSS).whenPressed(
+                            new InstantCommand(() -> {
+                                closeShooterTarget -= 20;
+                                gamepad2.rumbleBlips(1);
+                            })
+                    );
                         })
                 );
     }
 
     @Override
     public void run() {
+        gate.down(); //temp fix
+
         //While intake is on, scan color sensors
         if (!intakeState.equals(IntakeState.STOP) && spindexer.availableToSenseColor()) {
             schedule(new ScanAndUpdateBallsCommand(spindexer, colorSensors));
@@ -341,29 +358,51 @@ public class AlphaTeleOp extends CommandOpMode {
 
         telemetry.addData("Loop Time", timer.milliseconds());
 
-        telemetry.addData("current motif", motifs);
-        telemetry.addData("spindexer output", spindexer.getOutput());
-        telemetry.addData("spindexer setpoint", spindexer.getPIDSetpoint());
-        telemetry.addData("spindexer pos", spindexer.getCurrentPosition());
-        telemetry.addData("spindexer tick adjustment degrees", spindexerAdjustmentCount);
+        telemetry.addData("current motif ", motifs);
+        telemetry.addData("spindexer output ", spindexer.getOutput());
+        telemetry.addData("spindexer setpoint ", spindexer.getPIDSetpoint());
+        telemetry.addData("spindexer pos ", spindexer.getCurrentPosition());
+        telemetry.addData("spindexer tick adjustment degrees ", spindexerAdjustmentCount);
         telemetry.addData("is spindexer ready to read color ", spindexer.availableToSenseColor());
 
         telemetry.addData("------------------",null);
 
-        telemetry.addData("shooter close amount", closeShooterTarget);
-        telemetry.addData("shooter target velocity", shooter.getTargetVelocity());
-        telemetry.addData("shooter actual velocity", shooter.getActualVelocity());
+        telemetry.addData("shooter close amount ", closeShooterTarget);
+        telemetry.addData("shooter target velocity ", shooter.getTargetVelocity());
+        telemetry.addData("shooter actual velocity ", shooter.getActualVelocity());
+        telemetry.addData("shooter hood pos ", shooter.getHoodPos());
+
 
         telemetry.addData("------------------",null);
 
-        telemetry.addData("current pos", String.format("X: %8.2f, Y: %8.2f", follower.getPose().getX(), follower.getPose().getY()));
-        telemetry.addData("current heading", String.format("Heading: %.4f", follower.getPose().getHeading()));
-        telemetry.addData("saved pos", String.format("X: %8.2f, Y: %8.2f", savedPose.getX(), savedPose.getY()));
-        telemetry.addData("saved heading", String.format("Heading: %.4f", savedPose.getHeading()));
-        telemetry.addData("t value", follower.getCurrentTValue());
+        telemetry.addData("current pos ", String.format("X: %8.2f, Y: %8.2f", follower.getPose().getX(), follower.getPose().getY()));
+        telemetry.addData("current heading ", String.format("Heading: %.4f", follower.getPose().getHeading()));
+        telemetry.addData("saved pos ", String.format("X: %8.2f, Y: %8.2f", savedPose.getX(), savedPose.getY()));
+        telemetry.addData("saved heading ", String.format("Heading: %.4f", savedPose.getHeading()));
+        telemetry.addData("t value ", follower.getCurrentTValue());
         telemetry.addData("!follower.isBusy() || (gamepad1.touchpad_finger_1 && gamepad1.touchpad_finger_2)", !follower.isBusy() || (gamepad1.touchpad_finger_1 && gamepad1.touchpad_finger_2));
-        telemetry.addData("slowmode", slowMode);
+        telemetry.addData("slowmode ", slowMode);
+
         telemetry.addData("------------------",null);
+
+        if (colorSensors.checkIfPurple(colorSensors.senseColorsHSV(1)) == true) {
+            telemetry.addData("detecting purple, raw value: ", colorSensors.senseColorsHSV(1));
+        }
+        else if (colorSensors.checkIfPurple(colorSensors.senseColorsHSV(2)) == true) {
+            telemetry.addData("detecting purple, raw value: ", colorSensors.senseColorsHSV(2));
+        }
+        if (colorSensors.checkIfGreen(colorSensors.senseColorsHSV(1)) == true) {
+            telemetry.addData("detecting green, raw value: ", colorSensors.senseColorsHSV(1));
+        }
+        else if (colorSensors.checkIfGreen(colorSensors.senseColorsHSV(2)) == true) {
+            telemetry.addData("detecting green, raw value: ", colorSensors.senseColorsHSV(2));
+        }
+        if (colorSensors.checkIfWhite(colorSensors.senseColorsHSV(1)) == true) {
+            telemetry.addData("detecting white, raw value: ", colorSensors.senseColorsHSV(1));
+        }
+        else if (colorSensors.checkIfWhite(colorSensors.senseColorsHSV(2)) == true) {
+            telemetry.addData("detecting white, raw value: ", colorSensors.senseColorsHSV(2));
+        }
 
         timer.reset();
         telemetry.update();

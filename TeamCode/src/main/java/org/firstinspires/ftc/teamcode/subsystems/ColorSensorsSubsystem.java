@@ -12,8 +12,8 @@ import org.firstinspires.ftc.teamcode.RobotConstants;
 public class ColorSensorsSubsystem extends SubsystemBase {
     private NormalizedColorSensor colorSensor1; // Color sensor in pos 1. see spindexer subsystem comment
 
-    public final static float[] greenHigherHSV = {175f, 0.9f, 0.95f};
-    public final static float[] greenLowerHSV  = {135f, 0.2f, 0.2f};
+    public final static float[] greenHigherHSV = {174f, 0.86f, 0.31f};
+    public final static float[] greenLowerHSV  = {134f, 0.46f, 0.0f};
 
     public final static float[] purpleHigherHSV = {248f, 0.9f, 0.95f};
     public final static float[] purpleLowerHSV  = {208f, 0.2f, 0.28f};

@@ -15,6 +15,7 @@ public class LEDSubsystem extends SubsystemBase {
     }
 
     public void setColor(LEDState i) {
+        ledstate = i;
         if (i == LEDState.OFF) {
             led.setPosition(0.0);
         }
@@ -48,7 +49,6 @@ public class LEDSubsystem extends SubsystemBase {
         else if (i == LEDState.WHITE) {
             led.setPosition(1.0);
         }
-        ledstate = i;
     }
 
 }

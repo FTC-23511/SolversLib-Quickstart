@@ -16,13 +16,13 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 public class Constants {
     public static FollowerConstants followerConstants = new FollowerConstants()
-            .mass(8.89)
-            .forwardZeroPowerAcceleration(-56.4339326415)
-            .lateralZeroPowerAcceleration(-77.942853906)
+            .mass(12.60987)
+            .forwardZeroPowerAcceleration(-53.7961591924281)
+            .lateralZeroPowerAcceleration(-84.89915877059722)
             .translationalPIDFCoefficients(new PIDFCoefficients(0.1, 0, 0, 0))
-            .headingPIDFCoefficients(new PIDFCoefficients(2.0, 0, 0, 0))
-            .drivePIDFCoefficients(new FilteredPIDFCoefficients(1.0,0.0,0,0.6,0.0))
-            .centripetalScaling(0.000001);
+            .headingPIDFCoefficients(new PIDFCoefficients(0.85, 0, 0, 0))
+            .drivePIDFCoefficients(new FilteredPIDFCoefficients(0.006,0.0,0,0.6,0.0))
+            .centripetalScaling(0.001);
 
     public static MecanumConstants driveConstants = new MecanumConstants()
             .leftFrontMotorName("leftFront")
@@ -32,20 +32,20 @@ public class Constants {
             .leftFrontMotorDirection(DcMotorSimple.Direction.REVERSE)
             .leftRearMotorDirection(DcMotorSimple.Direction.REVERSE)
             .rightFrontMotorDirection(DcMotorSimple.Direction.REVERSE)
-            .rightRearMotorDirection(DcMotorSimple.Direction.FORWARD)
+            .rightRearMotorDirection(DcMotorSimple.Direction.REVERSE)
             .useBrakeModeInTeleOp(true)
-            .xVelocity(54.6519177855)
-            .yVelocity(41.4717026758)
-            .maxPower(0.2);
+            .xVelocity(57.75912787970596)
+            .yVelocity(50.2589293953002)
+            .maxPower(1.0);
 
     public static PinpointConstants localizerConstants = new PinpointConstants()
-            .forwardPodY(4) //we measured using ruler and taking length and width and dividing by two
-            .strafePodX(-7.5)
+            .forwardPodY(5) //we measured using ruler and taking length and width and dividing by two
+            .strafePodX(-0.25)
             .distanceUnit(DistanceUnit.INCH)
             .hardwareMapName("pinpoint")
             .encoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD)
-            .forwardEncoderDirection(GoBildaPinpointDriver.EncoderDirection.FORWARD)
-            .strafeEncoderDirection(GoBildaPinpointDriver.EncoderDirection.FORWARD);
+            .forwardEncoderDirection(GoBildaPinpointDriver.EncoderDirection.REVERSED)
+            .strafeEncoderDirection(GoBildaPinpointDriver.EncoderDirection.REVERSED);
 
     /**
      These are the PathConstraints in order:
