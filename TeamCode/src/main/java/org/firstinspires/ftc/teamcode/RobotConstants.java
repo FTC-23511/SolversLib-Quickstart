@@ -19,7 +19,7 @@ public class RobotConstants {
     }
 
     public enum Motifs {
-        PPG, PGP, GPP
+        PPG, PGP, GPP, PPP
     }
 
 }
