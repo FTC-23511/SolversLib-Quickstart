@@ -39,7 +39,7 @@ import java.util.ArrayList;
 
 @Config
 @Autonomous(name = "Red 12ball real🦅", group = "angryBirds", preselectTeleOp = "Alpha Teleop")
-public class RedFarAuto extends CommandOpMode {
+public class Red12Auto extends CommandOpMode {
     //paths
     private final ArrayList<PathChain> paths = new ArrayList<>();
 
@@ -64,16 +64,18 @@ public class RedFarAuto extends CommandOpMode {
     public void buildPaths(Follower follower) {
         follower.setStartingPose(startingPose);
         //shoot first
+        //0
         paths.add(follower
                 .pathBuilder()
                 .addPath(
-                        new BezierLine(new Pose(123.361, 122.175), new Pose(84, 84))
+                        new BezierLine(new Pose(122.361, 121.175), new Pose(84, 84))
                 )
                 .setLinearHeadingInterpolation(Math.toRadians(45), Math.toRadians(45))
                 .build()
         );
 
         //cycle1
+        //1
         paths.add(follower
                 .pathBuilder()
                 .addPath(
@@ -83,89 +85,99 @@ public class RedFarAuto extends CommandOpMode {
                 .build()
         );
 
+        //2
         paths.add(follower
                 .pathBuilder()
                 .addPath(
-                        new BezierLine(new Pose(101.000, 84.000), new Pose(130.000, 84.000))
+                        new BezierLine(new Pose(101.000, 84.000), new Pose(120.000, 84.000))
                 )
-                .setTangentHeadingInterpolation()
+                .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(0))
                 .build()
         );
 
+        //3
         paths.add(follower
                 .pathBuilder()
                 .addPath(
-                        new BezierLine(new Pose(130.000, 84.000), new Pose(84, 84))
+                        new BezierLine(new Pose(120.000, 84.000), new Pose(84, 84))
                 )
                 .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(45))
                 .build()
         );
 
+        //4
         paths.add(follower
                 .pathBuilder()
                 .addPath(
-                        new BezierLine(new Pose(84,  84), new Pose(95.000, 60.000))
+                        new BezierLine(new Pose(84,  84), new Pose(101, 58))
                 )
                 .setLinearHeadingInterpolation(Math.toRadians(45), Math.toRadians(0))
                 .build()
         );
 
         //cycle2
+        //5
         paths.add(follower
                 .pathBuilder()
                 .addPath(
-                        new BezierLine(new Pose(95.000, 60.000), new Pose(140.000, 60.000))
-                )
-                .setTangentHeadingInterpolation()
-                .build()
-        );
-
-        paths.add(follower
-                .pathBuilder()
-                .addPath(
-                        new BezierLine(new Pose(140.000, 60.000), new Pose(125.000, 60.000))
+                        new BezierLine(new Pose(101, 58), new Pose(130.000, 58))
                 )
                 .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(0))
                 .build()
         );
 
+        //6
         paths.add(follower
                 .pathBuilder()
                 .addPath(
-                        new BezierLine(new Pose(125.000, 60.000), new Pose(84, 84))
+                        new BezierLine(new Pose(130.000, 58), new Pose(120.000, 58))
+                )
+                .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(0))
+                .build()
+        );
+
+        //7
+        paths.add(follower
+                .pathBuilder()
+                .addPath(
+                        new BezierLine(new Pose(120.000, 58), new Pose(84, 84))
                 )
                 .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(45))
                 .build()
         );
 
+        //8
         paths.add(follower
                 .pathBuilder()
                 .addPath(
-                        new BezierLine(new Pose(84, 84), new Pose(95, 35))
+                        new BezierLine(new Pose(84, 84), new Pose(101, 35))
                 )
                 .setLinearHeadingInterpolation(Math.toRadians(45), Math.toRadians(0))
                 .build()
         );
 
         //cycle3
+        //9
         paths.add(follower
                 .pathBuilder()
                 .addPath(
-                        new BezierLine(new Pose(95, 35), new Pose(140, 35))
-                )
-                .setTangentHeadingInterpolation()
-                .build()
-        );
-
-        paths.add(follower
-                .pathBuilder()
-                .addPath(
-                        new BezierLine(new Pose(140, 35), new Pose(125, 35))
+                        new BezierLine(new Pose(101, 35), new Pose(130, 35))
                 )
                 .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(0))
                 .build()
         );
 
+        //10
+        paths.add(follower
+                .pathBuilder()
+                .addPath(
+                        new BezierLine(new Pose(130, 35), new Pose(125, 35))
+                )
+                .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(0))
+                .build()
+        );
+
+        //11
         paths.add(follower
                 .pathBuilder()
                 .addPath(
@@ -176,6 +188,7 @@ public class RedFarAuto extends CommandOpMode {
         );
 
         //endpos
+        //12
         paths.add(follower
                 .pathBuilder()
                 .addPath(
@@ -302,7 +315,7 @@ public class RedFarAuto extends CommandOpMode {
                                 new InstantCommand(() -> follower.setMaxPower(0.7)),
                                 intakeArtifacts(),
                                 new ParallelRaceGroup(
-                                        new FollowPathCommand(follower, paths.get(5), true), //drive and pick up balls
+                                        new FollowPathCommand(follower, paths.get(9), true), //drive and pick up balls
 //                                        new WaitForRobotStuckCommand(follower)
                                         new WaitCommand(3000)
                                 )
@@ -312,13 +325,13 @@ public class RedFarAuto extends CommandOpMode {
                             follower.setMaxPower(1);
                             spindexer.setBalls(new RobotConstants.BallColors[] {PURPLE, PURPLE, GREEN});
                         }),
-                        new FollowPathCommand(follower, paths.get(9), true),
+                        new FollowPathCommand(follower, paths.get(10), true),
 
-                        new FollowPathCommand(follower, paths.get(10), true), //return to shooting pos
+                        new FollowPathCommand(follower, paths.get(11), true), //return to shooting pos
                         new ShootBallSequenceCommandSequence(shooter, spindexer, gate, motif), //shoot motif
 
                         //move off shooting line so that you get extra points theoretically
-                        new FollowPathCommand(follower, paths.get(11), true),
+                        new FollowPathCommand(follower, paths.get(12), true),
 
                         new InstantCommand(() -> {shooter.setTargetVelocity(0);})
                 )
