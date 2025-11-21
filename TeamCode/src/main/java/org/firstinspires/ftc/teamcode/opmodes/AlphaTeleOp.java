@@ -17,7 +17,6 @@ import com.seattlesolvers.solverslib.command.InstantCommand;
 import com.seattlesolvers.solverslib.command.SelectCommand;
 import com.seattlesolvers.solverslib.command.button.Trigger;
 import com.seattlesolvers.solverslib.controller.PIDController;
-import com.seattlesolvers.solverslib.controller.PIDFController;
 import com.seattlesolvers.solverslib.gamepad.GamepadEx;
 import com.seattlesolvers.solverslib.gamepad.GamepadKeys;
 
@@ -25,7 +24,6 @@ import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.RobotConstants.*;
 import org.firstinspires.ftc.teamcode.commands.MoveSpindexerCommand;
 import org.firstinspires.ftc.teamcode.commands.ScanAndUpdateBallsCommand;
-import org.firstinspires.ftc.teamcode.commands.ScheduleGateCommand;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 import org.firstinspires.ftc.teamcode.subsystems.CameraSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.ColorSensorsSubsystem;
@@ -323,6 +321,7 @@ public class AlphaTeleOp extends CommandOpMode {
                     .addProcessor(camera.getAprilTagProcessor())
                     .build()
             );
+            camera.initializeSettings();
             cameraInitialized = true;
         }
         gate.down(); //temp fix
