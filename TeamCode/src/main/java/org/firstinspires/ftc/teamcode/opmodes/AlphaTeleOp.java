@@ -14,6 +14,8 @@ import com.seattlesolvers.solverslib.command.CommandOpMode;
 import com.seattlesolvers.solverslib.command.InstantCommand;
 import com.seattlesolvers.solverslib.command.SelectCommand;
 import com.seattlesolvers.solverslib.command.button.Trigger;
+import com.seattlesolvers.solverslib.controller.PIDController;
+import com.seattlesolvers.solverslib.controller.PIDFController;
 import com.seattlesolvers.solverslib.gamepad.GamepadEx;
 import com.seattlesolvers.solverslib.gamepad.GamepadKeys;
 
@@ -106,7 +108,8 @@ public class AlphaTeleOp extends CommandOpMode {
         }
     }
 
-    //ShootMotif command
+    //point to april tag
+    PIDController headingPID = new PIDController(0.4, 0, 0);
 
 
     @Override
@@ -172,6 +175,11 @@ public class AlphaTeleOp extends CommandOpMode {
                     setSavedPose(follower.getPose());
                 })
         );
+        driver1.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER).whenPressed(
+                new InstantCommand(() -> {
+                    manualControl = false;
+                })
+        );
         new Trigger(() -> driver1.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) > 0.5)
                 .whileActiveContinuous(new InstantCommand(() -> slowMode = true))
                 .whenInactive(new InstantCommand(() -> slowMode = false));
@@ -221,21 +229,6 @@ public class AlphaTeleOp extends CommandOpMode {
                     }
                 })
         );
-        /*
-        driver2.getGamepadButton(GamepadKeys.Button.CIRCLE).whenPressed(
-                new InstantCommand(() -> {
-                    spindexer.moveSpindexerBy(60);
-                    spindexerAdjustmentCount += 60;
-                    gamepad2.rumbleBlips(1);
-                })
-        );
-        driver2.getGamepadButton(GamepadKeys.Button.SQUARE).whenPressed(
-                new InstantCommand(() -> {
-                    spindexer.moveSpindexerBy(-60);
-                    spindexerAdjustmentCount -= 60;
-                    gamepad2.rumbleBlips(1);
-                })
-        );*/
         driver2.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER).whenPressed( //close distance
                 new InstantCommand(() -> {
                     shooter.setTargetVelocity(closeShooterTarget);
@@ -303,13 +296,13 @@ public class AlphaTeleOp extends CommandOpMode {
             double denominator = Math.max(Math.abs(x) + Math.abs(y) + Math.abs(rx), 1.0);
             follower.setTeleOpDrive(y / denominator, x / denominator, rx / denominator, true);
         } else {
-            if (
-                    (Math.abs(follower.getPose().getHeading() - savedPose.getHeading()) < 0.04
-                    && Math.abs(follower.getPose().getX() - savedPose.getX()) < 1
-                    && Math.abs(follower.getPose().getY() - savedPose.getY()) < 1)
-                    || (gamepad1.touchpad_finger_1 && gamepad1.touchpad_finger_2)) {
+            if (gamepad1.touchpad_finger_1 && gamepad1.touchpad_finger_2) {
+                double x = -driver1.getLeftX();
+                double y = driver1.getLeftY();
+                double rx = headingPID.calculate(100, 0); //replace 100 (placeholder) with camera april tag x
+                double denominator = Math.max(Math.abs(x) + Math.abs(y) + Math.abs(rx), 1.0);
+                follower.setTeleOpDrive(y / denominator, x / denominator, rx / denominator, true);
                 manualControl = true;
-                follower.startTeleopDrive();
             }
         }
         follower.update();
