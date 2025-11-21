@@ -66,7 +66,7 @@ public class Red12AutoGate extends CommandOpMode {
         follower.setStartingPose(startingPose);
         shimmy = follower.pathBuilder()
                 .addPath(
-                        new BezierCurve(new Pose(120.000, 82.000), new Pose(88.000, 77.000), new Pose(123.000, 70))
+                        new BezierCurve(new Pose(120.000, 82.000), new Pose(80.000, 77.000), new Pose(123.000, 70))
                 )
                 .setConstantHeadingInterpolation(Math.toRadians(0))
                 .build();
@@ -116,7 +116,7 @@ public class Red12AutoGate extends CommandOpMode {
         paths.add(follower
                 .pathBuilder()
                 .addPath(
-                        new BezierLine(new Pose(90,  84), new Pose(96, 59))
+                        new BezierLine(new Pose(90,  84), new Pose(96, 55))
                 )
                 .setLinearHeadingInterpolation(Math.toRadians(45), Math.toRadians(0))
                 .build()
@@ -127,7 +127,7 @@ public class Red12AutoGate extends CommandOpMode {
         paths.add(follower
                 .pathBuilder()
                 .addPath(
-                        new BezierLine(new Pose(96, 59), new Pose(130.000, 59))
+                        new BezierLine(new Pose(96, 55), new Pose(130.000, 55))
                 )
                 .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(0))
                 .build()
@@ -137,7 +137,7 @@ public class Red12AutoGate extends CommandOpMode {
         paths.add(follower
                 .pathBuilder()
                 .addPath(
-                        new BezierLine(new Pose(130.000, 59), new Pose(120.000, 59))
+                        new BezierLine(new Pose(130.000, 55), new Pose(115.000, 55))
                 )
                 .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(0))
                 .build()
@@ -147,7 +147,7 @@ public class Red12AutoGate extends CommandOpMode {
         paths.add(follower
                 .pathBuilder()
                 .addPath(
-                        new BezierLine(new Pose(120.000, 59), new Pose(88, 84))
+                        new BezierLine(new Pose(115.000, 55), new Pose(88, 84))
                 )
                 .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(45))
                 .build()
@@ -157,7 +157,7 @@ public class Red12AutoGate extends CommandOpMode {
         paths.add(follower
                 .pathBuilder()
                 .addPath(
-                        new BezierLine(new Pose(88, 84), new Pose(96, 35))
+                        new BezierLine(new Pose(88, 84), new Pose(96, 31))
                 )
                 .setLinearHeadingInterpolation(Math.toRadians(45), Math.toRadians(0))
                 .build()
@@ -168,7 +168,7 @@ public class Red12AutoGate extends CommandOpMode {
         paths.add(follower
                 .pathBuilder()
                 .addPath(
-                        new BezierLine(new Pose(96, 35), new Pose(130, 35))
+                        new BezierLine(new Pose(96, 31), new Pose(130, 31))
                 )
                 .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(0))
                 .build()
@@ -178,7 +178,7 @@ public class Red12AutoGate extends CommandOpMode {
         paths.add(follower
                 .pathBuilder()
                 .addPath(
-                        new BezierLine(new Pose(130, 35), new Pose(125, 35))
+                        new BezierLine(new Pose(130, 31), new Pose(125, 31))
                 )
                 .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(0))
                 .build()
@@ -188,7 +188,7 @@ public class Red12AutoGate extends CommandOpMode {
         paths.add(follower
                 .pathBuilder()
                 .addPath(
-                        new BezierLine(new Pose(125, 35), new Pose(88, 84))
+                        new BezierLine(new Pose(125, 31), new Pose(88, 84))
                 )
                 .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(45))
                 .build()
@@ -214,12 +214,12 @@ public class Red12AutoGate extends CommandOpMode {
                         new WaitForColorCommand(colorsensor),
                         new WaitCommand(1500)
                 ),
-                new MoveSpindexerCommand(spindexer, gate, 1, false),
+                new MoveSpindexerCommand(spindexer, gate, 1, true),
                 new ParallelRaceGroup(
                         new WaitForColorCommand(colorsensor),
                         new WaitCommand(500)
                 ),
-                new MoveSpindexerCommand(spindexer, gate, 1, false),
+                new MoveSpindexerCommand(spindexer, gate, 1, true),
                 new ParallelRaceGroup(
                         new WaitForColorCommand(colorsensor),
                         new WaitCommand(500)
@@ -288,7 +288,7 @@ public class Red12AutoGate extends CommandOpMode {
                                 new ParallelRaceGroup(
                                         new FollowPathCommand(follower, paths.get(2), true), //drive and pick up balls
 //                                        new WaitForRobotStuckCommand(follower) //does not work for some reason
-                                        new WaitCommand(3000)
+                                        new WaitCommand(2000)
                                 )
 
                         ),
@@ -308,16 +308,16 @@ public class Red12AutoGate extends CommandOpMode {
 
                         //cycle two
                         new ParallelCommandGroup(
+                                new InstantCommand(() -> follower.setMaxPower(0.7)),
                                 new InstantCommand(() -> {intake.setSpeed(IntakeSubsystem.IntakeState.INTAKING);}),
                                 new FollowPathCommand(follower, paths.get(4), true) //drives to balls and lines itself up to intake
                         ),
                         new ParallelCommandGroup(
-                                new InstantCommand(() -> follower.setMaxPower(0.7)),
                                 intakeArtifacts(),
                                 new ParallelRaceGroup(
                                         new FollowPathCommand(follower, paths.get(5), true), //drive and pick up balls
 //                                        new WaitForRobotStuckCommand(follower)
-                                        new WaitCommand(3000)
+                                        new WaitCommand(2000)
                                 )
                         ),
                         //needs extra step to back out from the wall because it will collide with the exit of the ramp
@@ -332,16 +332,16 @@ public class Red12AutoGate extends CommandOpMode {
 
                         //cycle three
                         new ParallelCommandGroup(
+                                new InstantCommand(() -> follower.setMaxPower(0.7)),
                                 new InstantCommand(() -> {intake.setSpeed(IntakeSubsystem.IntakeState.INTAKING);}),
                                 new FollowPathCommand(follower, paths.get(8), true) //drives to balls and lines itself up to intake
                         ),
                         new ParallelCommandGroup(
-                                new InstantCommand(() -> follower.setMaxPower(0.7)),
                                 intakeArtifacts(),
                                 new ParallelRaceGroup(
                                         new FollowPathCommand(follower, paths.get(9), true), //drive and pick up balls
-//                                        new WaitForRobotStuckCommand(follower)
-                                        new WaitCommand(3000)
+//                                        new WaitForRobotStuckCommand(follower),
+                                        new WaitCommand(2000)
                                 )
                         ),
                         //needs extra step to back out from the wall because it will collide with the exit of the ramp
