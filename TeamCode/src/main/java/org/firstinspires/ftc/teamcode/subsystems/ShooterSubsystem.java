@@ -34,13 +34,14 @@ public class ShooterSubsystem extends SubsystemBase {
         shooter1.setInverted(true); //one has to be backwards
         shooter2.setInverted(false);
         hood.setInverted(false);
-
+        shooter1.setZeroPowerBehavior(Motor.ZeroPowerBehavior.FLOAT);
+        shooter2.setZeroPowerBehavior(Motor.ZeroPowerBehavior.FLOAT);
+        
         shooter = new MotorGroup(shooter1, shooter2);
 
         shooter.setRunMode(Motor.RunMode.RawPower);
         shooter.set(0);
-        shooter.setZeroPowerBehavior(Motor.ZeroPowerBehavior.FLOAT);
-        shooter2.setZeroPowerBehavior(Motor.ZeroPowerBehavior.FLOAT);
+
     }
 
     public void setTargetVelocity(double vel) {
