@@ -55,28 +55,32 @@ public class SpindexerSubsystem extends SubsystemBase {
         pid.setSetPoint(degrees);
     }
 
+    private double lastAbs = Double.NaN;
+
     @Override
     public void periodic() {
         double abs = getAbsolutePosition360();
 
-        if (!initialized) {
+        if (Double.isNaN(lastAbs)) {
+            lastAbs = abs;
             continuousPosition = abs;
-            initialized = true;
-        } else {
-            double last = continuousPosition % 360;
-            double diff = abs - last;
-
-            // wrap diff into [-180, 180]
-            diff = ((diff + 180) % 360 + 360) % 360 - 180;
-
-            continuousPosition += diff;
+            return;
         }
+
+        double diff = abs - lastAbs;
+
+        // unwrap based on real analog readings, not modulo continuous position
+        if (diff > 180) diff -= 360;
+        if (diff < -180) diff += 360;
+
+        continuousPosition += diff;
+        lastAbs = abs;
 
         double outputRaw = pid.calculate(continuousPosition);
         output = clamp(outputRaw, -1, 1);
-
         spindexer.setPower(output);
     }
+
 
 
     /** Converts analog voltage to 0–360° */
