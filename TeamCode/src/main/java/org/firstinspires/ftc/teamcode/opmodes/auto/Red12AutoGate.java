@@ -61,14 +61,15 @@ public class Red12AutoGate extends CommandOpMode {
     private GateSubsystem gate;
     private LEDSubsystem led;
     private RobotConstants.BallColors[] motif = new RobotConstants.BallColors[]{UNKNOWN,UNKNOWN,UNKNOWN};
-    PathChain shimmy = follower.pathBuilder()
-            .addPath(
-                    new BezierCurve(new Pose(120.000, 82.000), new Pose(88.000, 77.000), new Pose(123.000, 71.000))
-            )
-            .setConstantHeadingInterpolation(Math.toRadians(0))
-            .build();
+    PathChain shimmy;
     public void buildPaths(Follower follower) {
         follower.setStartingPose(startingPose);
+        shimmy = follower.pathBuilder()
+                .addPath(
+                        new BezierCurve(new Pose(120.000, 82.000), new Pose(88.000, 77.000), new Pose(123.000, 71.000))
+                )
+                .setConstantHeadingInterpolation(Math.toRadians(0))
+                .build();
         //shoot first
         //0
         paths.add(follower
