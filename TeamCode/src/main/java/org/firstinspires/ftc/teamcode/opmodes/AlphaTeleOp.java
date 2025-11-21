@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.opmodes;
 
+import static com.seattlesolvers.solverslib.util.MathUtils.clamp;
 import static org.firstinspires.ftc.teamcode.RobotConstants.Motifs.*;
 
 import com.pedropathing.follower.Follower;
@@ -19,6 +20,7 @@ import com.seattlesolvers.solverslib.gamepad.GamepadKeys;
 import org.firstinspires.ftc.teamcode.RobotConstants.*;
 import org.firstinspires.ftc.teamcode.commands.MoveSpindexerCommand;
 import org.firstinspires.ftc.teamcode.commands.ScanAndUpdateBallsCommand;
+import org.firstinspires.ftc.teamcode.commands.ScheduleGateCommand;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 import org.firstinspires.ftc.teamcode.subsystems.ColorSensorsSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.GateSubsystem;
@@ -72,7 +74,8 @@ public class AlphaTeleOp extends CommandOpMode {
     public ElapsedTime lastVoltageCheck = new ElapsedTime();
 
     //variable shooter target
-    double closeShooterTarget = 1100;
+    double closeShooterTarget = 1200;
+    double farShooterTarget = 1500;
 
     //looptime
     private ElapsedTime timer = new ElapsedTime();
@@ -120,7 +123,8 @@ public class AlphaTeleOp extends CommandOpMode {
         gate = new GateSubsystem(hardwareMap);
         voltageSensor = hardwareMap.get(VoltageSensor.class, "Control Hub");
 
-        shooter.setHood(0.56);
+        spindexer.set(75);
+        shooter.setHood(0.45);
 
         super.reset();
         lastVoltageCheck.reset();
@@ -176,23 +180,19 @@ public class AlphaTeleOp extends CommandOpMode {
                 .whenInactive(new InstantCommand(() -> slowMode = false));
         //Driver 2
         driver2.getGamepadButton(GamepadKeys.Button.CIRCLE).whenPressed(
-                new InstantCommand(() -> {
-                    gate.up();
-                })
+                gate::up
         );
         driver2.getGamepadButton(GamepadKeys.Button.SQUARE).whenPressed(
-                new InstantCommand(() -> {
-                    gate.down();
-                })
+                gate::down
         );
         driver2.getGamepadButton(GamepadKeys.Button.OPTIONS).whenPressed(
                 new InstantCommand(() -> {
-                    shooter.setHood(Math.max(shooter.getHoodPos() + 0.01, 1.0));
+                    shooter.setHood(clamp(shooter.getHoodPos() + 0.01, 0.0, 1.0));
                 })
         );
         driver2.getGamepadButton(GamepadKeys.Button.SHARE).whenPressed(
                 new InstantCommand(() -> {
-                    shooter.setHood(Math.max(shooter.getHoodPos() - 0.01, 1.0));
+                    shooter.setHood(clamp(shooter.getHoodPos() - 0.01, 0.0, 1.0));
                 })
         );
         driver2.getGamepadButton(GamepadKeys.Button.DPAD_RIGHT).whenPressed(
@@ -236,27 +236,15 @@ public class AlphaTeleOp extends CommandOpMode {
                     gamepad2.rumbleBlips(1);
                 })
         );*/
-        driver2.getGamepadButton(GamepadKeys.Button.TRIANGLE).whenPressed(
+        driver2.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER).whenPressed( //close distance
                 new InstantCommand(() -> {
-                    closeShooterTarget += 20;
-                    gamepad2.rumbleBlips(1);
-                })
-        );
-        driver2.getGamepadButton(GamepadKeys.Button.CROSS).whenPressed(
-                new InstantCommand(() -> {
-                    closeShooterTarget -= 20;
-                    gamepad2.rumbleBlips(1);
-                })
-        );
-        driver2.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER).whenPressed( //close close distance
-                new InstantCommand(() -> {
-                    shooter.setTargetVelocity(1100);
+                    shooter.setTargetVelocity(closeShooterTarget);
                 })
         );
         new Trigger(
-                () -> driver2.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) > 0.5) //far close distance
+                () -> driver2.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) > 0.5) //far distance
                     .whileActiveContinuous(new InstantCommand(() -> {
-                        shooter.setTargetVelocity(closeShooterTarget);
+                        shooter.setTargetVelocity(farShooterTarget);
                     })
                 );
         driver2.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER).whenPressed(  //turn off shooter
@@ -268,7 +256,33 @@ public class AlphaTeleOp extends CommandOpMode {
         new Trigger(
                 () -> driver2.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) > 0.5) //intake
                 .whenActive(new InstantCommand(() -> {
-                            shooter.setTargetVelocity(-300);
+                    driver2.getGamepadButton(GamepadKeys.Button.TRIANGLE).whenPressed(
+                            new InstantCommand(() -> {
+                                farShooterTarget += 20;
+                                gamepad2.rumbleBlips(1);
+                            })
+                    );
+                    driver2.getGamepadButton(GamepadKeys.Button.CROSS).whenPressed(
+                            new InstantCommand(() -> {
+                                farShooterTarget -= 20;
+                                gamepad2.rumbleBlips(1);
+                            })
+                    );
+                        })
+                )
+                .whenInactive(new InstantCommand(() -> {
+                    driver2.getGamepadButton(GamepadKeys.Button.TRIANGLE).whenPressed(
+                            new InstantCommand(() -> {
+                                closeShooterTarget += 20;
+                                gamepad2.rumbleBlips(1);
+                            })
+                    );
+                    driver2.getGamepadButton(GamepadKeys.Button.CROSS).whenPressed(
+                            new InstantCommand(() -> {
+                                closeShooterTarget -= 20;
+                                gamepad2.rumbleBlips(1);
+                            })
+                    );
                         })
                 );
     }

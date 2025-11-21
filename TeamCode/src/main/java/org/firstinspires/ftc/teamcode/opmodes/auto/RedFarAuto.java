@@ -39,7 +39,7 @@ import java.util.ArrayList;
 
 @Config
 @Autonomous(name = "Red 12ball real🦅", group = "angryBirds", preselectTeleOp = "Alpha Teleop")
-public class RedAuto extends CommandOpMode {
+public class RedFarAuto extends CommandOpMode {
     //paths
     private final ArrayList<PathChain> paths = new ArrayList<>();
 
@@ -63,6 +63,7 @@ public class RedAuto extends CommandOpMode {
 
     public void buildPaths(Follower follower) {
         follower.setStartingPose(startingPose);
+        //shoot first
         paths.add(follower
                 .pathBuilder()
                 .addPath(
@@ -72,6 +73,7 @@ public class RedAuto extends CommandOpMode {
                 .build()
         );
 
+        //cycle1
         paths.add(follower
                 .pathBuilder()
                 .addPath(
@@ -98,7 +100,6 @@ public class RedAuto extends CommandOpMode {
                 .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(45))
                 .build()
         );
-        //Cycle 2
 
         paths.add(follower
                 .pathBuilder()
@@ -109,6 +110,7 @@ public class RedAuto extends CommandOpMode {
                 .build()
         );
 
+        //cycle2
         paths.add(follower
                 .pathBuilder()
                 .addPath(
@@ -135,20 +137,21 @@ public class RedAuto extends CommandOpMode {
                 .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(45))
                 .build()
         );
-        //Cycle 3
+
         paths.add(follower
                 .pathBuilder()
                 .addPath(
-                        new BezierLine(new Pose(84,  84), new Pose(95.000, 36.000))
+                        new BezierLine(new Pose(84, 84), new Pose(95, 35))
                 )
                 .setLinearHeadingInterpolation(Math.toRadians(45), Math.toRadians(0))
                 .build()
         );
 
+        //cycle3
         paths.add(follower
                 .pathBuilder()
                 .addPath(
-                        new BezierLine(new Pose(95.000, 36.000), new Pose(140.000, 36.000))
+                        new BezierLine(new Pose(95, 35), new Pose(140, 35))
                 )
                 .setTangentHeadingInterpolation()
                 .build()
@@ -157,7 +160,7 @@ public class RedAuto extends CommandOpMode {
         paths.add(follower
                 .pathBuilder()
                 .addPath(
-                        new BezierLine(new Pose(140.000, 36.000), new Pose(125.000, 36.000))
+                        new BezierLine(new Pose(140, 35), new Pose(125, 35))
                 )
                 .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(0))
                 .build()
@@ -166,16 +169,17 @@ public class RedAuto extends CommandOpMode {
         paths.add(follower
                 .pathBuilder()
                 .addPath(
-                        new BezierLine(new Pose(125.000, 36.000), new Pose(84, 84))
+                        new BezierLine(new Pose(125, 35), new Pose(84, 84))
                 )
                 .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(45))
                 .build()
         );
 
+        //endpos
         paths.add(follower
                 .pathBuilder()
                 .addPath(
-                        new BezierLine(new Pose(84, 84), new Pose(84.000, 108.000))
+                        new BezierLine(new Pose(84, 84), new Pose(84, 108))
                 )
                 .setLinearHeadingInterpolation(Math.toRadians(45), Math.toRadians(0))
                 .build()
@@ -244,8 +248,8 @@ public class RedAuto extends CommandOpMode {
                 new RunCommand(() -> follower.update()),
                 new SequentialCommandGroup(
                         new InstantCommand(() -> {
-                            //shooter.setTargetVelocity(1150);
-                            shooter.setHood(0.56); //Placeholder
+                            shooter.setTargetVelocity(1200);
+                            shooter.setHood(0.45); //Placeholder
                             gate.up();
                             follower.setMaxPower(1);
                             spindexer.setBalls(new RobotConstants.BallColors[] {PURPLE, PURPLE, PURPLE});

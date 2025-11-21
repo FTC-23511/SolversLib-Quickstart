@@ -13,8 +13,8 @@ import com.seattlesolvers.solverslib.hardware.motors.Motor;
 @TeleOp(name = "Shooter pid tuning", group = "tuning")
 public class ShooterPIDTuningOp extends OpMode {
 
-    public static double p = 0.00, i = 0.0, d = 0.0;
-    public static double f = 0.000;
+    public static double p = -0.008, i = 0.0, d = 0.0;
+    public static double f = -0.00052;
     public static double targetVelocity = 000; // ticks per second
 
     Motor shooter;
@@ -29,11 +29,11 @@ public class ShooterPIDTuningOp extends OpMode {
         shooter = new Motor(hardwareMap, "shooter1", Motor.GoBILDA.RPM_312);
         shooter.setRunMode(Motor.RunMode.RawPower);
         shooter.setZeroPowerBehavior(Motor.ZeroPowerBehavior.FLOAT);
-        shooter.setInverted(false);
+        shooter.setInverted(true);
         shooter2 = new Motor(hardwareMap, "shooter2", Motor.GoBILDA.RPM_312);
         shooter2.setRunMode(Motor.RunMode.RawPower);
         shooter2.setZeroPowerBehavior(Motor.ZeroPowerBehavior.FLOAT);
-        shooter2.setInverted(true);
+        shooter2.setInverted(false);
 
         // Initialize custom PIDF controller (same as ShooterSubSystem)
         flywheelController = new PIDFController(p, i, d, f);
