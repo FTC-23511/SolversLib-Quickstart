@@ -24,14 +24,17 @@ import org.firstinspires.ftc.teamcode.commands.MoveSpindexerCommand;
 import org.firstinspires.ftc.teamcode.commands.ScanAndUpdateBallsCommand;
 import org.firstinspires.ftc.teamcode.commands.ScheduleGateCommand;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
+import org.firstinspires.ftc.teamcode.subsystems.CameraSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.ColorSensorsSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.GateSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.IntakeSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.LEDSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.ShooterSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.SpindexerSubsystem;
+import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.function.Supplier;
 
 @TeleOp (name = "Alpha Teleop", group = "!")
@@ -51,6 +54,7 @@ public class AlphaTeleOp extends CommandOpMode {
     private ColorSensorsSubsystem colorSensors;
     private LEDSubsystem led;
     private GateSubsystem gate;
+    private CameraSubsystem camera;
 
     //gamepads
     public GamepadEx driver1;
@@ -124,6 +128,7 @@ public class AlphaTeleOp extends CommandOpMode {
         colorSensors = new ColorSensorsSubsystem(hardwareMap);
         led = new LEDSubsystem(hardwareMap);
         gate = new GateSubsystem(hardwareMap);
+        camera = new CameraSubsystem(hardwareMap);
         voltageSensor = hardwareMap.get(VoltageSensor.class, "Control Hub");
 
         spindexer.set(75);
@@ -131,7 +136,7 @@ public class AlphaTeleOp extends CommandOpMode {
 
         super.reset();
         lastVoltageCheck.reset();
-        register(intake, shooter, spindexer, gate, colorSensors, led);
+        register(intake, shooter, spindexer, gate, colorSensors, led, camera);
 
         //pedro and gamepad wrapper
         follower.startTeleopDrive();
@@ -282,6 +287,8 @@ public class AlphaTeleOp extends CommandOpMode {
 
     @Override
     public void run() {
+        List <AprilTagDetection> detections = camera.detectAprilTags();
+
         //While intake is on, scan color sensors
         if (!intakeState.equals(IntakeState.STOP) && spindexer.availableToSenseColor()) {
             schedule(new ScanAndUpdateBallsCommand(spindexer, colorSensors));
@@ -297,13 +304,18 @@ public class AlphaTeleOp extends CommandOpMode {
             follower.setTeleOpDrive(y / denominator, x / denominator, rx / denominator, true);
         } else {
             if (gamepad1.touchpad_finger_1 && gamepad1.touchpad_finger_2) {
-                double x = -driver1.getLeftX();
-                double y = driver1.getLeftY();
-                double rx = headingPID.calculate(100, 0); //replace 100 (placeholder) with camera april tag x
-                double denominator = Math.max(Math.abs(x) + Math.abs(y) + Math.abs(rx), 1.0);
-                follower.setTeleOpDrive(y / denominator, x / denominator, rx / denominator, true);
                 manualControl = true;
             }
+            double x = -driver1.getLeftX();
+            double y = driver1.getLeftY();
+            double rx = 0;
+            if (camera.detectGoalXDistance(detections) != null) {
+                rx = headingPID.calculate((double) camera.detectGoalXDistance(detections), 0); //replace 100 (placeholder) with camera april tag x
+            } else {
+                rx = -driver1.getRightX() * (slowMode?0.3:1);
+            }
+            double denominator = Math.max(Math.abs(x) + Math.abs(y) + Math.abs(rx), 1.0);
+            follower.setTeleOpDrive(y / denominator, x / denominator, rx / denominator, true);
         }
         follower.update();
 
