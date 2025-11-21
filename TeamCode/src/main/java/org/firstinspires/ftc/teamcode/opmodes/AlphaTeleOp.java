@@ -123,12 +123,13 @@ public class AlphaTeleOp extends CommandOpMode {
         gate = new GateSubsystem(hardwareMap);
         voltageSensor = hardwareMap.get(VoltageSensor.class, "Control Hub");
 
-        spindexer.set(75);
-        shooter.setHood(0.45);
-
         super.reset();
         lastVoltageCheck.reset();
         register(intake, shooter, spindexer, gate, colorSensors, led);
+
+        spindexer.set(75);
+        shooter.setHood(0.45);
+        gate.down();
 
         //pedro and gamepad wrapper
         follower.startTeleopDrive();
@@ -289,6 +290,8 @@ public class AlphaTeleOp extends CommandOpMode {
 
     @Override
     public void run() {
+        gate.down(); //temp fix
+
         //While intake is on, scan color sensors
         if (!intakeState.equals(IntakeState.STOP) && spindexer.availableToSenseColor()) {
             schedule(new ScanAndUpdateBallsCommand(spindexer, colorSensors));

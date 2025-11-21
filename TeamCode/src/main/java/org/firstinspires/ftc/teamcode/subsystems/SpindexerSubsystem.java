@@ -28,15 +28,10 @@ public class SpindexerSubsystem extends SubsystemBase {
 
     private final PIDController pid;
 
-    // Absolute values
-    private double currentDeg = 0;         // unwrapped actual angle
-    private double lastWrappedDeg = 0;     // internal tracker
-    public double offset = 0;
-
-    // IMPORTANT: unbounded target
-    private double targetDeg = 0;
-
     private double output = 0;
+
+    private double continuousPosition = 0;
+    private boolean initialized = false;
 
     public SpindexerSubsystem(HardwareMap hm) {
         spindexer = hm.get(DcMotorEx.class, "spindexer");
@@ -46,80 +41,67 @@ public class SpindexerSubsystem extends SubsystemBase {
 
         spindexer.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
         spindexer.setDirection(DcMotorSimple.Direction.REVERSE);
-
-        // Initialize starting position
-        double initial = getAbsolutePosition360();
-        lastWrappedDeg = initial;
-        currentDeg = initial;
-        targetDeg = initial;
     }
 
     /** Moves spindexer by a number of degrees while keeping direction consistent */
     public void moveSpindexerBy(double deltaDegrees) {
-        targetDeg += deltaDegrees;  // unbounded — preserves direction!
+        pid.setSetPoint(pid.getSetPoint() + deltaDegrees);
     }
+
 
 
     /** Set absolute target (but still unbounded) */
     public void set(double degrees) {
-        double current = currentDeg;
-        double wrappedTarget = degrees % 360;
-
-        // Compute shortest path
-        double diff = wrappedTarget - (current % 360);
-        diff = ((diff + 180) % 360 + 360) % 360 - 180;
-
-        targetDeg = current + diff;
+        pid.setSetPoint(degrees);
     }
 
     @Override
     public void periodic() {
+        double abs = getAbsolutePosition360();
 
-        // Step 1: read 0–360°
-        double wrapped = getAbsolutePosition360();
+        if (!initialized) {
+            continuousPosition = abs;
+            initialized = true;
+        } else {
+            double last = continuousPosition % 360;
+            double diff = abs - last;
 
-        // Step 2: unwrap into continuous range
-        double base = (lastWrappedDeg % 360 + 360) % 360;
-        double delta = wrapped - base;
+            // wrap diff into [-180, 180]
+            diff = ((diff + 180) % 360 + 360) % 360 - 180;
 
-        if (delta > 180) delta -= 360;
-        if (delta < -180) delta += 360;
+            continuousPosition += diff;
+        }
 
-        lastWrappedDeg += delta;
-        currentDeg = lastWrappedDeg;
-
-        // Step 3: PD control on continuous error
-        double error = targetDeg - currentDeg;
-        output = pid.calculate(0, error);
-
-        // Clamp power
-        output = clamp(output, -0.8, 0.8);
-
+        double outputRaw = pid.calculate(continuousPosition);
+        output = clamp(outputRaw, -1, 1);
 
         spindexer.setPower(output);
     }
 
+
     /** Converts analog voltage to 0–360° */
     private double getAbsolutePosition360() {
-        return (absoluteEncoder.getVoltage() / 3.2 * 360 + offset) % 360;
+        return (absoluteEncoder.getVoltage() / 3.2 * 360) % 360;
     }
 
     public double getCurrentPosition() {
-        return currentDeg;
+        return continuousPosition;
     }
+
     public double getWrappedPosition() {
-        return (currentDeg % 360 + 360) % 360;
+        return getAbsolutePosition360();
     }
 
     public double getPIDSetpoint() {
-        return targetDeg;
+        return pid.getSetPoint();
     }
     public double getOutput() {
         return output;
     }
 
-    public boolean isNearTargetPosition() {
-        return Math.abs(targetDeg - currentDeg) < 5;
+    public boolean isNearTargetPosition() { //within 5 deg
+        double error = Math.abs(getCurrentPosition() - getPIDSetpoint());
+        return error < 5;
     }
 
     public boolean isLowVelocity() {
