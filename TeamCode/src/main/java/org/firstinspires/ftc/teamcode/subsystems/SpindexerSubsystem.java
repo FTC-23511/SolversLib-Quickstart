@@ -93,7 +93,7 @@ public class SpindexerSubsystem extends SubsystemBase {
         output = pid.calculate(0, error);
 
         // Clamp power
-        output = clamp(output, -1, 1);
+        output = clamp(output, -0.8, 0.8);
 
 
         spindexer.setPower(output);
