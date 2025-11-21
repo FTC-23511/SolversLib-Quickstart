@@ -45,7 +45,7 @@ public class SpindexerSubsystem extends SubsystemBase {
 
     /** Moves spindexer by a number of degrees while keeping direction consistent */
     public void moveSpindexerBy(double deltaDegrees) {
-        pid.setSetPoint(pid.getSetPoint() + deltaDegrees);
+        pid.setSetPoint(pid.getSetPoint() - deltaDegrees);
     }
 
 
