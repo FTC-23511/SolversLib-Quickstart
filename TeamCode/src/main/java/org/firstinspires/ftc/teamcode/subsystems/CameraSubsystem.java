@@ -28,6 +28,27 @@ public class CameraSubsystem extends SubsystemBase {
     private VisionPortal visionPortal; // Used to manage the video source.
     private AprilTagProcessor myAprilTagProcessor; // Used for managing the AprilTag detection process.
     //private AprilTagDetection myAprilTagDetection = null; // Used to hold the data for a detected AprilTag
+
+    /*
+     Manually set the camera gain and exposure.
+     This can only be called AFTER calling initAprilTag(), and only works for Webcams;
+    */
+    private void  setManualExposure(int exposureMS, int gain) {
+        if (visionPortal == null) {
+            return;
+        }
+
+        ExposureControl exposureControl = visionPortal.getCameraControl(ExposureControl.class);
+        if (exposureControl.getMode() != ExposureControl.Mode.Manual) {
+            exposureControl.setMode(ExposureControl.Mode.Manual);
+            //sleep(50);
+        }
+        exposureControl.setExposure((long)exposureMS, TimeUnit.MILLISECONDS);
+        //sleep(20);
+        GainControl gainControl = visionPortal.getCameraControl(GainControl.class);
+        gainControl.setGain(gain);
+        //sleep(20);
+    }
     public CameraSubsystem(final HardwareMap hardwareMap) {
         boolean targetFound = false; // Set to true when an AprilTag target is detected
 
@@ -43,7 +64,7 @@ public class CameraSubsystem extends SubsystemBase {
     /**
      * Initialize the AprilTag processor.
      */
-    private void initAprilTag(final HardwareMap hardwareMap) {
+    public void initAprilTag(final HardwareMap hardwareMap) {
         // Create the AprilTag processor by using a builder.
         myAprilTagProcessor = new AprilTagProcessor.Builder().build();
 
@@ -173,25 +194,6 @@ public class CameraSubsystem extends SubsystemBase {
         return null;
     }
 
-    /*
-     Manually set the camera gain and exposure.
-     This can only be called AFTER calling initAprilTag(), and only works for Webcams;
-    */
-    private void  setManualExposure(int exposureMS, int gain) {
-        if (visionPortal == null) {
-            return;
-        }
 
-        ExposureControl exposureControl = visionPortal.getCameraControl(ExposureControl.class);
-            if (exposureControl.getMode() != ExposureControl.Mode.Manual) {
-                exposureControl.setMode(ExposureControl.Mode.Manual);
-                //sleep(50);
-            }
-            exposureControl.setExposure((long)exposureMS, TimeUnit.MILLISECONDS);
-            //sleep(20);
-            GainControl gainControl = visionPortal.getCameraControl(GainControl.class);
-            gainControl.setGain(gain);
-            //sleep(20);
-        }
     }
 
