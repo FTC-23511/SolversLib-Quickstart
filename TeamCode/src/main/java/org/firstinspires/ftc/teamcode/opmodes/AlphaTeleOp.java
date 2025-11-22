@@ -174,6 +174,7 @@ public class AlphaTeleOp extends CommandOpMode {
         driver1.getGamepadButton(GamepadKeys.Button.SQUARE).whenPressed(
                 new InstantCommand(() -> {spindexer.moveSpindexerBy(-120);})
         );
+
         driver1.getGamepadButton(GamepadKeys.Button.DPAD_UP).whenPressed(
                 new InstantCommand(() -> {
                     goToSavedPose();
@@ -262,9 +263,15 @@ public class AlphaTeleOp extends CommandOpMode {
                 );
         driver2.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER).whenPressed(  //turn off shooter
                 new InstantCommand(() -> {
-                    shooter.setTargetVelocity(0);
+                    shooter.setTargetVelocity(500);
                     gamepad2.rumbleBlips(1);
                 })
+        );
+        driver2.getGamepadButton(GamepadKeys.Button.LEFT_STICK_BUTTON).whenPressed(
+                new InstantCommand(() -> shooter.setTargetVelocity(0))
+        );
+        driver2.getGamepadButton(GamepadKeys.Button.RIGHT_STICK_BUTTON).whenPressed(
+                new InstantCommand(() -> shooter.setTargetVelocity(0))
         );
         new Trigger(
                 () -> driver2.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) > 0.5) //intake
