@@ -167,10 +167,10 @@ public class AlphaTeleOp extends CommandOpMode {
                 })
         );
         driver1.getGamepadButton(GamepadKeys.Button.CIRCLE).whenPressed(
-                new MoveSpindexerCommand(spindexer, gate, 1, true)
+                new InstantCommand(() -> {spindexer.moveSpindexerBy(120);})
         );
         driver1.getGamepadButton(GamepadKeys.Button.SQUARE).whenPressed(
-                new MoveSpindexerCommand(spindexer, gate, -1, true)
+                new InstantCommand(() -> {spindexer.moveSpindexerBy(-120);})
         );
         driver1.getGamepadButton(GamepadKeys.Button.DPAD_UP).whenPressed(
                 new InstantCommand(() -> {
