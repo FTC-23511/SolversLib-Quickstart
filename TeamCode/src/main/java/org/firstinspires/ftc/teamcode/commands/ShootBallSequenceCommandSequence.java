@@ -14,6 +14,7 @@ public class ShootBallSequenceCommandSequence extends SequentialCommandGroup {
     public ShootBallSequenceCommandSequence(ShooterSubsystem shooterSubsystem, SpindexerSubsystem spindexerSubsystem, GateSubsystem gateSubsystem, RobotConstants.BallColors[] targetBallSequence) {
         addCommands(
                 new InstantCommand(gateSubsystem::down), //redundant, for safety b/c gate should already be up.
+                new WaitCommand(500),
                 new MoveSpindexerCommand(spindexerSubsystem, gateSubsystem, 1, true),
                 new MoveSpindexerCommand(spindexerSubsystem, gateSubsystem, 1, true),
                 new MoveSpindexerCommand(spindexerSubsystem, gateSubsystem, 1, true),
