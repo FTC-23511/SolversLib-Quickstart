@@ -16,15 +16,12 @@ import com.seattlesolvers.solverslib.command.CommandOpMode;
 import com.seattlesolvers.solverslib.command.InstantCommand;
 import com.seattlesolvers.solverslib.command.SelectCommand;
 import com.seattlesolvers.solverslib.command.button.Trigger;
-import com.seattlesolvers.solverslib.controller.PIDController;
 import com.seattlesolvers.solverslib.controller.PIDFController;
 import com.seattlesolvers.solverslib.gamepad.GamepadEx;
 import com.seattlesolvers.solverslib.gamepad.GamepadKeys;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.RobotConstants.*;
-import org.firstinspires.ftc.teamcode.commands.MoveSpindexerCommand;
-import org.firstinspires.ftc.teamcode.commands.ScanAndUpdateBallsCommand;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 import org.firstinspires.ftc.teamcode.subsystems.CameraSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.ColorSensorsSubsystem;
@@ -41,8 +38,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.function.Supplier;
 
-@TeleOp (name = "Alpha Teleop", group = "!")
-public class AlphaTeleOp extends CommandOpMode {
+@TeleOp (name = "Beta Teleop", group = "!")
+public class BetaTeleOp extends CommandOpMode {
     public Motifs motifs = PPG;
 
     //pedro
