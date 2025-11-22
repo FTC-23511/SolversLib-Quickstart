@@ -83,7 +83,7 @@ public class Blue12Auto extends CommandOpMode {
                 .addPath(
                         new BezierLine(new Pose(91, 84).mirror(), new Pose(96, 82.000).mirror())
                 )
-                .setLinearHeadingInterpolation(Math.toRadians(131), Math.toRadians(176))
+                .setLinearHeadingInterpolation(Math.toRadians(131), Math.toRadians(180))
                 .build()
         );
 
@@ -93,7 +93,7 @@ public class Blue12Auto extends CommandOpMode {
                 .addPath(
                         new BezierLine(new Pose(96, 82.000).mirror(), new Pose(120.000, 82.000).mirror())
                 )
-                .setLinearHeadingInterpolation(Math.toRadians(176), Math.toRadians(176))
+                .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(180))
                 .build()
         );
 
@@ -103,7 +103,7 @@ public class Blue12Auto extends CommandOpMode {
                 .addPath(
                         new BezierLine(new Pose(120, 82).mirror(), new Pose(91, 84).mirror())
                 )
-                .setLinearHeadingInterpolation(Math.toRadians(176), Math.toRadians(131))
+                .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(131))
                 .build()
         );
 
@@ -113,7 +113,7 @@ public class Blue12Auto extends CommandOpMode {
                 .addPath(
                         new BezierLine(new Pose(91,  84).mirror(), new Pose(91, 55).mirror())
                 )
-                .setLinearHeadingInterpolation(Math.toRadians(131), Math.toRadians(176))
+                .setLinearHeadingInterpolation(Math.toRadians(131), Math.toRadians(180))
                 .build()
         );
 
@@ -124,7 +124,7 @@ public class Blue12Auto extends CommandOpMode {
                 .addPath(
                         new BezierLine(new Pose(91, 55).mirror(), new Pose(130.000, 55).mirror())
                 )
-                .setLinearHeadingInterpolation(Math.toRadians(176), Math.toRadians(176))
+                .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(180))
                 .build()
         );
 
@@ -134,7 +134,7 @@ public class Blue12Auto extends CommandOpMode {
                 .addPath(
                         new BezierLine(new Pose(130.000, 55).mirror(), new Pose(115.000, 55).mirror())
                 )
-                .setLinearHeadingInterpolation(Math.toRadians(176), Math.toRadians(176))
+                .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(180))
                 .build()
         );
 
@@ -144,7 +144,7 @@ public class Blue12Auto extends CommandOpMode {
                 .addPath(
                         new BezierLine(new Pose(115.000, 55).mirror(), new Pose(91, 84).mirror())
                 )
-                .setLinearHeadingInterpolation(Math.toRadians(176), Math.toRadians(129))
+                .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(129))
                 .build()
         );
 
@@ -154,7 +154,7 @@ public class Blue12Auto extends CommandOpMode {
                 .addPath(
                         new BezierLine(new Pose(91, 84).mirror(), new Pose(91, 31).mirror())
                 )
-                .setLinearHeadingInterpolation(Math.toRadians(129), Math.toRadians(176))
+                .setLinearHeadingInterpolation(Math.toRadians(129), Math.toRadians(180))
                 .build()
         );
 
@@ -165,7 +165,7 @@ public class Blue12Auto extends CommandOpMode {
                 .addPath(
                         new BezierLine(new Pose(91, 31).mirror(), new Pose(130, 31).mirror())
                 )
-                .setLinearHeadingInterpolation(Math.toRadians(176), Math.toRadians(176))
+                .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(180))
                 .build()
         );
 
@@ -175,7 +175,7 @@ public class Blue12Auto extends CommandOpMode {
                 .addPath(
                         new BezierLine(new Pose(130, 31).mirror(), new Pose(125, 31).mirror())
                 )
-                .setLinearHeadingInterpolation(Math.toRadians(176), Math.toRadians(176))
+                .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(180))
                 .build()
         );
 
@@ -185,7 +185,7 @@ public class Blue12Auto extends CommandOpMode {
                 .addPath(
                         new BezierLine(new Pose(125, 31).mirror(), new Pose(91, 84).mirror())
                 )
-                .setLinearHeadingInterpolation(Math.toRadians(176), Math.toRadians(131))
+                .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(131))
                 .build()
         );
 
@@ -263,7 +263,7 @@ public class Blue12Auto extends CommandOpMode {
                 new RunCommand(() -> follower.update()),
                 new SequentialCommandGroup(
                         new InstantCommand(() -> {
-                            shooter.setTargetVelocity(1250);
+                            shooter.setTargetVelocity(1220);
                             shooter.setHood(0.45); //Placeholder
                             gate.down();
                             follower.setMaxPower(0.8);
