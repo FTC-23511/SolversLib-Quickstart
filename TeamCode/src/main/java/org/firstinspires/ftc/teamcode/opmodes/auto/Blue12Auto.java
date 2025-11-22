@@ -54,7 +54,7 @@ public class Blue12Auto extends CommandOpMode {
     private Follower follower;
 
     //update starting pose
-    public static Pose startingPose = new Pose(122.361,121.175,Math.toRadians(131)).mirror(); //find actual statring pos
+    public static Pose startingPose = new Pose(122.361,121.175,Math.toRadians(49)).mirror(); //find actual statring pos
     private IntakeSubsystem intake;
     private ShooterSubsystem shooter;
     private SpindexerSubsystem spindexer;
