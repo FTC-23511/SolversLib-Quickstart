@@ -1,0 +1,170 @@
+package org.firstinspires.ftc.teamcode.opmodes.tuning;
+
+import static com.seattlesolvers.solverslib.util.MathUtils.clamp;
+
+import android.annotation.SuppressLint;
+
+import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.config.Config;
+import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
+import com.pedropathing.follower.Follower;
+import com.pedropathing.geometry.Pose;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.util.ElapsedTime;
+import com.seattlesolvers.solverslib.command.CommandOpMode;
+import com.seattlesolvers.solverslib.command.InstantCommand;
+import com.seattlesolvers.solverslib.controller.PIDFController;
+import com.seattlesolvers.solverslib.gamepad.GamepadEx;
+import com.seattlesolvers.solverslib.gamepad.GamepadKeys;
+
+import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
+import org.firstinspires.ftc.teamcode.subsystems.CameraSubsystem;
+import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
+import org.firstinspires.ftc.vision.VisionPortal;
+import org.firstinspires.ftc.vision.apriltag.AprilTagGameDatabase;
+import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
+
+import java.util.List;
+
+@Config
+@TeleOp (name = "Drivetrain PID Tuning", group = "tuning")
+public class TeleopDrivetrainPIDTuningOp extends CommandOpMode {
+    //pedro
+    private Follower follower;
+    public static Pose startingPose = new Pose(0,0,0);
+    public static Pose savedPose = new Pose(0,0,0);
+
+    private CameraSubsystem camera;
+
+    //gamepads
+    public GamepadEx driver1;
+    public GamepadEx driver2;
+
+    //vision
+    boolean cameraInitialized = false;
+
+    private boolean manualControl = true;
+
+    //looptime
+    private ElapsedTime timer = new ElapsedTime();
+
+    //spindexer adjustment
+    private int spindexerAdjustmentCount = 0;
+
+
+
+    //point to april tag
+    public static double headingkP = -0.02;
+    public static double headingkD = 0;
+    public static double headingkF = 0.5;
+    PIDFController headingPID = new PIDFController(headingkP, 0, headingkD, headingkF);
+    double lastSeenX;
+    double headingVector;
+
+    @Override
+    public void initialize () {
+        //systems and pedro
+        follower = Constants.createFollower(hardwareMap);
+        follower.setStartingPose(startingPose);
+        follower.setMaxPower(1.0);
+        camera = new CameraSubsystem();
+
+        super.reset();
+        register(camera);
+
+        telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
+
+        //pedro and gamepad wrapper
+        follower.startTeleopDrive();
+        driver1 = new GamepadEx(gamepad1);
+        driver2 = new GamepadEx(gamepad2);
+//        pathChainSupplier = () -> follower.pathBuilder() //Lazy Curve Generation
+//                .addPath(new Path(new BezierLine(follower::getPose, savedPose)))
+//                .setHeadingInterpolation(HeadingInterpolator.linearFromPoint(follower::getHeading, savedPose::getHeading, 0.8))
+//                .build();
+        //command binding
+        driver1.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER).whenPressed(
+                new InstantCommand(() -> {
+                    gamepad1.rumbleBlips(3);
+                    manualControl = false;
+                })
+        );
+    }
+
+    @SuppressLint("DefaultLocale")
+    @Override
+    public void run() {
+        if (!cameraInitialized) {
+            camera.setAprilTagProcessor(new AprilTagProcessor.Builder()
+                    // The following default settings are available to un-comment and edit as needed.
+                    .setDrawAxes(true)
+                    .setDrawCubeProjection(true)
+                    .setDrawTagOutline(true)
+                    //.setTagFamily(AprilTagProcessor.TagFamily.TAG_36h11)
+                    .setTagLibrary(AprilTagGameDatabase.getDecodeTagLibrary())
+                    //.setOutputUnits(DistanceUnit.INCH, AngleUnit.DEGREES)
+                    // == CAMERA CALIBRATION ==
+                    // If you do not manually specify calibration parameters, the SDK will attempt
+                    // to load a predefined calibration for your camera.
+                    //.setLensIntrinsics(578.272, 578.272, 402.145, 221.506)
+                    // ... these parameters are fx, fy, cx, cy.
+                    .build());
+            camera.setVisionPortal(new VisionPortal.Builder()
+                    .setCamera(hardwareMap.get(WebcamName.class, "Webcam 1"))
+                    .addProcessor(camera.getAprilTagProcessor())
+                    .build()
+            );
+            sleep(400);
+//            camera.initializeSettings();  // Use low exposure time to reduce motion
+            cameraInitialized = true;
+        }
+
+
+        //Drivetrain code
+        headingPID.setP(headingkP);
+        headingPID.setF(headingkF);
+        headingPID.setD(headingkD);
+        if (manualControl) {
+            double x = -driver1.getLeftX();
+            double y = driver1.getLeftY();
+            double rx = -driver1.getRightX() * (1);
+            double denominator = Math.max(Math.abs(x) + Math.abs(y) + Math.abs(rx), 1.0);
+            follower.setTeleOpDrive(y / denominator, x / denominator, rx / denominator, true);
+        } else {
+            List<AprilTagDetection> detections = camera.detectAprilTags();
+            if (gamepad1.touchpad_finger_1 && gamepad1.touchpad_finger_2) {
+                manualControl = true;
+            }
+            double x = -driver1.getLeftX();
+            double y = driver1.getLeftY();
+            double rx = 0;
+            if (camera.detectGoalXDistance(detections) != null) {
+                lastSeenX = (double) camera.detectGoalXDistance(detections);
+                headingVector = -headingPID.calculate(lastSeenX, 0);
+                rx = headingVector; //replace 100 (placeholder) with camera april tag x
+            } else {
+                rx = -driver1.getRightX() * (1);
+            }
+            double denominator = Math.max(Math.abs(x) + Math.abs(y) + Math.abs(rx), 1.0);
+            follower.setTeleOpDrive(y / denominator, x / denominator, rx / denominator, true);
+        }
+        follower.update();
+        telemetry.addData("target", 0);
+        telemetry.addData("last seen goal x pos ", lastSeenX);
+        telemetry.addData("last pid power to heading", headingVector);
+
+
+        telemetry.addData("current pos ", String.format("X: %8.2f, Y: %8.2f", follower.getPose().getX(), follower.getPose().getY()));
+        telemetry.addData("current heading ", String.format("Heading: %.4f", follower.getPose().getHeading()));
+        telemetry.addData("t value ", follower.getCurrentTValue());
+        telemetry.addData("!follower.isBusy() || (gamepad1.touchpad_finger_1 && gamepad1.touchpad_finger_2)", !follower.isBusy() || (gamepad1.touchpad_finger_1 && gamepad1.touchpad_finger_2));
+
+
+        timer.reset();
+        telemetry.update();
+        super.run();
+
+
+    }
+}

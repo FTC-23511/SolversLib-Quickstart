@@ -1,6 +1,5 @@
 package org.firstinspires.ftc.teamcode.subsystems;
 
-import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.seattlesolvers.solverslib.command.SubsystemBase;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.ExposureControl;
@@ -18,7 +17,7 @@ public class CameraSubsystem extends SubsystemBase {
     private static final List<Integer> GOAL_TAG_IDS = Arrays.asList(20, 24); // Tags we should detect for goal
     private VisionPortal visionPortal; // Used to manage the video source.
     private AprilTagProcessor aprilTagProcessor; // Used for managing the AprilTag detection process.
-    private void  setManualExposure(int exposureMS, int gain) {
+    private void setManualExposure(int exposureMS, int gain, VisionPortal visionPortal) {
         if (visionPortal == null) {
             return;
         }
@@ -35,7 +34,7 @@ public class CameraSubsystem extends SubsystemBase {
         //sleep(20);
     }
     public CameraSubsystem() {
-        setManualExposure(6, 250);  // Use low exposure time to reduce motion blur
+
     }
 
     public AprilTagProcessor getAprilTagProcessor() {
@@ -143,6 +142,12 @@ public class CameraSubsystem extends SubsystemBase {
         return null;
     }
 
-
+    /**
+     * !Must be ran after apriltagprocessor and vision portal are passed in!
+     */
+    public void initializeSettings() {
+        setManualExposure(6, 250, this.visionPortal);  // Use low exposure time to reduce motion blur
+        this.aprilTagProcessor.setDecimation(3);
+    }
 }
 

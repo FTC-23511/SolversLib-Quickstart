@@ -3,6 +3,8 @@ package org.firstinspires.ftc.teamcode.opmodes;
 import static com.seattlesolvers.solverslib.util.MathUtils.clamp;
 import static org.firstinspires.ftc.teamcode.RobotConstants.Motifs.*;
 
+import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.geometry.Pose;
 import com.pedropathing.paths.PathChain;
@@ -14,6 +16,7 @@ import com.seattlesolvers.solverslib.command.CommandOpMode;
 import com.seattlesolvers.solverslib.command.InstantCommand;
 import com.seattlesolvers.solverslib.command.SelectCommand;
 import com.seattlesolvers.solverslib.command.button.Trigger;
+import com.seattlesolvers.solverslib.controller.PIDController;
 import com.seattlesolvers.solverslib.gamepad.GamepadEx;
 import com.seattlesolvers.solverslib.gamepad.GamepadKeys;
 
@@ -29,10 +32,12 @@ import org.firstinspires.ftc.teamcode.subsystems.IntakeSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.LEDSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.ShooterSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.SpindexerSubsystem;
+import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.function.Supplier;
 
 @TeleOp (name = "Alpha Teleop", group = "!")
@@ -116,8 +121,13 @@ public class AlphaTeleOp extends CommandOpMode {
         }
     }
 
-    //ShootMotif command
 
+    //point to april tag
+    public static double headingkP = 0.1;
+    public static double headingkD = 0.0001;
+    PIDController headingPID = new PIDController(headingkP, 0, headingkD);
+    double lastSeenX;
+    double headingVector;
 
     @Override
     public void initialize () {
@@ -141,6 +151,8 @@ public class AlphaTeleOp extends CommandOpMode {
         spindexer.set(75);
         shooter.setHood(0.45);
         gate.down();
+
+        telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
         //pedro and gamepad wrapper
         follower.startTeleopDrive();
@@ -183,6 +195,12 @@ public class AlphaTeleOp extends CommandOpMode {
         driver1.getGamepadButton(GamepadKeys.Button.DPAD_DOWN).whenPressed(
                 new InstantCommand(() -> {
                     setSavedPose(follower.getPose());
+                })
+        );
+        driver1.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER).whenPressed(
+                new InstantCommand(() -> {
+                    gamepad1.rumbleBlips(3);
+                    manualControl = false;
                 })
         );
         new Trigger(() -> driver1.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) > 0.5)
@@ -235,21 +253,6 @@ public class AlphaTeleOp extends CommandOpMode {
                     }
                 })
         );
-        /*
-        driver2.getGamepadButton(GamepadKeys.Button.CIRCLE).whenPressed(
-                new InstantCommand(() -> {
-                    spindexer.moveSpindexerBy(60);
-                    spindexerAdjustmentCount += 60;
-                    gamepad2.rumbleBlips(1);
-                })
-        );
-        driver2.getGamepadButton(GamepadKeys.Button.SQUARE).whenPressed(
-                new InstantCommand(() -> {
-                    spindexer.moveSpindexerBy(-60);
-                    spindexerAdjustmentCount -= 60;
-                    gamepad2.rumbleBlips(1);
-                })
-        );*/
         driver2.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER).whenPressed( //close distance
                 new InstantCommand(() -> {
                     shooter.setTargetVelocity(closeShooterTarget);
@@ -330,6 +333,7 @@ public class AlphaTeleOp extends CommandOpMode {
                     .addProcessor(camera.getAprilTagProcessor())
                     .build()
             );
+            camera.initializeSettings();
             cameraInitialized = true;
         }
         gate.down(); //temp fix
@@ -348,14 +352,22 @@ public class AlphaTeleOp extends CommandOpMode {
             double denominator = Math.max(Math.abs(x) + Math.abs(y) + Math.abs(rx), 1.0);
             follower.setTeleOpDrive(y / denominator, x / denominator, rx / denominator, true);
         } else {
-            if (
-                    (Math.abs(follower.getPose().getHeading() - savedPose.getHeading()) < 0.04
-                    && Math.abs(follower.getPose().getX() - savedPose.getX()) < 1
-                    && Math.abs(follower.getPose().getY() - savedPose.getY()) < 1)
-                    || (gamepad1.touchpad_finger_1 && gamepad1.touchpad_finger_2)) {
+            List<AprilTagDetection> detections = camera.detectAprilTags();
+            if (gamepad1.touchpad_finger_1 && gamepad1.touchpad_finger_2) {
                 manualControl = true;
-                follower.startTeleopDrive();
             }
+            double x = -driver1.getLeftX();
+            double y = driver1.getLeftY();
+            double rx = 0;
+            if (camera.detectGoalXDistance(detections) != null) {
+                lastSeenX = (double) camera.detectGoalXDistance(detections);
+                headingVector = -headingPID.calculate(lastSeenX, 0);
+                rx = headingVector; //replace 100 (placeholder) with camera april tag x
+            } else {
+                rx = -driver1.getRightX() * (slowMode?0.3:1);
+            }
+            double denominator = Math.max(Math.abs(x) + Math.abs(y) + Math.abs(rx), 1.0);
+            follower.setTeleOpDrive(y / denominator, x / denominator, rx / denominator, true);
         }
         follower.update();
 
@@ -406,6 +418,11 @@ public class AlphaTeleOp extends CommandOpMode {
         telemetry.addData("spindexer pos ", spindexer.getCurrentPosition());
         telemetry.addData("spindexer tick adjustment degrees ", spindexerAdjustmentCount);
         telemetry.addData("is spindexer ready to read color ", spindexer.availableToSenseColor());
+
+        telemetry.addData("------------------",null);
+
+        telemetry.addData("last seen goal x pos ", lastSeenX);
+        telemetry.addData("last pid power to heading", headingVector);
 
         telemetry.addData("------------------",null);
 
