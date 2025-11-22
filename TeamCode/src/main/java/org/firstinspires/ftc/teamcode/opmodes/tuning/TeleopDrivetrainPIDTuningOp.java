@@ -115,7 +115,8 @@ public class TeleopDrivetrainPIDTuningOp extends CommandOpMode {
                     .addProcessor(camera.getAprilTagProcessor())
                     .build()
             );
-            camera.initializeSettings();  // Use low exposure time to reduce motion blur
+            sleep(400);
+//            camera.initializeSettings();  // Use low exposure time to reduce motion
             cameraInitialized = true;
         }
 
@@ -150,14 +151,12 @@ public class TeleopDrivetrainPIDTuningOp extends CommandOpMode {
         telemetry.addData("last seen goal x pos ", lastSeenX);
         telemetry.addData("last pid power to heading", headingVector);
 
-        telemetry.addData("------------------",null);
 
         telemetry.addData("current pos ", String.format("X: %8.2f, Y: %8.2f", follower.getPose().getX(), follower.getPose().getY()));
         telemetry.addData("current heading ", String.format("Heading: %.4f", follower.getPose().getHeading()));
         telemetry.addData("t value ", follower.getCurrentTValue());
         telemetry.addData("!follower.isBusy() || (gamepad1.touchpad_finger_1 && gamepad1.touchpad_finger_2)", !follower.isBusy() || (gamepad1.touchpad_finger_1 && gamepad1.touchpad_finger_2));
 
-        telemetry.addData("------------------",null);
 
         timer.reset();
         telemetry.update();
