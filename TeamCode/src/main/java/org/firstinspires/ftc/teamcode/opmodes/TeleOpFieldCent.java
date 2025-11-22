@@ -1,7 +1,9 @@
 package org.firstinspires.ftc.teamcode.opmodes;
 
 import static com.seattlesolvers.solverslib.util.MathUtils.clamp;
-import static org.firstinspires.ftc.teamcode.RobotConstants.Motifs.*;
+import static org.firstinspires.ftc.teamcode.RobotConstants.Motifs.GPP;
+import static org.firstinspires.ftc.teamcode.RobotConstants.Motifs.PGP;
+import static org.firstinspires.ftc.teamcode.RobotConstants.Motifs.PPG;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
@@ -21,7 +23,7 @@ import com.seattlesolvers.solverslib.gamepad.GamepadEx;
 import com.seattlesolvers.solverslib.gamepad.GamepadKeys;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
-import org.firstinspires.ftc.teamcode.RobotConstants.*;
+import org.firstinspires.ftc.teamcode.RobotConstants.Motifs;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 import org.firstinspires.ftc.teamcode.subsystems.CameraSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.ColorSensorsSubsystem;
@@ -30,23 +32,24 @@ import org.firstinspires.ftc.teamcode.subsystems.IntakeSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.LEDSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.ShooterSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.SpindexerSubsystem;
-import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 import org.firstinspires.ftc.vision.VisionPortal;
+import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.function.Supplier;
 
-@TeleOp (name = "Beta Teleop", group = "!")
-public class BetaTeleOp extends CommandOpMode {
+@TeleOp (name = "Teleop Field Centric", group = "!")
+public class TeleOpFieldCent extends CommandOpMode {
     public Motifs motifs = PPG;
 
     //pedro
     private Follower follower;
-    public static Pose startingPose = new Pose(0,0,0);
+    public static Pose startingPose = (Pose) blackboard.getOrDefault("endpose", new Pose(0,0,0));
     public static Pose savedPose = new Pose(0,0,0);
     private Supplier<PathChain> pathChainSupplier;
+    private double fieldOffset = 0;  // degrees
+
 
     //subsystems
     private IntakeSubsystem intake;
@@ -92,6 +95,7 @@ public class BetaTeleOp extends CommandOpMode {
 
     //looptime
     private ElapsedTime timer = new ElapsedTime();
+    private ElapsedTime totalTimer = new ElapsedTime();
 
     //spindexer adjustment
     private int spindexerAdjustmentCount = 0;
@@ -202,6 +206,13 @@ public class BetaTeleOp extends CommandOpMode {
                     manualControl = false;
                 })
         );
+        driver1.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER).whenReleased(
+                new InstantCommand(() -> {
+                    gamepad1.rumbleBlips(1);
+                    manualControl = true;
+                })
+        );
+
         new Trigger(() -> driver1.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) > 0.5)
                 .whileActiveContinuous(new InstantCommand(() -> slowMode = true))
                 .whenInactive(new InstantCommand(() -> slowMode = false));
@@ -269,12 +280,13 @@ public class BetaTeleOp extends CommandOpMode {
                     gamepad2.rumbleBlips(1);
                 })
         );
-        driver2.getGamepadButton(GamepadKeys.Button.LEFT_STICK_BUTTON).whenPressed(
-                new InstantCommand(() -> shooter.setTargetVelocity(0))
-        );
-        driver2.getGamepadButton(GamepadKeys.Button.RIGHT_STICK_BUTTON).whenPressed(
-                new InstantCommand(() -> shooter.setTargetVelocity(0))
-        );
+        // Driver 2: rotate field-centric frame by ±90 degrees
+        driver2.getGamepadButton(GamepadKeys.Button.LEFT_STICK_BUTTON)
+                .whenPressed(new InstantCommand(() -> fieldOffset += Math.toRadians(90)));
+
+        driver2.getGamepadButton(GamepadKeys.Button.RIGHT_STICK_BUTTON)
+                .whenPressed(new InstantCommand(() -> fieldOffset -= Math.toRadians(90)));
+
         new Trigger(
                 () -> driver2.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) > 0.5) //intake
                 .whenActive(new InstantCommand(() -> {
@@ -339,11 +351,21 @@ public class BetaTeleOp extends CommandOpMode {
 
         //Drivetrain code
         if (manualControl) {
+
             double x = -driver1.getLeftX();
             double y = driver1.getLeftY();
             double rx = -driver1.getRightX() * (slowMode?0.3:1);
-            double denominator = Math.max(Math.abs(x) + Math.abs(y) + Math.abs(rx), 1.0);
-            follower.setTeleOpDrive(y / denominator, x / denominator, rx / denominator, true);
+            // rotate driver input by the fieldOffset
+            double rotatedX =  x * Math.cos(fieldOffset) - y * Math.sin(fieldOffset);
+            double rotatedY =  x * Math.sin(fieldOffset) + y * Math.cos(fieldOffset);
+
+            double denominator = Math.max(Math.abs(rotatedX) + Math.abs(rotatedY) + Math.abs(rx), 1.0);
+
+            // send rotated inputs
+            follower.setTeleOpDrive(rotatedY / denominator, rotatedX / denominator, rx / denominator, false);
+
+//            double denominator = Math.max(Math.abs(x) + Math.abs(y) + Math.abs(rx), 1.0);
+//            follower.setTeleOpDrive(y / denominator, x / denominator, rx / denominator, false);
         } else {
             List<AprilTagDetection> detections = camera.detectAprilTags();
             cameraReads++;
@@ -353,6 +375,8 @@ public class BetaTeleOp extends CommandOpMode {
             double x = -driver1.getLeftX();
             double y = driver1.getLeftY();
             double rx = 0;
+            double rotatedX =  x * Math.cos(fieldOffset) - y * Math.sin(fieldOffset);
+            double rotatedY =  x * Math.sin(fieldOffset) + y * Math.cos(fieldOffset);
             if (camera.detectGoalXDistance(detections) != null) {
                 lastSeenX = (double) camera.detectGoalXDistance(detections);
                 headingVector = -headingPID.calculate(lastSeenX, -8);
@@ -361,7 +385,7 @@ public class BetaTeleOp extends CommandOpMode {
                 rx = -driver1.getRightX() * (slowMode?0.3:1);
             }
             double denominator = Math.max(Math.abs(x) + Math.abs(y) + Math.abs(rx), 1.0);
-            follower.setTeleOpDrive(y / denominator, x / denominator, rx / denominator, true);
+            follower.setTeleOpDrive(rotatedY / denominator, x / denominator, rotatedX / denominator, false);
         }
         follower.update();
 
@@ -377,21 +401,17 @@ public class BetaTeleOp extends CommandOpMode {
                 led.setColor(LEDSubsystem.LEDState.GREEN);
             }
         }
-        else if (!intakeState.equals(IntakeState.STOP)){ //intaking mode
-            if (colorSensors.checkIfGreen(3)) {
-                led.setColor(LEDSubsystem.LEDState.GREEN);
-            }
-            else if (colorSensors.checkIfPurple(3)) {
-                led.setColor(LEDSubsystem.LEDState.VIOLET);
-            }
-            else if (colorSensors.checkIfWhite(3)){
-                led.setColor(LEDSubsystem.LEDState.WHITE);
-            }
-            else {
-                led.setColor(LEDSubsystem.LEDState.YELLOW);
-            }
-        } else {
-            led.setColor(LEDSubsystem.LEDState.OFF);
+        else {
+            double t = totalTimer.seconds();
+            double min = 0.3;
+            double max = 0.722;
+            double amplitude = (max - min) / 2.0;
+            double midpoint = (max + min) / 2.0;
+            double speed = 0.6; // cycles per second — increase for faster transitions
+
+            // Oscillate servo position smoothly with sine wave
+            double position = midpoint + amplitude * Math.sin(2 * Math.PI * speed * t);
+            led.setPosition(position);
         }
 
         //Voltage compensation code
@@ -440,35 +460,35 @@ public class BetaTeleOp extends CommandOpMode {
         telemetry.addData("camera reads", cameraReads);
 
         telemetry.addData("------------------","");
-        float[] hsv1 = colorSensors.senseColorsHSV(1);
-        float[] hsv2 = colorSensors.senseColorsHSV(2);
-
-        String color1 = "none";
-        String color2 = "none";
-
-        // Sensor 1
-        if (ColorSensorsSubsystem.colorIsPurple(hsv1)) {
-            color1 = "purple";
-        } else if (ColorSensorsSubsystem.colorIsGreen(hsv1)) {
-            color1 = "green";
-        } else if (ColorSensorsSubsystem.colorIsWhite(hsv1)) {
-            color1 = "white";
-        }
-
-        // Sensor 2
-        if (ColorSensorsSubsystem.colorIsPurple(hsv2)) {
-            color2 = "purple";
-        } else if (ColorSensorsSubsystem.colorIsGreen(hsv2)) {
-            color2 = "green";
-        } else if (ColorSensorsSubsystem.colorIsWhite(hsv2)) {
-            color2 = "white";
-        }
-
-
-
-        // ONE telemetry block, no ifs
-        telemetry.addData("Sensor 1 Left", color1 + " | raw: " + Arrays.toString(hsv1));
-        telemetry.addData("Sensor 2 Right", color2 + " | raw: " + Arrays.toString(hsv2));
+//        float[] hsv1 = colorSensors.senseColorsHSV(1);
+//        float[] hsv2 = colorSensors.senseColorsHSV(2);
+//
+//        String color1 = "none";
+//        String color2 = "none";
+//
+//        // Sensor 1
+//        if (ColorSensorsSubsystem.colorIsPurple(hsv1)) {
+//            color1 = "purple";
+//        } else if (ColorSensorsSubsystem.colorIsGreen(hsv1)) {
+//            color1 = "green";
+//        } else if (ColorSensorsSubsystem.colorIsWhite(hsv1)) {
+//            color1 = "white";
+//        }
+//
+//        // Sensor 2
+//        if (ColorSensorsSubsystem.colorIsPurple(hsv2)) {
+//            color2 = "purple";
+//        } else if (ColorSensorsSubsystem.colorIsGreen(hsv2)) {
+//            color2 = "green";
+//        } else if (ColorSensorsSubsystem.colorIsWhite(hsv2)) {
+//            color2 = "white";
+//        }
+//
+//
+//
+//        // ONE telemetry block, no ifs
+//        telemetry.addData("Sensor 1 Left", color1 + " | raw: " + Arrays.toString(hsv1));
+//        telemetry.addData("Sensor 2 Right", color2 + " | raw: " + Arrays.toString(hsv2));
         telemetry.addData("isAdjustingFar?", isAdjustingFar);
 
 

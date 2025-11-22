@@ -43,7 +43,7 @@ import java.util.ArrayList;
 public class Red12AutoGate extends CommandOpMode {
     //paths
     private final ArrayList<PathChain> paths = new ArrayList<>();
-
+    public Pose currentPose;
     //voltage compensation
     public VoltageSensor voltageSensor;
     double currentVoltage = 14;
@@ -403,10 +403,14 @@ public class Red12AutoGate extends CommandOpMode {
         telemetry.addData("current heading", String.format("Heading: %.4f", follower.getPose().getHeading()));
         telemetry.addData("t value", follower.getCurrentTValue());
         telemetry.addData("------------------",null);
-
+        currentPose = follower.getPose();
         timer.reset();
         telemetry.update();
         super.run();
 
+    }
+    @Override
+    public void end() {
+        blackboard.put("endpose", currentPose);
     }
 }

@@ -14,6 +14,9 @@ public class LEDSubsystem extends SubsystemBase {
         led = hMap.get(Servo.class, "led");
     }
 
+    public void setPosition(double pos) {
+        led.setPosition(pos);
+    }
     public void setColor(LEDState i) {
         ledstate = i;
         if (i == LEDState.OFF) {
