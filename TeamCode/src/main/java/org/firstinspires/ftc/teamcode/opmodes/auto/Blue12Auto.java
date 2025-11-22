@@ -194,7 +194,7 @@ public class Blue12Auto extends CommandOpMode {
         paths.add(follower
                 .pathBuilder()
                 .addPath(
-                        new BezierLine(new Pose(91, 84).mirror(), new Pose(97, 80).mirror())
+                        new BezierLine(new Pose(91, 84).mirror(), new Pose(99, 78).mirror())
                 )
                 .setLinearHeadingInterpolation(Math.toRadians(131), Math.toRadians(131))
                 .build()

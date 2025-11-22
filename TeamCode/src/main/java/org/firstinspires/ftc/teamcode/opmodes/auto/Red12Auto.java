@@ -194,7 +194,7 @@ public class Red12Auto extends CommandOpMode {
         paths.add(follower
                 .pathBuilder()
                 .addPath(
-                        new BezierLine(new Pose(91, 84), new Pose(97, 80))
+                        new BezierLine(new Pose(91, 84), new Pose(99, 78))
                 )
                 .setLinearHeadingInterpolation(Math.toRadians(49), Math.toRadians(49))
                 .build()
