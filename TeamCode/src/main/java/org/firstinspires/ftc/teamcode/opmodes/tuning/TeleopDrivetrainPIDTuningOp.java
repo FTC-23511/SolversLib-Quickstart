@@ -122,6 +122,9 @@ public class TeleopDrivetrainPIDTuningOp extends CommandOpMode {
 
 
         //Drivetrain code
+        headingPID.setP(headingkP);
+        headingPID.setF(headingkF);
+        headingPID.setD(headingkD);
         if (manualControl) {
             double x = -driver1.getLeftX();
             double y = driver1.getLeftY();
