@@ -408,5 +408,6 @@ public class Red12Auto extends CommandOpMode {
     @Override
     public void end() {
         blackboard.put("endpose", currentPose);
+        super.end();
     }
 }

@@ -282,10 +282,10 @@ public class TeleOpFieldCent extends CommandOpMode {
         );
         // Driver 2: rotate field-centric frame by ±90 degrees
         driver2.getGamepadButton(GamepadKeys.Button.LEFT_STICK_BUTTON)
-                .whenPressed(new InstantCommand(() -> fieldOffset += Math.toRadians(90)));
+                .whenPressed(new InstantCommand(() -> fieldOffset += Math.toRadians(45)));
 
         driver2.getGamepadButton(GamepadKeys.Button.RIGHT_STICK_BUTTON)
-                .whenPressed(new InstantCommand(() -> fieldOffset -= Math.toRadians(90)));
+                .whenPressed(new InstantCommand(() -> fieldOffset -= Math.toRadians(45)));
 
         new Trigger(
                 () -> driver2.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) > 0.5) //intake
