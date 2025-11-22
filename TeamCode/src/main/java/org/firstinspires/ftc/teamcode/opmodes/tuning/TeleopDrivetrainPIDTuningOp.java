@@ -141,7 +141,7 @@ public class TeleopDrivetrainPIDTuningOp extends CommandOpMode {
             double rx = 0;
             if (camera.detectGoalXDistance(detections) != null) {
                 lastSeenX = (double) camera.detectGoalXDistance(detections);
-                headingVector = -headingPID.calculate(lastSeenX, 0);
+                headingVector = -headingPID.calculate(lastSeenX, -16);
                 rx = headingVector; //replace 100 (placeholder) with camera april tag x
             } else {
                 rx = -driver1.getRightX() * (1);
@@ -150,7 +150,7 @@ public class TeleopDrivetrainPIDTuningOp extends CommandOpMode {
             follower.setTeleOpDrive(y / denominator, x / denominator, rx / denominator, true);
         }
         follower.update();
-        telemetry.addData("target", 0);
+        telemetry.addData("target", -16);
         telemetry.addData("last seen goal x pos ", lastSeenX);
         telemetry.addData("last pid power to heading", headingVector);
 

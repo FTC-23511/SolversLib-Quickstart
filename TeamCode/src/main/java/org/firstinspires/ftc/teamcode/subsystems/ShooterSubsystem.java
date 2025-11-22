@@ -67,7 +67,7 @@ public class ShooterSubsystem extends SubsystemBase {
         flywheelController.setF(kF);
         flywheelController.setP(kP);
         hood.set(hoodPos);
-        shooter.set(flywheelController.calculate(shooter1.getCorrectedVelocity()));
+        shooter.set(flywheelController.calculate(flywheelController.getSetPoint() != 0 ? shooter1.getCorrectedVelocity() : 0));
     }
 
 }

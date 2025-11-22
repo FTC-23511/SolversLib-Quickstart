@@ -268,7 +268,7 @@ public class Red12Auto extends CommandOpMode {
                 new RunCommand(() -> follower.update()),
                 new SequentialCommandGroup(
                         new InstantCommand(() -> {
-                            shooter.setTargetVelocity(1200);
+                            shooter.setTargetVelocity(1250);
                             shooter.setHood(0.45); //Placeholder
                             gate.down();
                             follower.setMaxPower(0.8);

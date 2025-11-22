@@ -124,9 +124,9 @@ public class AlphaTeleOp extends CommandOpMode {
 
 
     //point to april tag
-    public static double headingkP = -0.02;
+    public static double headingkP = -0.01;
     public static double headingkD = 0;
-    public static double headingkF = 0.5;
+    public static double headingkF = 0;
     PIDFController headingPID = new PIDFController(headingkP, 0, headingkD, headingkF);
     double lastSeenX;
     double headingVector;
@@ -268,7 +268,7 @@ public class AlphaTeleOp extends CommandOpMode {
                 );
         driver2.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER).whenPressed(  //turn off shooter
                 new InstantCommand(() -> {
-                    shooter.setTargetVelocity(500);
+                    shooter.setTargetVelocity(0);
                     gamepad2.rumbleBlips(1);
                 })
         );
@@ -312,6 +312,7 @@ public class AlphaTeleOp extends CommandOpMode {
                 })
         );
     }
+    int cameraReads = 0;
 
     @Override
     public void run() {
@@ -339,12 +340,6 @@ public class AlphaTeleOp extends CommandOpMode {
         }
         gate.down(); //temp fix
 
-        //While intake is on, scan color sensors
-        if (!intakeState.equals(IntakeState.STOP) && spindexer.availableToSenseColor()) {
-            schedule(new ScanAndUpdateBallsCommand(spindexer, colorSensors));
-        }
-
-
         //Drivetrain code
         if (manualControl) {
             double x = -driver1.getLeftX();
@@ -354,6 +349,7 @@ public class AlphaTeleOp extends CommandOpMode {
             follower.setTeleOpDrive(y / denominator, x / denominator, rx / denominator, true);
         } else {
             List<AprilTagDetection> detections = camera.detectAprilTags();
+            cameraReads++;
             if (gamepad1.touchpad_finger_1 && gamepad1.touchpad_finger_2) {
                 manualControl = true;
             }
@@ -362,8 +358,8 @@ public class AlphaTeleOp extends CommandOpMode {
             double rx = 0;
             if (camera.detectGoalXDistance(detections) != null) {
                 lastSeenX = (double) camera.detectGoalXDistance(detections);
-                headingVector = -headingPID.calculate(lastSeenX, 0);
-                rx = headingVector; //replace 100 (placeholder) with camera april tag x
+                headingVector = -headingPID.calculate(lastSeenX, -8);
+                rx = headingVector;
             } else {
                 rx = -driver1.getRightX() * (slowMode?0.3:1);
             }
@@ -443,6 +439,8 @@ public class AlphaTeleOp extends CommandOpMode {
         telemetry.addData("current heading ", String.format("Heading: %.4f", follower.getPose().getHeading()));
         telemetry.addData("t value ", follower.getCurrentTValue());
         telemetry.addData("slowmode ", slowMode);
+        telemetry.addData("camera initialized", cameraInitialized);
+        telemetry.addData("camera reads", cameraReads);
 
         telemetry.addData("------------------","");
         float[] hsv1 = colorSensors.senseColorsHSV(1);
@@ -452,20 +450,20 @@ public class AlphaTeleOp extends CommandOpMode {
         String color2 = "none";
 
         // Sensor 1
-        if (colorSensors.checkIfPurple(1)) {
+        if (ColorSensorsSubsystem.colorIsPurple(hsv1)) {
             color1 = "purple";
-        } else if (colorSensors.checkIfGreen(1)) {
+        } else if (ColorSensorsSubsystem.colorIsGreen(hsv1)) {
             color1 = "green";
-        } else if (colorSensors.checkIfWhite(1)) {
+        } else if (ColorSensorsSubsystem.colorIsWhite(hsv1)) {
             color1 = "white";
         }
 
         // Sensor 2
-        if (colorSensors.checkIfPurple(2)) {
+        if (ColorSensorsSubsystem.colorIsPurple(hsv2)) {
             color2 = "purple";
-        } else if (colorSensors.checkIfGreen(2)) {
+        } else if (ColorSensorsSubsystem.colorIsGreen(hsv2)) {
             color2 = "green";
-        } else if (colorSensors.checkIfWhite(2)) {
+        } else if (ColorSensorsSubsystem.colorIsWhite(hsv2)) {
             color2 = "white";
         }
 
