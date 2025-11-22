@@ -17,6 +17,7 @@ import com.seattlesolvers.solverslib.command.InstantCommand;
 import com.seattlesolvers.solverslib.command.SelectCommand;
 import com.seattlesolvers.solverslib.command.button.Trigger;
 import com.seattlesolvers.solverslib.controller.PIDController;
+import com.seattlesolvers.solverslib.controller.PIDFController;
 import com.seattlesolvers.solverslib.gamepad.GamepadEx;
 import com.seattlesolvers.solverslib.gamepad.GamepadKeys;
 
@@ -123,9 +124,10 @@ public class AlphaTeleOp extends CommandOpMode {
 
 
     //point to april tag
-    public static double headingkP = 0.1;
+    public static double headingkP = -0.02;
     public static double headingkD = 0.0001;
-    PIDController headingPID = new PIDController(headingkP, 0, headingkD);
+    public static double headingkF = 0.5;
+    PIDFController headingPID = new PIDFController(headingkP, 0, headingkD, headingkF);
     double lastSeenX;
     double headingVector;
 
