@@ -39,7 +39,7 @@ import java.util.ArrayList;
 
 
 @Config
-@Autonomous(name = "Red 12ball no gate🦅", group = "angryBirds", preselectTeleOp = "Alpha Teleop")
+@Autonomous(name = "Red 12ball no gate🦅", group = "angryBirds", preselectTeleOp = "Teleop")
 public class Red12Auto extends CommandOpMode {
     //paths
     private final ArrayList<PathChain> paths = new ArrayList<>();
@@ -54,7 +54,7 @@ public class Red12Auto extends CommandOpMode {
     private Follower follower;
 
     //update starting pose
-    public static Pose startingPose = new Pose(123.36079077429983,122.17462932454696,Math.toRadians(45)); //find actual statring pos
+    public static Pose startingPose = new Pose(122.361,121.175,Math.toRadians(45)); //find actual statring pos
     private IntakeSubsystem intake;
     private ShooterSubsystem shooter;
     private SpindexerSubsystem spindexer;
