@@ -54,7 +54,7 @@ public class Blue12Auto extends CommandOpMode {
     private Follower follower;
 
     //update starting pose
-    public static Pose startingPose = new Pose(122.361,121.175,Math.toRadians(49)).mirror(); //find actual statring pos
+    public static Pose startingPose = new Pose(21.639,121.175,Math.toRadians(131)); //find actual statring pos
     private IntakeSubsystem intake;
     private ShooterSubsystem shooter;
     private SpindexerSubsystem spindexer;
@@ -70,7 +70,7 @@ public class Blue12Auto extends CommandOpMode {
         paths.add(follower
                 .pathBuilder()
                 .addPath(
-                        new BezierLine(new Pose(122.361, 121.175).mirror(), new Pose(91, 84).mirror())
+                        new BezierLine(new Pose(21.639, 121.175), new Pose(91, 84).mirror())
                 )
                 .setLinearHeadingInterpolation(Math.toRadians(131), Math.toRadians(131))
                 .build()
