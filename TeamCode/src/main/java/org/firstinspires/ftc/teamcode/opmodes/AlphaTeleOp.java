@@ -335,7 +335,6 @@ public class AlphaTeleOp extends CommandOpMode {
                     .addProcessor(camera.getAprilTagProcessor())
                     .build()
             );
-            camera.initializeSettings();
             cameraInitialized = true;
         }
         gate.down(); //temp fix
@@ -409,24 +408,27 @@ public class AlphaTeleOp extends CommandOpMode {
             shooter.updatePIDVoltage(currentVoltage);
             lastVoltageCheck.reset();
         }
+        if (gamepad1.touchpad_finger_1 && gamepad1.touchpad_finger_2) { //rumble if reset (workaround for driver1 no method ok)
+            gamepad1.rumbleBlips(1);
+        }
 
-        telemetry.addData("BALLS", Arrays.toString(spindexer.getBalls()));
+//        telemetry.addData("BALLS", Arrays.toString(spindexer.getBalls()));
 
         telemetry.addData("Loop Time", timer.milliseconds());
 
-        telemetry.addData("current motif ", motifs);
+//        telemetry.addData("current motif ", motifs);
         telemetry.addData("spindexer output ", spindexer.getOutput());
         telemetry.addData("spindexer setpoint ", spindexer.getPIDSetpoint());
         telemetry.addData("spindexer pos ", spindexer.getCurrentPosition());
         telemetry.addData("spindexer tick adjustment degrees ", spindexerAdjustmentCount);
         telemetry.addData("is spindexer ready to read color ", spindexer.availableToSenseColor());
 
-        telemetry.addData("------------------",null);
+        telemetry.addData("------------------","");
 
         telemetry.addData("last seen goal x pos ", lastSeenX);
         telemetry.addData("last pid power to heading", headingVector);
 
-        telemetry.addData("------------------",null);
+        telemetry.addData("------------------","");
 
         telemetry.addData("shooter close amount ", closeShooterTarget);
         telemetry.addData("shooter far amount ", farShooterTarget);
@@ -435,17 +437,14 @@ public class AlphaTeleOp extends CommandOpMode {
         telemetry.addData("shooter hood pos ", shooter.getHoodPos());
 
 
-        telemetry.addData("------------------",null);
+        telemetry.addData("------------------","");
 
         telemetry.addData("current pos ", String.format("X: %8.2f, Y: %8.2f", follower.getPose().getX(), follower.getPose().getY()));
         telemetry.addData("current heading ", String.format("Heading: %.4f", follower.getPose().getHeading()));
-        telemetry.addData("saved pos ", String.format("X: %8.2f, Y: %8.2f", savedPose.getX(), savedPose.getY()));
-        telemetry.addData("saved heading ", String.format("Heading: %.4f", savedPose.getHeading()));
         telemetry.addData("t value ", follower.getCurrentTValue());
-        telemetry.addData("!follower.isBusy() || (gamepad1.touchpad_finger_1 && gamepad1.touchpad_finger_2)", !follower.isBusy() || (gamepad1.touchpad_finger_1 && gamepad1.touchpad_finger_2));
         telemetry.addData("slowmode ", slowMode);
 
-        telemetry.addData("------------------",null);
+        telemetry.addData("------------------","");
         float[] hsv1 = colorSensors.senseColorsHSV(1);
         float[] hsv2 = colorSensors.senseColorsHSV(2);
 
