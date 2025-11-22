@@ -426,28 +426,28 @@ public class AlphaTeleOp extends CommandOpMode {
         String color2 = "none";
 
         // Sensor 1
-        if (colorSensors.checkIfPurple(1)) {
+        if (ColorSensorsSubsystem.checkIfPurple(hsv1)) {
             color1 = "purple";
-        } else if (colorSensors.checkIfGreen(1)) {
+        } else if (ColorSensorsSubsystem.checkIfGreen(hsv1)) {
             color1 = "green";
-        } else if (colorSensors.checkIfWhite(1)) {
+        } else if (ColorSensorsSubsystem.checkIfWhite(hsv1)) {
             color1 = "white";
         }
 
         // Sensor 2
-        if (colorSensors.checkIfPurple(2)) {
+        if (ColorSensorsSubsystem.checkIfPurple(hsv2)) {
             color2 = "purple";
-        } else if (colorSensors.checkIfGreen(2)) {
+        } else if (ColorSensorsSubsystem.checkIfGreen(hsv2)) {
             color2 = "green";
-        } else if (colorSensors.checkIfWhite(2)) {
+        } else if (ColorSensorsSubsystem.checkIfWhite(hsv2)) {
             color2 = "white";
         }
 
 
 
         // ONE telemetry block, no ifs
-        telemetry.addData("Sensor 1 Left", color1 + " | raw: " + Arrays.toString(hsv1));
-        telemetry.addData("Sensor 2 Right", color2 + " | raw: " + Arrays.toString(hsv2));
+        telemetry.addData("Sensor 1", color1 + " | raw: " + Arrays.toString(hsv1));
+        telemetry.addData("Sensor 2", color2 + " | raw: " + Arrays.toString(hsv2));
         telemetry.addData("isAdjustingFar?", isAdjustingFar);
 
 
