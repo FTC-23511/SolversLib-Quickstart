@@ -201,12 +201,6 @@ public class TeleOp extends CommandOpMode {
                     manualControl = false;
                 })
         );
-        driver1.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER).whenReleased(
-                new InstantCommand(() -> {
-                    gamepad1.rumbleBlips(1);
-                    manualControl = true;
-                })
-        );
         new Trigger(() -> driver1.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) > 0.5)
                 .whileActiveContinuous(new InstantCommand(() -> slowMode = true))
                 .whenInactive(new InstantCommand(() -> slowMode = false));
@@ -352,7 +346,7 @@ public class TeleOp extends CommandOpMode {
         } else {
             List<AprilTagDetection> detections = camera.detectAprilTags();
             cameraReads++;
-            if (gamepad1.touchpad_finger_1 && gamepad1.touchpad_finger_2) {
+            if (gamepad1.touchpad_finger_1) {
                 manualControl = true;
             }
             double x = -driver1.getLeftX();
@@ -402,7 +396,7 @@ public class TeleOp extends CommandOpMode {
             shooter.updatePIDVoltage(currentVoltage);
             lastVoltageCheck.reset();
         }
-        if (gamepad1.touchpad_finger_1 && gamepad1.touchpad_finger_2) { //rumble if reset (workaround for driver1 no method ok)
+        if (gamepad1.touchpad_finger_1) { //rumble if reset (workaround for driver1 no method ok)
             gamepad1.rumbleBlips(1);
         }
 

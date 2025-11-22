@@ -206,12 +206,7 @@ public class TeleOpFieldCent extends CommandOpMode {
                     manualControl = false;
                 })
         );
-        driver1.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER).whenReleased(
-                new InstantCommand(() -> {
-                    gamepad1.rumbleBlips(1);
-                    manualControl = true;
-                })
-        );
+
 
         new Trigger(() -> driver1.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) > 0.5)
                 .whileActiveContinuous(new InstantCommand(() -> slowMode = true))
@@ -369,7 +364,7 @@ public class TeleOpFieldCent extends CommandOpMode {
         } else {
             List<AprilTagDetection> detections = camera.detectAprilTags();
             cameraReads++;
-            if (gamepad1.touchpad_finger_1 && gamepad1.touchpad_finger_2) {
+            if (gamepad1.touchpad_finger_1) {
                 manualControl = true;
             }
             double x = -driver1.getLeftX();
@@ -381,11 +376,10 @@ public class TeleOpFieldCent extends CommandOpMode {
                 lastSeenX = (double) camera.detectGoalXDistance(detections);
                 headingVector = -headingPID.calculate(lastSeenX, -8);
                 rx = headingVector;
-            } else {
-                rx = -driver1.getRightX() * (slowMode?0.3:1);
             }
-            double denominator = Math.max(Math.abs(x) + Math.abs(y) + Math.abs(rx), 1.0);
-            follower.setTeleOpDrive(rotatedY / denominator, x / denominator, rotatedX / denominator, false);
+            rx += -driver1.getRightX() * (slowMode?0.3:1);
+            double denominator = Math.max(Math.abs(rotatedX) + Math.abs(rotatedY) + Math.abs(rx), 1.0);
+            follower.setTeleOpDrive(rotatedY / denominator, rotatedX / denominator, rx / denominator, false);
         }
         follower.update();
 
@@ -421,7 +415,7 @@ public class TeleOpFieldCent extends CommandOpMode {
             shooter.updatePIDVoltage(currentVoltage);
             lastVoltageCheck.reset();
         }
-        if (gamepad1.touchpad_finger_1 && gamepad1.touchpad_finger_2) { //rumble if reset (workaround for driver1 no method ok)
+        if (gamepad1.touchpad_finger_1) { //rumble if reset (workaround for driver1 no method ok)
             gamepad1.rumbleBlips(1);
         }
 

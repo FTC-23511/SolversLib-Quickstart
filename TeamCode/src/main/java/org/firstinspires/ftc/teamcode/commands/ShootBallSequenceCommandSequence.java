@@ -2,6 +2,8 @@ package org.firstinspires.ftc.teamcode.commands;
 
 import com.seattlesolvers.solverslib.command.ConditionalCommand;
 import com.seattlesolvers.solverslib.command.InstantCommand;
+import com.seattlesolvers.solverslib.command.ParallelCommandGroup;
+import com.seattlesolvers.solverslib.command.ParallelRaceGroup;
 import com.seattlesolvers.solverslib.command.SequentialCommandGroup;
 import com.seattlesolvers.solverslib.command.WaitCommand;
 
@@ -13,11 +15,22 @@ import org.firstinspires.ftc.teamcode.subsystems.SpindexerSubsystem;
 public class ShootBallSequenceCommandSequence extends SequentialCommandGroup {
     public ShootBallSequenceCommandSequence(ShooterSubsystem shooterSubsystem, SpindexerSubsystem spindexerSubsystem, GateSubsystem gateSubsystem, RobotConstants.BallColors[] targetBallSequence) {
         addCommands(
-                new InstantCommand(gateSubsystem::down), //redundant, for safety b/c gate should already be up.
+                new InstantCommand(gateSubsystem::down),
                 new WaitCommand(500),
-                new MoveSpindexerCommand(spindexerSubsystem, gateSubsystem, 1, true),
-                new MoveSpindexerCommand(spindexerSubsystem, gateSubsystem, 1, true),
-                new MoveSpindexerCommand(spindexerSubsystem, gateSubsystem, 1, true),
+                new ParallelCommandGroup(
+                        new MoveSpindexerCommand(spindexerSubsystem, gateSubsystem, 1, true),
+                        new WaitCommand(499)
+                ),
+                new ParallelCommandGroup(
+                        new MoveSpindexerCommand(spindexerSubsystem, gateSubsystem, 1, true),
+                        new WaitCommand(499)
+                ),
+                new ParallelCommandGroup(
+                        new MoveSpindexerCommand(spindexerSubsystem, gateSubsystem, 1, true),
+                        new WaitCommand(499)
+                ),
+
+
                 //ball 1 logic
                 /*
                 new ConditionalCommand( //is targetBallSequence[0] loaded?

@@ -54,7 +54,7 @@ public class Red12Auto extends CommandOpMode {
     private Follower follower;
 
     //update starting pose
-    public static Pose startingPose = new Pose(122.361,121.175,Math.toRadians(45)); //find actual statring pos
+    public static Pose startingPose = new Pose(122.361,121.175,Math.toRadians(49)); //find actual statring pos
     private IntakeSubsystem intake;
     private ShooterSubsystem shooter;
     private SpindexerSubsystem spindexer;
@@ -72,7 +72,7 @@ public class Red12Auto extends CommandOpMode {
                 .addPath(
                         new BezierLine(new Pose(122.361, 121.175), new Pose(91, 84))
                 )
-                .setLinearHeadingInterpolation(Math.toRadians(45), Math.toRadians(45))
+                .setLinearHeadingInterpolation(Math.toRadians(49), Math.toRadians(49))
                 .build()
         );
 
@@ -83,7 +83,7 @@ public class Red12Auto extends CommandOpMode {
                 .addPath(
                         new BezierLine(new Pose(91, 84), new Pose(96, 82.000))
                 )
-                .setLinearHeadingInterpolation(Math.toRadians(45), Math.toRadians(0))
+                .setLinearHeadingInterpolation(Math.toRadians(49), Math.toRadians(0))
                 .build()
         );
 
@@ -103,7 +103,7 @@ public class Red12Auto extends CommandOpMode {
                 .addPath(
                         new BezierLine(new Pose(120, 82), new Pose(91, 84))
                 )
-                .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(45))
+                .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(49))
                 .build()
         );
 
@@ -113,7 +113,7 @@ public class Red12Auto extends CommandOpMode {
                 .addPath(
                         new BezierLine(new Pose(91,  84), new Pose(91, 55))
                 )
-                .setLinearHeadingInterpolation(Math.toRadians(45), Math.toRadians(0))
+                .setLinearHeadingInterpolation(Math.toRadians(49), Math.toRadians(0))
                 .build()
         );
 
@@ -144,7 +144,7 @@ public class Red12Auto extends CommandOpMode {
                 .addPath(
                         new BezierLine(new Pose(115.000, 55), new Pose(91, 84))
                 )
-                .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(47))
+                .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(51))
                 .build()
         );
 
@@ -154,7 +154,7 @@ public class Red12Auto extends CommandOpMode {
                 .addPath(
                         new BezierLine(new Pose(91, 84), new Pose(91, 31))
                 )
-                .setLinearHeadingInterpolation(Math.toRadians(47), Math.toRadians(0))
+                .setLinearHeadingInterpolation(Math.toRadians(51), Math.toRadians(0))
                 .build()
         );
 
@@ -185,7 +185,7 @@ public class Red12Auto extends CommandOpMode {
                 .addPath(
                         new BezierLine(new Pose(125, 31), new Pose(91, 84))
                 )
-                .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(45))
+                .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(49))
                 .build()
         );
 
@@ -196,7 +196,7 @@ public class Red12Auto extends CommandOpMode {
                 .addPath(
                         new BezierLine(new Pose(91, 84), new Pose(97, 80))
                 )
-                .setLinearHeadingInterpolation(Math.toRadians(45), Math.toRadians(45))
+                .setLinearHeadingInterpolation(Math.toRadians(49), Math.toRadians(49))
                 .build()
         );
 
@@ -263,7 +263,7 @@ public class Red12Auto extends CommandOpMode {
                 new RunCommand(() -> follower.update()),
                 new SequentialCommandGroup(
                         new InstantCommand(() -> {
-                            shooter.setTargetVelocity(1250);
+                            shooter.setTargetVelocity(1220);
                             shooter.setHood(0.45); //Placeholder
                             gate.down();
                             follower.setMaxPower(0.8);
