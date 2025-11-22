@@ -403,6 +403,7 @@ public class AlphaTeleOp extends CommandOpMode {
         telemetry.addData("------------------",null);
 
         telemetry.addData("shooter close amount ", closeShooterTarget);
+        telemetry.addData("shooter far amount ", farShooterTarget);
         telemetry.addData("shooter target velocity ", shooter.getTargetVelocity());
         telemetry.addData("shooter actual velocity ", shooter.getActualVelocity());
         telemetry.addData("shooter hood pos ", shooter.getHoodPos());
