@@ -1,12 +1,13 @@
 package org.firstinspires.ftc.teamcode.opmodes;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.seattlesolvers.solverslib.command.CommandOpMode;
 import com.seattlesolvers.solverslib.gamepad.GamepadEx;
-
+@Disabled
 @TeleOp(name = "\uD83D\uDC80 Reset Spindexer", group = "!")
 public class ResetSpindexerOp extends CommandOpMode {
     private GamepadEx driver1;
