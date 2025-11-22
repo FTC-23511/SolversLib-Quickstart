@@ -263,7 +263,7 @@ public class Red12Auto extends CommandOpMode {
                 new RunCommand(() -> follower.update()),
                 new SequentialCommandGroup(
                         new InstantCommand(() -> {
-                            shooter.setTargetVelocity(1220);
+                            shooter.setTargetVelocity(1205);
                             shooter.setHood(0.45); //Placeholder
                             gate.down();
                             follower.setMaxPower(0.8);
@@ -271,7 +271,9 @@ public class Red12Auto extends CommandOpMode {
                         }), //start shoot
                         new FollowPathCommand(follower, paths.get(0), true), //drive to shooting pos
                         new ShootBallSequenceCommandSequence(shooter, spindexer, gate, motif), //shoot motif
-                        new InstantCommand(() -> {follower.setMaxPower(1);}),
+                        new InstantCommand(() -> {
+                            follower.setMaxPower(1);
+                            shooter.setTargetVelocity(1220);}),
                         //cycle one
                         new ParallelCommandGroup(
                                 new InstantCommand(() -> {intake.setSpeed(IntakeSubsystem.IntakeState.INTAKING);}),

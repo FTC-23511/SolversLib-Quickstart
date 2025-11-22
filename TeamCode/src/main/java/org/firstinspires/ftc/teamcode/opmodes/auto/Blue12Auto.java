@@ -54,7 +54,7 @@ public class Blue12Auto extends CommandOpMode {
     private Follower follower;
 
     //update starting pose
-    public static Pose startingPose = new Pose(21.639,121.175,Math.toRadians(135)); //find actual statring pos
+    public static Pose startingPose = new Pose(21.639,121.175,Math.toRadians(136)); //find actual statring pos
     private IntakeSubsystem intake;
     private ShooterSubsystem shooter;
     private SpindexerSubsystem spindexer;
@@ -72,7 +72,7 @@ public class Blue12Auto extends CommandOpMode {
                 .addPath(
                         new BezierLine(new Pose(21.639, 121.175), new Pose(91, 89).mirror())
                 )
-                .setLinearHeadingInterpolation(Math.toRadians(135), Math.toRadians(135))
+                .setLinearHeadingInterpolation(Math.toRadians(136), Math.toRadians(136))
                 .build()
         );
 
@@ -83,7 +83,7 @@ public class Blue12Auto extends CommandOpMode {
                 .addPath(
                         new BezierLine(new Pose(91, 89).mirror(), new Pose(96, 87.000).mirror())
                 )
-                .setLinearHeadingInterpolation(Math.toRadians(135), Math.toRadians(180))
+                .setLinearHeadingInterpolation(Math.toRadians(136), Math.toRadians(180))
                 .build()
         );
 
@@ -103,7 +103,7 @@ public class Blue12Auto extends CommandOpMode {
                 .addPath(
                         new BezierLine(new Pose(132, 87).mirror(), new Pose(91, 89).mirror())
                 )
-                .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(135))
+                .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(136))
                 .build()
         );
 
@@ -113,7 +113,7 @@ public class Blue12Auto extends CommandOpMode {
                 .addPath(
                         new BezierLine(new Pose(91,  89).mirror(), new Pose(91, 60).mirror())
                 )
-                .setLinearHeadingInterpolation(Math.toRadians(135), Math.toRadians(180))
+                .setLinearHeadingInterpolation(Math.toRadians(136), Math.toRadians(180))
                 .build()
         );
 
@@ -144,7 +144,7 @@ public class Blue12Auto extends CommandOpMode {
                 .addPath(
                         new BezierLine(new Pose(115.000, 60).mirror(), new Pose(91, 89).mirror())
                 )
-                .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(135))
+                .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(136))
                 .build()
         );
 
@@ -154,7 +154,7 @@ public class Blue12Auto extends CommandOpMode {
                 .addPath(
                         new BezierLine(new Pose(91, 89).mirror(), new Pose(91, 38).mirror())
                 )
-                .setLinearHeadingInterpolation(Math.toRadians(135), Math.toRadians(180))
+                .setLinearHeadingInterpolation(Math.toRadians(136), Math.toRadians(180))
                 .build()
         );
 
@@ -185,7 +185,7 @@ public class Blue12Auto extends CommandOpMode {
                 .addPath(
                         new BezierLine(new Pose(125, 38).mirror(), new Pose(91, 89).mirror())
                 )
-                .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(135))
+                .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(136))
                 .build()
         );
 
@@ -196,7 +196,7 @@ public class Blue12Auto extends CommandOpMode {
                 .addPath(
                         new BezierLine(new Pose(91, 89).mirror(), new Pose(99, 83).mirror())
                 )
-                .setLinearHeadingInterpolation(Math.toRadians(135), Math.toRadians(135))
+                .setLinearHeadingInterpolation(Math.toRadians(136), Math.toRadians(136))
                 .build()
         );
 
@@ -263,7 +263,7 @@ public class Blue12Auto extends CommandOpMode {
                 new RunCommand(() -> follower.update()),
                 new SequentialCommandGroup(
                         new InstantCommand(() -> {
-                            shooter.setTargetVelocity(1220);
+                            shooter.setTargetVelocity(1205);
                             shooter.setHood(0.45); //Placeholder
                             gate.down();
                             follower.setMaxPower(0.8);
