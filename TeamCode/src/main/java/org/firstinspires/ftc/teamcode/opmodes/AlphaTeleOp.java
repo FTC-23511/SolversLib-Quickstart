@@ -125,7 +125,7 @@ public class AlphaTeleOp extends CommandOpMode {
 
     //point to april tag
     public static double headingkP = -0.02;
-    public static double headingkD = 0.0001;
+    public static double headingkD = 0;
     public static double headingkF = 0.5;
     PIDFController headingPID = new PIDFController(headingkP, 0, headingkD, headingkF);
     double lastSeenX;
