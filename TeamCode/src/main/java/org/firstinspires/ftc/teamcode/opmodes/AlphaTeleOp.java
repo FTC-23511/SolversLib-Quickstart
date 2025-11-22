@@ -88,6 +88,9 @@ public class AlphaTeleOp extends CommandOpMode {
     //variable shooter target
     double closeShooterTarget = 1200;
     double farShooterTarget = 1500;
+    //true = controlling far
+    boolean isAdjustingFar;
+
 
     //looptime
     private ElapsedTime timer = new ElapsedTime();
@@ -178,11 +181,12 @@ public class AlphaTeleOp extends CommandOpMode {
                 })
         );
         driver1.getGamepadButton(GamepadKeys.Button.CIRCLE).whenPressed(
-                new MoveSpindexerCommand(spindexer, gate, 1, true)
+                new InstantCommand(() -> {spindexer.moveSpindexerBy(120);})
         );
         driver1.getGamepadButton(GamepadKeys.Button.SQUARE).whenPressed(
-                new MoveSpindexerCommand(spindexer, gate, -1, true)
+                new InstantCommand(() -> {spindexer.moveSpindexerBy(-120);})
         );
+
         driver1.getGamepadButton(GamepadKeys.Button.DPAD_UP).whenPressed(
                 new InstantCommand(() -> {
                     goToSavedPose();
@@ -205,6 +209,7 @@ public class AlphaTeleOp extends CommandOpMode {
         new Trigger(() -> driver1.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) > 0.5)
                 .whileActiveContinuous(new InstantCommand(() -> slowMode = true))
                 .whenInactive(new InstantCommand(() -> slowMode = false));
+
         //Driver 2
         driver2.getGamepadButton(GamepadKeys.Button.CIRCLE).whenPressed(
                 gate::up
@@ -261,42 +266,49 @@ public class AlphaTeleOp extends CommandOpMode {
                 );
         driver2.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER).whenPressed(  //turn off shooter
                 new InstantCommand(() -> {
-                    shooter.setTargetVelocity(0);
+                    shooter.setTargetVelocity(500);
                     gamepad2.rumbleBlips(1);
                 })
+        );
+        driver2.getGamepadButton(GamepadKeys.Button.LEFT_STICK_BUTTON).whenPressed(
+                new InstantCommand(() -> shooter.setTargetVelocity(0))
+        );
+        driver2.getGamepadButton(GamepadKeys.Button.RIGHT_STICK_BUTTON).whenPressed(
+                new InstantCommand(() -> shooter.setTargetVelocity(0))
         );
         new Trigger(
                 () -> driver2.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) > 0.5) //intake
                 .whenActive(new InstantCommand(() -> {
-                    driver2.getGamepadButton(GamepadKeys.Button.TRIANGLE).whenPressed(
-                            new InstantCommand(() -> {
-                                farShooterTarget += 20;
-                                gamepad2.rumbleBlips(1);
-                            })
-                    );
-                    driver2.getGamepadButton(GamepadKeys.Button.CROSS).whenPressed(
-                            new InstantCommand(() -> {
-                                farShooterTarget -= 20;
-                                gamepad2.rumbleBlips(1);
-                            })
-                    );
+                    isAdjustingFar = true;
                         })
                 )
                 .whenInactive(new InstantCommand(() -> {
-                    driver2.getGamepadButton(GamepadKeys.Button.TRIANGLE).whenPressed(
-                            new InstantCommand(() -> {
-                                closeShooterTarget += 20;
-                                gamepad2.rumbleBlips(1);
-                            })
-                    );
-                    driver2.getGamepadButton(GamepadKeys.Button.CROSS).whenPressed(
-                            new InstantCommand(() -> {
-                                closeShooterTarget -= 20;
-                                gamepad2.rumbleBlips(1);
-                            })
-                    );
+                    isAdjustingFar = false;
                         })
                 );
+
+        driver2.getGamepadButton(GamepadKeys.Button.TRIANGLE).whenPressed(
+                new InstantCommand(() -> {
+                    if (isAdjustingFar) {
+                        farShooterTarget += 20;
+                        gamepad2.rumbleBlips(1);
+                    } else{
+                        closeShooterTarget += 20;
+                        gamepad2.rumbleBlips(1);
+                    }
+                })
+        );
+        driver2.getGamepadButton(GamepadKeys.Button.CROSS).whenPressed(
+                new InstantCommand(() -> {
+                    if (isAdjustingFar) {
+                        farShooterTarget -= 20;
+                        gamepad2.rumbleBlips(1);
+                    } else{
+                        closeShooterTarget -= 20;
+                        gamepad2.rumbleBlips(1);
+                    }
+                })
+        );
     }
 
     @Override
@@ -415,6 +427,7 @@ public class AlphaTeleOp extends CommandOpMode {
         telemetry.addData("------------------",null);
 
         telemetry.addData("shooter close amount ", closeShooterTarget);
+        telemetry.addData("shooter far amount ", farShooterTarget);
         telemetry.addData("shooter target velocity ", shooter.getTargetVelocity());
         telemetry.addData("shooter actual velocity ", shooter.getActualVelocity());
         telemetry.addData("shooter hood pos ", shooter.getHoodPos());
@@ -431,25 +444,37 @@ public class AlphaTeleOp extends CommandOpMode {
         telemetry.addData("slowmode ", slowMode);
 
         telemetry.addData("------------------",null);
+        float[] hsv1 = colorSensors.senseColorsHSV(1);
+        float[] hsv2 = colorSensors.senseColorsHSV(2);
 
-        if (colorSensors.checkIfPurple(1) == true) {
-            telemetry.addData("detecting purple, raw value: ", colorSensors.senseColorsHSV(1));
+        String color1 = "none";
+        String color2 = "none";
+
+        // Sensor 1
+        if (colorSensors.checkIfPurple(1)) {
+            color1 = "purple";
+        } else if (colorSensors.checkIfGreen(1)) {
+            color1 = "green";
+        } else if (colorSensors.checkIfWhite(1)) {
+            color1 = "white";
         }
-        else if (colorSensors.checkIfPurple(2) == true) {
-            telemetry.addData("detecting purple, raw value: ", colorSensors.senseColorsHSV(2));
+
+        // Sensor 2
+        if (colorSensors.checkIfPurple(2)) {
+            color2 = "purple";
+        } else if (colorSensors.checkIfGreen(2)) {
+            color2 = "green";
+        } else if (colorSensors.checkIfWhite(2)) {
+            color2 = "white";
         }
-        if (colorSensors.checkIfGreen(1) == true) {
-            telemetry.addData("detecting green, raw value: ", colorSensors.senseColorsHSV(1));
-        }
-        else if (colorSensors.checkIfGreen(2) == true) {
-            telemetry.addData("detecting green, raw value: ", colorSensors.senseColorsHSV(2));
-        }
-        if (colorSensors.checkIfWhite(1) == true) {
-            telemetry.addData("detecting white, raw value: ", colorSensors.senseColorsHSV(1));
-        }
-        else if (colorSensors.checkIfWhite(2) == true) {
-            telemetry.addData("detecting white, raw value: ", colorSensors.senseColorsHSV(2));
-        }
+
+
+
+        // ONE telemetry block, no ifs
+        telemetry.addData("Sensor 1 Left", color1 + " | raw: " + Arrays.toString(hsv1));
+        telemetry.addData("Sensor 2 Right", color2 + " | raw: " + Arrays.toString(hsv2));
+        telemetry.addData("isAdjustingFar?", isAdjustingFar);
+
 
         timer.reset();
         telemetry.update();
