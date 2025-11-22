@@ -259,7 +259,7 @@ public class AlphaTeleOp extends CommandOpMode {
                 );
         driver2.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER).whenPressed(  //turn off shooter
                 new InstantCommand(() -> {
-                    shooter.setTargetVelocity(0);
+                    shooter.setTargetVelocity(600);
                     gamepad2.rumbleBlips(1);
                 })
         );
@@ -295,6 +295,11 @@ public class AlphaTeleOp extends CommandOpMode {
                     );
                         })
                 );
+        //set to 0
+        driver2.getGamepadButton(GamepadKeys.Button.LEFT_STICK_BUTTON).whenPressed(
+                new InstantCommand(() -> shooter.setTargetVelocity(0))
+        );
+
     }
 
     @Override
