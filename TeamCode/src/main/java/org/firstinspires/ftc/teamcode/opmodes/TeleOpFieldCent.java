@@ -384,7 +384,10 @@ public class TeleOpFieldCent extends CommandOpMode {
         follower.update();
 
         //LED Code
-        if (shooter.getActualVelocity() > 300) { //shooting mode
+        if (intakeState == IntakeState.FORWARD) {
+            led.setColor(LEDSubsystem.LEDState.WHITE);
+        }
+        else if (shooter.getActualVelocity() > 300) { //shooting mode
             if (shooter.getActualVelocity() - shooter.getTargetVelocity() < -30) {
                 led.setColor(LEDSubsystem.LEDState.RED);
             }
