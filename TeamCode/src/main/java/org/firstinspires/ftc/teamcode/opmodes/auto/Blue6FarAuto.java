@@ -39,17 +39,24 @@ import org.firstinspires.ftc.teamcode.subsystems.SpindexerSubsystem;
 public class Blue6FarAuto extends CommandOpMode {
     //paths
     public static class Paths {
-
+        public PathChain to69Deg;
         public PathChain toHpZone;
         public PathChain grabHpBalls;
         public PathChain returnToFarZone;
         public PathChain leaveZone;
 
         public Paths(Follower follower) {
+            to69Deg = follower
+                    .pathBuilder()
+                    .addPath(
+                            new BezierLine(new Pose(87.000, 8.294).mirror(), new Pose(86.000, 18.000).mirror())
+                    )
+                    .setConstantHeadingInterpolation(Math.toRadians(180-69))
+                    .build();
             toHpZone = follower
                     .pathBuilder()
                     .addPath(
-                            new BezierLine(new Pose(87.000, 8.294).mirror(), new Pose(129.882, 9.882).mirror())
+                            new BezierLine(new Pose(86.000, 18.000).mirror(), new Pose(129.882, 9.882).mirror())
                     )
                     .setTangentHeadingInterpolation()
                     .build();
@@ -102,31 +109,11 @@ public class Blue6FarAuto extends CommandOpMode {
     private ColorSensorsSubsystem colorsensor;
     private GateSubsystem gate;
     private LEDSubsystem led;
-    PathChain shimmy;
     public void buildPaths(Follower follower) {
         follower.setStartingPose(startingPose);
         paths = new Paths(follower);
     }
 
-    private SequentialCommandGroup intakeArtifacts() {
-        return new SequentialCommandGroup(
-                new InstantCommand(() -> intake.set(IntakeSubsystem.IntakeState.INTAKING)),
-                new ParallelRaceGroup(
-                        new WaitForColorCommand(colorsensor),
-                        new WaitCommand(1500)
-                ),
-                new MoveSpindexerCommand(spindexer, gate, 1, true),
-                new ParallelRaceGroup(
-                        new WaitForColorCommand(colorsensor),
-                        new WaitCommand(500)
-                ),
-                new MoveSpindexerCommand(spindexer, gate, 1, true),
-                new ParallelRaceGroup(
-                        new WaitForColorCommand(colorsensor),
-                        new WaitCommand(500)
-                )
-        );
-    }
 
     @Override
     public void initialize() {
@@ -167,7 +154,10 @@ public class Blue6FarAuto extends CommandOpMode {
                         new InstantCommand(() -> { //immediately set shooter to max speed.
                             shooter.setTargetVelocity(1500);
                         }),
-                        new WaitCommand(5000),
+                        new ParallelCommandGroup(
+                                new FollowPathCommand(follower, paths.to69Deg, 0.3),
+                                new WaitCommand(5000)
+                        ),
                         new InstantCommand(() -> { //launch all 3 balls
                             spindexer.moveSpindexerBy(120);
                             spindexer.moveSpindexerBy(120);
