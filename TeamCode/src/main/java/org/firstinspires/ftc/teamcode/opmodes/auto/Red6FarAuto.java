@@ -1,12 +1,12 @@
 package org.firstinspires.ftc.teamcode.opmodes.auto;
 
-import static org.firstinspires.ftc.teamcode.RobotConstants.BallColors.PURPLE;
-import static org.firstinspires.ftc.teamcode.RobotConstants.BallColors.UNKNOWN;
+import static org.firstinspires.ftc.teamcode.RobotConstants.BallColors.*;
 
 import android.annotation.SuppressLint;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.pedropathing.follower.Follower;
+import com.pedropathing.geometry.BezierCurve;
 import com.pedropathing.geometry.BezierLine;
 import com.pedropathing.geometry.Pose;
 import com.pedropathing.paths.PathChain;
@@ -15,6 +15,7 @@ import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.seattlesolvers.solverslib.command.CommandOpMode;
 import com.seattlesolvers.solverslib.command.InstantCommand;
+import com.seattlesolvers.solverslib.command.ParallelCommandGroup;
 import com.seattlesolvers.solverslib.command.ParallelRaceGroup;
 import com.seattlesolvers.solverslib.command.RunCommand;
 import com.seattlesolvers.solverslib.command.SequentialCommandGroup;
@@ -23,7 +24,6 @@ import com.seattlesolvers.solverslib.pedroCommand.FollowPathCommand;
 
 import org.firstinspires.ftc.teamcode.RobotConstants;
 import org.firstinspires.ftc.teamcode.commands.MoveSpindexerCommand;
-import org.firstinspires.ftc.teamcode.commands.ShootBallSequenceCommandSequence;
 import org.firstinspires.ftc.teamcode.commands.WaitForColorCommand;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 import org.firstinspires.ftc.teamcode.subsystems.ColorSensorsSubsystem;
@@ -33,14 +33,57 @@ import org.firstinspires.ftc.teamcode.subsystems.LEDSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.ShooterSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.SpindexerSubsystem;
 
-import java.util.ArrayList;
-
 
 @Config
-@Autonomous(name = "Red mini auto🦅", group = "angryBirds", preselectTeleOp = "Teleop")
-public class RedFarMIniAuto extends CommandOpMode {
+@Autonomous(name = "Red 6ball preload + hp🦅", group = "angryBirds", preselectTeleOp = "Teleop")
+public class Red6FarAuto extends CommandOpMode {
     //paths
-    private final ArrayList<PathChain> paths = new ArrayList<>();
+    public static class Paths {
+
+        public PathChain toHpZone;
+        public PathChain grabHpBalls;
+        public PathChain returnToFarZone;
+        public PathChain leaveZone;
+
+        public Paths(Follower follower) {
+            toHpZone = follower
+                    .pathBuilder()
+                    .addPath(
+                            new BezierLine(new Pose(87.000, 8.294), new Pose(129.882, 9.882))
+                    )
+                    .setTangentHeadingInterpolation()
+                    .build();
+
+            grabHpBalls = follower
+                    .pathBuilder()
+                    .addPath(
+                            new BezierCurve(
+                                    new Pose(129.882, 9.882),
+                                    new Pose(134.824, 21.706),
+                                    new Pose(140.471, 10.235)
+                            )
+                    )
+                    .setTangentHeadingInterpolation()
+                    .build();
+
+            returnToFarZone = follower
+                    .pathBuilder()
+                    .addPath(
+                            new BezierLine(new Pose(140.471, 10.235), new Pose(87.000, 8.200))
+                    )
+                    .setConstantHeadingInterpolation(Math.toRadians(69))
+                    .build();
+
+            leaveZone = follower
+                    .pathBuilder()
+                    .addPath(
+                            new BezierLine(new Pose(87.000, 8.200), new Pose(110.000, 10.000))
+                    )
+                    .setConstantHeadingInterpolation(Math.toRadians(69))
+                    .build();
+        }
+    }
+    Paths paths;
     public Pose currentPose;
 
     //voltage compensation
@@ -52,25 +95,17 @@ public class RedFarMIniAuto extends CommandOpMode {
     private Follower follower;
 
     //update starting pose
-    public static Pose startingPose = new Pose(122.361,121.175,Math.toRadians(49)); //find actual statring pos
+    public static Pose startingPose = new Pose(87,8.294117647058826,Math.toRadians(90));
     private IntakeSubsystem intake;
     private ShooterSubsystem shooter;
     private SpindexerSubsystem spindexer;
     private ColorSensorsSubsystem colorsensor;
     private GateSubsystem gate;
     private LEDSubsystem led;
-    private RobotConstants.BallColors[] motif = new RobotConstants.BallColors[]{UNKNOWN,UNKNOWN,UNKNOWN};
     PathChain shimmy;
     public void buildPaths(Follower follower) {
         follower.setStartingPose(startingPose);
-        paths.add(follower
-                .pathBuilder()
-                .addPath(
-                        new BezierLine(new Pose(56.000, 8.000), new Pose(36.666, 10.447))
-                )
-                .setConstantHeadingInterpolation(Math.toRadians(109))
-                .build());
-
+        paths = new Paths(follower);
     }
 
     private SequentialCommandGroup intakeArtifacts() {
@@ -118,33 +153,59 @@ public class RedFarMIniAuto extends CommandOpMode {
         // Initialize subsystems
         register(intake, spindexer, shooter, colorsensor, led, gate);
         spindexer.set(75);
+        shooter.setHood(0.45);
+        gate.down();
 
         //init paths
         buildPaths(follower);
-
-
-
-
-        //schedule commands
-        //one cycle = 3 balls + shoot given starting position is right at the shooting spot
-        //pp file is editable but you have to update the buildPath
+        
 
         schedule(
                 // DO NOT REMOVE: updates follower to follow path
                 new RunCommand(() -> follower.update()),
                 new SequentialCommandGroup(
-                        new InstantCommand(() -> {
+                        new InstantCommand(() -> { //immediately set shooter to max speed.
                             shooter.setTargetVelocity(1500);
-                            shooter.setHood(0.45); //Placeholder
-                            gate.down();
-                            follower.setMaxPower(0.8);
-                            spindexer.setBalls(new RobotConstants.BallColors[] {PURPLE, PURPLE, PURPLE});
                         }),
-                        new ShootBallSequenceCommandSequence(shooter, spindexer, gate, motif),
+                        new WaitCommand(5000),
+                        new InstantCommand(() -> { //launch all 3 balls
+                            spindexer.moveSpindexerBy(120);
+                            spindexer.moveSpindexerBy(120);
+                            spindexer.moveSpindexerBy(120);
+                        }),
+                        new WaitCommand(1500),
+                        new InstantCommand(() -> {
+                            intake.set(IntakeSubsystem.IntakeState.INTAKING);
+                            shooter.setTargetVelocity(0); //Since shooter might launch into hp turn off shooter to be nice :)
+                        }),
+                        new ParallelRaceGroup( //Do both, end when a or b finishes first:
+                            new ParallelCommandGroup( //a. both paths finish following with the timeout
+                                new FollowPathCommand(follower, paths.toHpZone, 0.7).withTimeout(1400),
+                                new FollowPathCommand(follower, paths.grabHpBalls, 0.5).withTimeout(5000)
+                            ),
+                            new SequentialCommandGroup( //b. the ball intaking sequence finishes.
+                                new WaitForColorCommand(colorsensor),
+                                new MoveSpindexerCommand(spindexer, gate, 1, true),
+                                new WaitForColorCommand(colorsensor),
+                                new MoveSpindexerCommand(spindexer, gate, 1, true),
+                                new WaitForColorCommand(colorsensor),
+                                new MoveSpindexerCommand(spindexer, gate, 1, true)
+                            )
+                        ),
+                        new FollowPathCommand(follower, paths.returnToFarZone)
+                                .withTimeout(5000)
+                                .alongWith(new InstantCommand(() -> shooter.setTargetVelocity(1500))) //we should use these decorators more
+                                .alongWith(new InstantCommand(() -> intake.set(IntakeSubsystem.IntakeState.REVERSE))) //reverse so we dont get 4?
+                        ,
+                        new WaitCommand(500),
+                        new InstantCommand(() -> {
+                            spindexer.moveSpindexerBy(120);
+                            spindexer.moveSpindexerBy(120);
+                            spindexer.moveSpindexerBy(120);
+                        }),
+                        new WaitCommand(1500),
+                        new FollowPathCommand(follower, paths.leaveZone).alongWith(new InstantCommand(() -> intake.set(IntakeSubsystem.IntakeState.INTAKING))) //maybe we can randomly get another?
 
-                        //or just move spindexer three times
-                        
-                        new FollowPathCommand(follower, paths.get(0), true)
                 )
         );
 

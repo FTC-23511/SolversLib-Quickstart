@@ -204,7 +204,7 @@ public class Blue12Auto extends CommandOpMode {
 
     private SequentialCommandGroup intakeArtifacts() {
         return new SequentialCommandGroup(
-                new InstantCommand(() -> intake.setSpeed(IntakeSubsystem.IntakeState.INTAKING)),
+                new InstantCommand(() -> intake.set(IntakeSubsystem.IntakeState.INTAKING)),
                 new ParallelRaceGroup(
                         new WaitForColorCommand(colorsensor),
                         new WaitCommand(1500)
@@ -274,7 +274,7 @@ public class Blue12Auto extends CommandOpMode {
                         new InstantCommand(() -> {follower.setMaxPower(1);}),
                         //cycle one
                         new ParallelCommandGroup(
-                                new InstantCommand(() -> {intake.setSpeed(IntakeSubsystem.IntakeState.INTAKING);}),
+                                new InstantCommand(() -> {intake.set(IntakeSubsystem.IntakeState.INTAKING);}),
                                 new FollowPathCommand(follower, paths.get(1), true) //drives to balls and lines itself up to intake
                         ),
                         new ParallelCommandGroup(
@@ -304,7 +304,7 @@ public class Blue12Auto extends CommandOpMode {
                         //cycle two
                         new ParallelCommandGroup(
                                 new InstantCommand(() -> follower.setMaxPower(0.7)),
-                                new InstantCommand(() -> {intake.setSpeed(IntakeSubsystem.IntakeState.INTAKING);}),
+                                new InstantCommand(() -> {intake.set(IntakeSubsystem.IntakeState.INTAKING);}),
                                 new FollowPathCommand(follower, paths.get(4), true) //drives to balls and lines itself up to intake
                         ),
                         new ParallelCommandGroup(
@@ -328,7 +328,7 @@ public class Blue12Auto extends CommandOpMode {
                         //cycle three
                         new ParallelCommandGroup(
                                 new InstantCommand(() -> follower.setMaxPower(0.7)),
-                                new InstantCommand(() -> {intake.setSpeed(IntakeSubsystem.IntakeState.INTAKING);}),
+                                new InstantCommand(() -> {intake.set(IntakeSubsystem.IntakeState.INTAKING);}),
                                 new FollowPathCommand(follower, paths.get(8), true) //drives to balls and lines itself up to intake
                         ),
                         new ParallelCommandGroup(

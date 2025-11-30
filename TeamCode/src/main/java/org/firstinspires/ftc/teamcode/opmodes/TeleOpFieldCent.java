@@ -109,16 +109,16 @@ public class TeleOpFieldCent extends CommandOpMode {
         switch (intakeState) {
             case FORWARD:
                 return new InstantCommand(() -> {
-                    intake.setSpeed(IntakeSubsystem.IntakeState.INTAKING);
+                    intake.set(IntakeSubsystem.IntakeState.INTAKING);
                 });
             case REVERSE:
                 return new InstantCommand(() -> {
-                    intake.setSpeed(IntakeSubsystem.IntakeState.REVERSE);
+                    intake.set(IntakeSubsystem.IntakeState.REVERSE);
                 });
             case STOP:
             default:
                 return new InstantCommand(() -> {
-                    intake.setSpeed(IntakeSubsystem.IntakeState.STILL);
+                    intake.set(IntakeSubsystem.IntakeState.STILL);
                 });
         }
     }

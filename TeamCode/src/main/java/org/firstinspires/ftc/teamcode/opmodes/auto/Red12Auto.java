@@ -6,7 +6,6 @@ import android.annotation.SuppressLint;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.pedropathing.follower.Follower;
-import com.pedropathing.geometry.BezierCurve;
 import com.pedropathing.geometry.BezierLine;
 import com.pedropathing.geometry.Pose;
 import com.pedropathing.paths.PathChain;
@@ -204,7 +203,7 @@ public class Red12Auto extends CommandOpMode {
 
     private SequentialCommandGroup intakeArtifacts() {
         return new SequentialCommandGroup(
-                new InstantCommand(() -> intake.setSpeed(IntakeSubsystem.IntakeState.INTAKING)),
+                new InstantCommand(() -> intake.set(IntakeSubsystem.IntakeState.INTAKING)),
                 new ParallelRaceGroup(
                         new WaitForColorCommand(colorsensor),
                         new WaitCommand(1500)
@@ -276,7 +275,7 @@ public class Red12Auto extends CommandOpMode {
                             shooter.setTargetVelocity(1220);}),
                         //cycle one
                         new ParallelCommandGroup(
-                                new InstantCommand(() -> {intake.setSpeed(IntakeSubsystem.IntakeState.INTAKING);}),
+                                new InstantCommand(() -> {intake.set(IntakeSubsystem.IntakeState.INTAKING);}),
                                 new FollowPathCommand(follower, paths.get(1), true) //drives to balls and lines itself up to intake
                         ),
                         new ParallelCommandGroup(
@@ -306,7 +305,7 @@ public class Red12Auto extends CommandOpMode {
                         //cycle two
                         new ParallelCommandGroup(
                                 new InstantCommand(() -> follower.setMaxPower(0.7)),
-                                new InstantCommand(() -> {intake.setSpeed(IntakeSubsystem.IntakeState.INTAKING);}),
+                                new InstantCommand(() -> {intake.set(IntakeSubsystem.IntakeState.INTAKING);}),
                                 new FollowPathCommand(follower, paths.get(4), true) //drives to balls and lines itself up to intake
                         ),
                         new ParallelCommandGroup(
@@ -330,7 +329,7 @@ public class Red12Auto extends CommandOpMode {
                         //cycle three
                         new ParallelCommandGroup(
                                 new InstantCommand(() -> follower.setMaxPower(0.7)),
-                                new InstantCommand(() -> {intake.setSpeed(IntakeSubsystem.IntakeState.INTAKING);}),
+                                new InstantCommand(() -> {intake.set(IntakeSubsystem.IntakeState.INTAKING);}),
                                 new FollowPathCommand(follower, paths.get(8), true) //drives to balls and lines itself up to intake
                         ),
                         new ParallelCommandGroup(

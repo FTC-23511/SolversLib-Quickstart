@@ -15,7 +15,7 @@ public class IntakeSubsystem extends SubsystemBase {
         intakeWheels.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
     }
 
-    public void setSpeed(IntakeState state) {
+    public void set(IntakeState state) {
         switch(state) {
             case STILL:
                 intakeWheels.setPower(0.0);
