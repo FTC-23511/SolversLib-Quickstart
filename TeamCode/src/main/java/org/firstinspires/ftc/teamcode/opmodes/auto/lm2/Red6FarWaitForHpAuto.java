@@ -1,16 +1,14 @@
-package org.firstinspires.ftc.teamcode.opmodes.auto;
-
-import static org.firstinspires.ftc.teamcode.RobotConstants.BallColors.*;
+package org.firstinspires.ftc.teamcode.opmodes.auto.lm2;
 
 import android.annotation.SuppressLint;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.pedropathing.follower.Follower;
-import com.pedropathing.geometry.BezierCurve;
 import com.pedropathing.geometry.BezierLine;
 import com.pedropathing.geometry.Pose;
 import com.pedropathing.paths.PathChain;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.seattlesolvers.solverslib.command.CommandOpMode;
@@ -22,7 +20,6 @@ import com.seattlesolvers.solverslib.command.SequentialCommandGroup;
 import com.seattlesolvers.solverslib.command.WaitCommand;
 import com.seattlesolvers.solverslib.pedroCommand.FollowPathCommand;
 
-import org.firstinspires.ftc.teamcode.RobotConstants;
 import org.firstinspires.ftc.teamcode.commands.MoveSpindexerCommand;
 import org.firstinspires.ftc.teamcode.commands.WaitForColorCommand;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
@@ -33,10 +30,10 @@ import org.firstinspires.ftc.teamcode.subsystems.LEDSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.ShooterSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.SpindexerSubsystem;
 
-
+@Disabled
 @Config
-@Autonomous(name = "Red far 6ball preload + hp, 5s delay🦅", group = "angryBirds", preselectTeleOp = "Teleop")
-public class Red6FarAuto extends CommandOpMode {
+@Autonomous(name = "Red far 6ball preload + wait 5s for hp, 5s delay🦅", group = "angryBirds", preselectTeleOp = "Teleop")
+public class Red6FarWaitForHpAuto extends CommandOpMode {
     //paths
     public static class Paths {
         public PathChain to69Deg;
@@ -173,6 +170,7 @@ public class Red6FarAuto extends CommandOpMode {
                             intake.set(IntakeSubsystem.IntakeState.INTAKING);
                             shooter.setTargetVelocity(0); //Since shooter might launch into hp turn off shooter to be nice :)
                         }),
+                        new WaitCommand(5000),
                         new ParallelRaceGroup( //Do both, end when a or b finishes first:
                             new ParallelCommandGroup( //a. both paths finish following with the timeout
                                 new FollowPathCommand(follower, paths.toHpZone, 0.7)
