@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.opmodes.auto.lm2;
+package org.firstinspires.ftc.teamcode.opmodes.auto.lm2archive;
 
 import android.annotation.SuppressLint;
 
@@ -32,8 +32,8 @@ import org.firstinspires.ftc.teamcode.subsystems.SpindexerSubsystem;
 
 @Disabled
 @Config
-@Autonomous(name = "Blue far 6ball preload + wait 5s for hp, 5s delay🦅", group = "angryBirds", preselectTeleOp = "Teleop")
-public class Blue6FarWaitForHpAuto extends CommandOpMode {
+@Autonomous(name = "Blue 6ball preload + hp🦅, 5s delay", group = "angryBirds", preselectTeleOp = "Teleop")
+public class Blue6FarAuto extends CommandOpMode {
     //paths
     public static class Paths {
         public PathChain to69Deg;
@@ -170,7 +170,6 @@ public class Blue6FarWaitForHpAuto extends CommandOpMode {
                             intake.set(IntakeSubsystem.IntakeState.INTAKING);
                             shooter.setTargetVelocity(0); //Since shooter might launch into hp turn off shooter to be nice :)
                         }),
-                        new WaitCommand(5000),
                         new ParallelRaceGroup( //Do both, end when a or b finishes first:
                                 new ParallelCommandGroup( //a. both paths finish following with the timeout
                                         new FollowPathCommand(follower, paths.toHpZone, 0.7)

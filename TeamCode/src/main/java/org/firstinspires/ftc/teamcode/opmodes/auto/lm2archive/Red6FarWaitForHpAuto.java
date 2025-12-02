@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.opmodes.auto.lm2;
+package org.firstinspires.ftc.teamcode.opmodes.auto.lm2archive;
 
 import android.annotation.SuppressLint;
 
