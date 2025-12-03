@@ -52,7 +52,7 @@ public class LimelightSubsystem extends SubsystemBase {
     }
 
     /**
-     * @return pass in list of detections to get camera's horizontal distance from tag center as a double or null if nothing is found
+     * @return pass in list of detections to get camera's horizontal distance from each specific tag's center as a double or null if nothing is found
      * */
     public Object detectGoalXDistance(LLResult result) {
         // Red ID = 24
@@ -83,16 +83,11 @@ public class LimelightSubsystem extends SubsystemBase {
      * */
     public Object detectRobotPosition(LLResult result) {
         if (result != null && result.isValid()) {
-            for (LLResultTypes.FiducialResult fiducial : result.getFiducialResults()) {
-                int id = fiducial.getFiducialId();
-                if (GOAL_TAG_IDS.contains(id)) {
-                    Pose3D botpose_mt2 = result.getBotpose_MT2();
-                    if (botpose_mt2 != null) {
-                        double x = botpose_mt2.getPosition().x;
-                        double y = botpose_mt2.getPosition().y;
-                        return new double[]{x,y};
-                    }
-                }
+            Pose3D botpose_mt2 = result.getBotpose_MT2();
+            if (botpose_mt2 != null) {
+                double x = botpose_mt2.getPosition().x;
+                double y = botpose_mt2.getPosition().y;
+                return new double[]{x,y};
             }
         }
         return null;
