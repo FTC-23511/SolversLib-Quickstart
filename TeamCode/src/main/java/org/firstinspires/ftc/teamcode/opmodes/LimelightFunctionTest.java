@@ -28,6 +28,7 @@ public class LimelightFunctionTest extends CommandOpMode {
         LLResult detections = limelight.getResult();
         List<LLResultTypes.ColorResult> colorTargets = detections.getColorResults();
         List<LLResultTypes.FiducialResult> fiducials = detections.getFiducialResults();
+        List<LLResultTypes.ClassifierResult> classifications = detections.getClassifierResults();
 
         telemetry.addData("Loop Time", timer.milliseconds());
         telemetry.addData("---------subsystem functions---------",null);
@@ -62,6 +63,12 @@ public class LimelightFunctionTest extends CommandOpMode {
             telemetry.addData("where color target is (left-right): ", x);
             telemetry.addData("where color target is (up-down): ", y);
             telemetry.addData("% of image the color target takes up: ", area);
+        }
+
+        for (LLResultTypes.ClassifierResult classification : classifications) {
+            String className = classification.getClassName(); //What limelight thinks it sees
+            double confidence = classification.getConfidence(); //Confidence Score
+            telemetry.addData("I see a ", className + " (" + confidence + "%)");
         }
 
         long staleness = detections.getStaleness();
