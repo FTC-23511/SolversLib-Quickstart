@@ -32,11 +32,10 @@ public class LimelightSubsystem extends SubsystemBase {
     public LLResult getResult() {
         return limelight.getLatestResult();
     }
-
     /**
      * @return pass in list of detections to detect motif id num (21, 22, or 23)
      * */
-    public Object detectMotif(LLResult result) {
+    public Object detectMotif(LLResult result) { //TODO: Make this method return the biggest motif fiducial! rn it returns the first tag with a motif it can find.
         // Obelisk GPP ID = 21
         // Obelisk PGP ID = 22
         // Obelisk PPG ID = 23
