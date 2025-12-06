@@ -37,7 +37,7 @@ public class LimelightSubsystem extends SubsystemBase {
      * */
     public Object detectMotif(LLResult result) {
         //TODO: Make this method return the biggest motif fiducial! rn it returns the first tag with a motif it can find.
-        //getTa gives you the area that the result covers on the screen
+        //fiducial.getTargetArea() might work?? i havent looked into it 
         //https://docs.steelbootrobotics.org/docs/Documents/limelight%20stuff.pdf
         // Obelisk GPP ID = 21
         // Obelisk PGP ID = 22
