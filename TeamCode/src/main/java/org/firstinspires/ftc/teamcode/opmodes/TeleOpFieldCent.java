@@ -26,11 +26,11 @@ import com.seattlesolvers.solverslib.gamepad.GamepadKeys;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.RobotConstants.Motifs;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
-import org.firstinspires.ftc.teamcode.subsystems.CameraSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.ColorSensorsSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.GateSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.IntakeSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.LEDSubsystem;
+import org.firstinspires.ftc.teamcode.subsystems.LimelightSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.ShooterSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.SpindexerSubsystem;
 import org.firstinspires.ftc.vision.VisionPortal;
@@ -59,7 +59,7 @@ public class TeleOpFieldCent extends CommandOpMode {
     private ColorSensorsSubsystem colorSensors;
     private LEDSubsystem led;
     private GateSubsystem gate;
-    private CameraSubsystem camera;
+    private LimelightSubsystem limelight;
 
     //gamepads
     public GamepadEx driver1;
@@ -133,12 +133,12 @@ public class TeleOpFieldCent extends CommandOpMode {
         colorSensors = new ColorSensorsSubsystem(hardwareMap);
         led = new LEDSubsystem(hardwareMap);
         gate = new GateSubsystem(hardwareMap);
-        camera = new CameraSubsystem();
+        limelight = new LimelightSubsystem();
         voltageSensor = hardwareMap.get(VoltageSensor.class, "Control Hub");
 
         super.reset();
         lastVoltageCheck.reset();
-        register(intake, shooter, spindexer, gate, colorSensors, led, camera);
+        register(intake, shooter, spindexer, gate, colorSensors, led, limelight);
 
         spindexer.set(75);
         shooter.setHood(0.45);
@@ -294,32 +294,8 @@ public class TeleOpFieldCent extends CommandOpMode {
                 })
         );
     }
-    int cameraReads = 0;
-
     @Override
     public void run() {
-        if (!cameraInitialized) {
-            camera.setAprilTagProcessor(new AprilTagProcessor.Builder()
-                    // The following default settings are available to un-comment and edit as needed.
-                    //.setDrawAxes(false)
-                    //.setDrawCubeProjection(false)
-                    //.setDrawTagOutline(true)
-                    //.setTagFamily(AprilTagProcessor.TagFamily.TAG_36h11)
-                    //.setTagLibrary(AprilTagGameDatabase.getCenterStageTagLibrary())
-                    //.setOutputUnits(DistanceUnit.INCH, AngleUnit.DEGREES)
-                    // == CAMERA CALIBRATION ==
-                    // If you do not manually specify calibration parameters, the SDK will attempt
-                    // to load a predefined calibration for your camera.
-                    //.setLensIntrinsics(578.272, 578.272, 402.145, 221.506)
-                    // ... these parameters are fx, fy, cx, cy.
-                    .build());
-            camera.setVisionPortal(new VisionPortal.Builder()
-                    .setCamera(hardwareMap.get(WebcamName.class, "Webcam 1"))
-                    .addProcessor(camera.getAprilTagProcessor())
-                    .build()
-            );
-            cameraInitialized = true;
-        }
         gate.down(); //temp fix
 
         //Drivetrain code
@@ -340,8 +316,6 @@ public class TeleOpFieldCent extends CommandOpMode {
 //            double denominator = Math.max(Math.abs(x) + Math.abs(y) + Math.abs(rx), 1.0);
 //            follower.setTeleOpDrive(y / denominator, x / denominator, rx / denominator, false);
         } else {
-            List<AprilTagDetection> detections = camera.detectAprilTags();
-            cameraReads++;
             if (gamepad1.touchpad_finger_1) {
                 manualControl = true;
                 gamepad1.rumbleBlips(1);
@@ -351,11 +325,11 @@ public class TeleOpFieldCent extends CommandOpMode {
             double rx = 0;
             double rotatedX =  x * Math.cos(fieldOffset) - y * Math.sin(fieldOffset);
             double rotatedY =  x * Math.sin(fieldOffset) + y * Math.cos(fieldOffset);
-            if (camera.detectGoalXDistance(detections) != null) {
-                lastSeenX = (double) camera.detectGoalXDistance(detections);
-                headingVector = -headingPID.calculate(lastSeenX, -8);
-                rx = headingVector;
-            }
+//            if (camera.detectGoalXDistance(detections) != null) {
+//                lastSeenX = (double) camera.detectGoalXDistance(detections);
+//                headingVector = -headingPID.calculate(lastSeenX, -8);
+//                rx = headingVector;
+//            }
             rx += -driver1.getRightX() * (slowMode?0.3:1);
             double denominator = Math.max(Math.abs(rotatedX) + Math.abs(rotatedY) + Math.abs(rx), 1.0);
             follower.setTeleOpDrive(rotatedY / denominator, rotatedX / denominator, rx / denominator, false);
@@ -428,9 +402,6 @@ public class TeleOpFieldCent extends CommandOpMode {
         telemetry.addData("current heading ", String.format("Heading: %.4f", follower.getPose().getHeading()));
         telemetry.addData("t value ", follower.getCurrentTValue());
         telemetry.addData("slowmode ", slowMode);
-        telemetry.addData("camera initialized", cameraInitialized);
-        telemetry.addData("camera reads", cameraReads);
-
         telemetry.addData("------------------","");
 //        float[] hsv1 = colorSensors.senseColorsHSV(1);
 //        float[] hsv2 = colorSensors.senseColorsHSV(2);
