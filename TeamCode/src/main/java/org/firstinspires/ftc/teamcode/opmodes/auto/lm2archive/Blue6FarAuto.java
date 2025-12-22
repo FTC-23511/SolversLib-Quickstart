@@ -1,16 +1,14 @@
-package org.firstinspires.ftc.teamcode.opmodes.auto;
-
-import static org.firstinspires.ftc.teamcode.RobotConstants.BallColors.*;
+package org.firstinspires.ftc.teamcode.opmodes.auto.lm2archive;
 
 import android.annotation.SuppressLint;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.pedropathing.follower.Follower;
-import com.pedropathing.geometry.BezierCurve;
 import com.pedropathing.geometry.BezierLine;
 import com.pedropathing.geometry.Pose;
 import com.pedropathing.paths.PathChain;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.seattlesolvers.solverslib.command.CommandOpMode;
@@ -22,7 +20,6 @@ import com.seattlesolvers.solverslib.command.SequentialCommandGroup;
 import com.seattlesolvers.solverslib.command.WaitCommand;
 import com.seattlesolvers.solverslib.pedroCommand.FollowPathCommand;
 
-import org.firstinspires.ftc.teamcode.RobotConstants;
 import org.firstinspires.ftc.teamcode.commands.MoveSpindexerCommand;
 import org.firstinspires.ftc.teamcode.commands.WaitForColorCommand;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
@@ -33,10 +30,10 @@ import org.firstinspires.ftc.teamcode.subsystems.LEDSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.ShooterSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.SpindexerSubsystem;
 
-
+@Disabled
 @Config
-@Autonomous(name = "Red far 6ball preload + hp, 5s delay🦅", group = "angryBirds", preselectTeleOp = "Teleop")
-public class Red6FarAuto extends CommandOpMode {
+@Autonomous(name = "Blue 6ball preload + hp🦅, 5s delay", group = "angryBirds", preselectTeleOp = "Teleop")
+public class Blue6FarAuto extends CommandOpMode {
     //paths
     public static class Paths {
         public PathChain to69Deg;
@@ -49,14 +46,14 @@ public class Red6FarAuto extends CommandOpMode {
             to69Deg = follower
                     .pathBuilder()
                     .addPath(
-                            new BezierLine(new Pose(87.000, 8.294), new Pose(86.000, 16.000))
+                            new BezierLine(new Pose(144-87.000, 8.294), new Pose(144-86.000, 16.000))
                     )
-                    .setConstantHeadingInterpolation(Math.toRadians(69))
+                    .setConstantHeadingInterpolation(Math.toRadians(180-69))
                     .build();
             toHpZone = follower
                     .pathBuilder()
                     .addPath(
-                            new BezierLine(new Pose(86.000, 18.000), new Pose(129.882, 9.882))
+                            new BezierLine(new Pose(144-86.000, 18.000), new Pose(144-129.882, 9.882))
                     )
                     .setTangentHeadingInterpolation()
                     .build();
@@ -65,33 +62,33 @@ public class Red6FarAuto extends CommandOpMode {
                     .pathBuilder()
                     .addPath(
                             new BezierLine(
-                                    new Pose(129.882, 9.882),
-                                    new Pose(138.1764705882353, 19.764705882352935)
+                                    new Pose(144-129.882, 9.882),
+                                    new Pose(144-138.1764705882353, 19.764705882352935)
                             )
                     )
                     .addPath(
                             new BezierLine(
-                                    new Pose(138.1764705882353, 19.764705882352935),
-                                    new Pose(134.29411764705884, 5.470588235294114)
+                                    new Pose(144-138.1764705882353, 19.764705882352935),
+                                    new Pose(144-134.29411764705884, 5.470588235294114)
                             )
                     )
-                    .setConstantHeadingInterpolation(Math.toRadians(-10))
+                    .setConstantHeadingInterpolation(Math.toRadians(180+10))
                     .build();
 
             returnToFarZone = follower
                     .pathBuilder()
                     .addPath(
-                            new BezierLine(new Pose(134.29411764705884, 5.470588235294114), new Pose(87.000, 8.200))
+                            new BezierLine(new Pose(144-134.29411764705884, 5.470588235294114), new Pose(144-87.000, 8.200))
                     )
-                    .setConstantHeadingInterpolation(Math.toRadians(69))
+                    .setConstantHeadingInterpolation(Math.toRadians(180-69))
                     .build();
 
             leaveZone = follower
                     .pathBuilder()
                     .addPath(
-                            new BezierLine(new Pose(87.000, 8.200), new Pose(110.000, 10.000))
+                            new BezierLine(new Pose(144-87.000, 8.200), new Pose(144-110.000, 10.000))
                     )
-                    .setConstantHeadingInterpolation(Math.toRadians(69))
+                    .setConstantHeadingInterpolation(Math.toRadians(180-69))
                     .build();
         }
     }
@@ -107,7 +104,7 @@ public class Red6FarAuto extends CommandOpMode {
     private Follower follower;
 
     //update starting pose
-    public static Pose startingPose = new Pose(87,8.294117647058826,Math.toRadians(90));
+    public static Pose startingPose = new Pose(144-87,8.294117647058826,Math.toRadians(180-90));
     private IntakeSubsystem intake;
     private ShooterSubsystem shooter;
     private SpindexerSubsystem spindexer;
@@ -150,18 +147,18 @@ public class Red6FarAuto extends CommandOpMode {
 
         //init paths
         buildPaths(follower);
-        
+
 
         schedule(
                 // DO NOT REMOVE: updates follower to follow path
                 new RunCommand(() -> follower.update()),
                 new SequentialCommandGroup(
                         new InstantCommand(() -> { //immediately set shooter to max speed.
-                            shooter.setTargetVelocity(1500);
+                            shooter.setTargetLinearSpeed(1500);
                         }),
                         new ParallelCommandGroup(
-                            new FollowPathCommand(follower, paths.to69Deg, 0.3),
-                            new WaitCommand(5000)
+                                new FollowPathCommand(follower, paths.to69Deg, 0.3),
+                                new WaitCommand(5000)
                         ),
                         new InstantCommand(() -> { //launch all 3 balls
                             spindexer.moveSpindexerBy(120);
@@ -171,26 +168,26 @@ public class Red6FarAuto extends CommandOpMode {
                         new WaitCommand(1500),
                         new InstantCommand(() -> {
                             intake.set(IntakeSubsystem.IntakeState.INTAKING);
-                            shooter.setTargetVelocity(0); //Since shooter might launch into hp turn off shooter to be nice :)
+                            shooter.setTargetLinearSpeed(0); //Since shooter might launch into hp turn off shooter to be nice :)
                         }),
                         new ParallelRaceGroup( //Do both, end when a or b finishes first:
-                            new ParallelCommandGroup( //a. both paths finish following with the timeout
-                                new FollowPathCommand(follower, paths.toHpZone, 0.7)
-                                        .withTimeout(1400),
-                                new FollowPathCommand(follower, paths.grabHpBalls, 0.5)
-                                        .withTimeout(5000)
-                            ),
-                            new SequentialCommandGroup( //b. the ball intaking sequence finishes.
-                                new WaitForColorCommand(colorsensor),
-                                new MoveSpindexerCommand(spindexer, gate, 1, true),
-                                new WaitForColorCommand(colorsensor),
-                                new MoveSpindexerCommand(spindexer, gate, 1, true),
-                                new WaitForColorCommand(colorsensor)
-                            )
+                                new ParallelCommandGroup( //a. both paths finish following with the timeout
+                                        new FollowPathCommand(follower, paths.toHpZone, 0.7)
+                                                .withTimeout(1400),
+                                        new FollowPathCommand(follower, paths.grabHpBalls, 0.5)
+                                                .withTimeout(5000)
+                                ),
+                                new SequentialCommandGroup( //b. the ball intaking sequence finishes.
+                                        new WaitForColorCommand(colorsensor),
+                                        new MoveSpindexerCommand(spindexer, gate, 1, true),
+                                        new WaitForColorCommand(colorsensor),
+                                        new MoveSpindexerCommand(spindexer, gate, 1, true),
+                                        new WaitForColorCommand(colorsensor)
+                                )
                         ),
                         new FollowPathCommand(follower, paths.returnToFarZone)
                                 .withTimeout(5000)
-                                .alongWith(new InstantCommand(() -> shooter.setTargetVelocity(1500))) //we should use these decorators more
+                                .alongWith(new InstantCommand(() -> shooter.setTargetLinearSpeed(1500))) //we should use these decorators more
 //                                .alongWith(new InstantCommand(() -> intake.set(IntakeSubsystem.IntakeState.REVERSE))) //reverse so we dont get 4?
                         ,
                         new WaitCommand(500),
