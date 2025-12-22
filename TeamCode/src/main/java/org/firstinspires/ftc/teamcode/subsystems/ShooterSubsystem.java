@@ -7,9 +7,12 @@ import com.seattlesolvers.solverslib.controller.PIDFController;
 import com.seattlesolvers.solverslib.hardware.ServoEx;
 import com.seattlesolvers.solverslib.hardware.motors.Motor;
 import com.seattlesolvers.solverslib.hardware.motors.MotorGroup;
+import com.seattlesolvers.solverslib.util.InterpLUT;
 
 public class ShooterSubsystem extends SubsystemBase {
-
+    //Note: I changed the motor type from 312 rpm to bare (6k i think).
+    // We might have to redo PID and find new velocities.
+    //Delete this once done :)
     private Motor shooter1;
     private Motor shooter2;
     private ServoEx hood;
@@ -25,10 +28,11 @@ public class ShooterSubsystem extends SubsystemBase {
     double kFOriginal = -0.00052;
     double kP = kPOriginal;
     double kF = kFOriginal;
+    InterpLUT lut;
     private final PIDFController flywheelController = new PIDFController(kPOriginal, 0, 0, kFOriginal);
     public ShooterSubsystem(final HardwareMap hMap) {
-        shooter1 = new Motor(hMap, "shooter1", Motor.GoBILDA.RPM_312);
-        shooter2 = new Motor(hMap, "shooter2", Motor.GoBILDA.RPM_312);
+        shooter1 = new Motor(hMap, "shooter1", Motor.GoBILDA.BARE);
+        shooter2 = new Motor(hMap, "shooter2", Motor.GoBILDA.BARE);
         hood = new ServoEx(hMap, "pivot");
 
         shooter1.setInverted(true); //one has to be backwards
@@ -42,14 +46,32 @@ public class ShooterSubsystem extends SubsystemBase {
         shooter.setRunMode(Motor.RunMode.RawPower);
         shooter.set(0);
 
+        lut = new InterpLUT(); //distance (in), linear speed (in/s);
+        lut.add(10, 50); //placeholder
+        lut.add(10, 50); //placeholder
+        lut.createLUT();
     }
-
-    public void setTargetVelocity(double vel) {
-        flywheelController.setSetPoint(vel);
+    public void setTargetLinearSpeed(double vel) {
+        double ticksPerRev = 28.0;
+        double flywheelDiameter = 2.83465;
+        double gearRatio = 32.0 / 24.0; //
+        double flywheelRPS = vel / (Math.PI * flywheelDiameter);
+        double motorRPS = flywheelRPS / gearRatio;
+        double targetTicksPerSec = motorRPS * ticksPerRev;
+        flywheelController.setSetPoint(targetTicksPerSec);
+    }
+    public double getFlywheelLinearSpeed() {
+        double ticksPerRev = 28.0;
+        double flywheelDiameter = 2.83465; //72 mm to inches
+        double gearRatio = 32.0 / 24.0;
+        return shooter1.getCorrectedVelocity() / ticksPerRev * gearRatio * Math.PI * flywheelDiameter;
+    }
+    public double findSpeedFromDistance(double distance) {
+        return lut.get(distance);
     }
     public void updatePIDVoltage(double voltage) {
-        kP = (voltage / 13.5) * kPOriginal;
-        kF = (voltage / 13.5) * kFOriginal;
+        kP = (voltage * 13.5) * kPOriginal;
+        kF = (voltage * 13.5) * kFOriginal;
     }
     public void setHood(double ticks) {
         hoodPos = ticks;
@@ -62,7 +84,7 @@ public class ShooterSubsystem extends SubsystemBase {
     public double getHoodPos() {
         return hoodPos;
     }
-
+    @Override
     public void periodic() {
         flywheelController.setF(kF);
         flywheelController.setP(kP);

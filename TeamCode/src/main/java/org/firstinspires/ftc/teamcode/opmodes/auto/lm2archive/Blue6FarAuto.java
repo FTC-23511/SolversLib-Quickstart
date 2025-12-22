@@ -154,7 +154,7 @@ public class Blue6FarAuto extends CommandOpMode {
                 new RunCommand(() -> follower.update()),
                 new SequentialCommandGroup(
                         new InstantCommand(() -> { //immediately set shooter to max speed.
-                            shooter.setTargetVelocity(1500);
+                            shooter.setTargetLinearSpeed(1500);
                         }),
                         new ParallelCommandGroup(
                                 new FollowPathCommand(follower, paths.to69Deg, 0.3),
@@ -168,7 +168,7 @@ public class Blue6FarAuto extends CommandOpMode {
                         new WaitCommand(1500),
                         new InstantCommand(() -> {
                             intake.set(IntakeSubsystem.IntakeState.INTAKING);
-                            shooter.setTargetVelocity(0); //Since shooter might launch into hp turn off shooter to be nice :)
+                            shooter.setTargetLinearSpeed(0); //Since shooter might launch into hp turn off shooter to be nice :)
                         }),
                         new ParallelRaceGroup( //Do both, end when a or b finishes first:
                                 new ParallelCommandGroup( //a. both paths finish following with the timeout
@@ -187,7 +187,7 @@ public class Blue6FarAuto extends CommandOpMode {
                         ),
                         new FollowPathCommand(follower, paths.returnToFarZone)
                                 .withTimeout(5000)
-                                .alongWith(new InstantCommand(() -> shooter.setTargetVelocity(1500))) //we should use these decorators more
+                                .alongWith(new InstantCommand(() -> shooter.setTargetLinearSpeed(1500))) //we should use these decorators more
 //                                .alongWith(new InstantCommand(() -> intake.set(IntakeSubsystem.IntakeState.REVERSE))) //reverse so we dont get 4?
                         ,
                         new WaitCommand(500),

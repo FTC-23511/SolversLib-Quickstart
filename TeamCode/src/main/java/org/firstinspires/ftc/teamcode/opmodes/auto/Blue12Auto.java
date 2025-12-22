@@ -263,7 +263,7 @@ public class Blue12Auto extends CommandOpMode {
                 new RunCommand(() -> follower.update()),
                 new SequentialCommandGroup(
                         new InstantCommand(() -> {
-                            shooter.setTargetVelocity(1200);
+                            shooter.setTargetLinearSpeed(1200);
                             shooter.setHood(0.45); //Placeholder
                             gate.down();
                             follower.setMaxPower(0.8);
@@ -352,7 +352,7 @@ public class Blue12Auto extends CommandOpMode {
                         //move off shooting line so that you get extra points theoretically
                         new FollowPathCommand(follower, paths.get(12), true),
 
-                        new InstantCommand(() -> {shooter.setTargetVelocity(0);})
+                        new InstantCommand(() -> {shooter.setTargetLinearSpeed(0);})
                 )
         );
 
