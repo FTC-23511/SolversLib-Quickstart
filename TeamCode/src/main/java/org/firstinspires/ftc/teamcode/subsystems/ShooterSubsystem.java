@@ -70,8 +70,9 @@ public class ShooterSubsystem extends SubsystemBase {
         return lut.get(distance);
     }
     public void updatePIDVoltage(double voltage) {
-        kP = (voltage * 13.5) * kPOriginal;
-        kF = (voltage * 13.5) * kFOriginal;
+        double compensation = 13.5 / voltage;
+        kP = compensation * kPOriginal;
+        kF = compensation * kFOriginal;
     }
     public void setHood(double ticks) {
         hoodPos = ticks;
