@@ -46,7 +46,7 @@ public class TeleOpFieldCent extends CommandOpMode {
 
     //pedro
     private Follower follower;
-    public static Pose startingPose = (Pose) blackboard.getOrDefault("endpose", new Pose(0,0,0));
+    public static Pose startingPose;
     public static Pose savedPose = new Pose(0,0,0);
     private Supplier<PathChain> pathChainSupplier;
     private double fieldOffset = 0;  // degrees
@@ -70,16 +70,6 @@ public class TeleOpFieldCent extends CommandOpMode {
 
     //autodrive
     private boolean manualControl = true;
-    private void setSavedPose(Pose pose) {
-        savedPose = pose;
-        gamepad1.rumbleBlips(1);
-    }
-    private void goToSavedPose() {
-        Pose currentPose = follower.getPose();
-        manualControl = false;
-        follower.holdPoint(savedPose);
-        gamepad1.rumbleBlips(3);
-    }
 
     //voltage compensation
     public VoltageSensor voltageSensor;
@@ -97,9 +87,6 @@ public class TeleOpFieldCent extends CommandOpMode {
     //looptime
     private ElapsedTime timer = new ElapsedTime();
     private ElapsedTime totalTimer = new ElapsedTime();
-
-    //spindexer adjustment
-    private int spindexerAdjustmentCount = 0;
 
     //intake state machine
     public enum IntakeState {
@@ -139,6 +126,7 @@ public class TeleOpFieldCent extends CommandOpMode {
         follower = Constants.createFollower(hardwareMap);
         follower.setStartingPose(startingPose);
         follower.setMaxPower(1.0);
+        startingPose = (Pose) blackboard.getOrDefault("endpose", new Pose(0,0,0));
         intake = new IntakeSubsystem(hardwareMap);
         shooter = new ShooterSubsystem(hardwareMap);
         spindexer = new SpindexerSubsystem(hardwareMap);
@@ -190,17 +178,6 @@ public class TeleOpFieldCent extends CommandOpMode {
         driver1.getGamepadButton(GamepadKeys.Button.SQUARE).whenPressed(
                 new InstantCommand(() -> {spindexer.moveSpindexerBy(-120);})
         );
-
-        driver1.getGamepadButton(GamepadKeys.Button.DPAD_UP).whenPressed(
-                new InstantCommand(() -> {
-                    goToSavedPose();
-                })
-        );
-        driver1.getGamepadButton(GamepadKeys.Button.DPAD_DOWN).whenPressed(
-                new InstantCommand(() -> {
-                    setSavedPose(follower.getPose());
-                })
-        );
         driver1.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER).whenPressed(
                 new InstantCommand(() -> {
                     gamepad1.rumbleBlips(3);
@@ -238,10 +215,10 @@ public class TeleOpFieldCent extends CommandOpMode {
                     if (motifs == PPG) {
                         motifs = GPP;
                     }
-                    if (motifs == GPP) {
+                    else if (motifs == GPP) {
                         motifs = PGP;
                     }
-                    if (motifs == PGP) {
+                    else if (motifs == PGP) {
                         motifs = PPG;
                     }
                 })
@@ -251,15 +228,15 @@ public class TeleOpFieldCent extends CommandOpMode {
                     if (motifs == PPG) {
                         motifs = PGP;
                     }
-                    if (motifs == PGP) {
+                    else if (motifs == PGP) {
                         motifs = GPP;
                     }
-                    if (motifs == GPP) {
+                    else if (motifs == GPP) {
                         motifs = PPG;
                     }
                 })
         );
-        driver2.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER).whenPressed( //close distance
+        driver2.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER).whenActive( //close distance
                 new InstantCommand(() -> {
                     shooter.setTargetLinearSpeed(closeShooterTarget);
                 })
@@ -270,7 +247,7 @@ public class TeleOpFieldCent extends CommandOpMode {
                         shooter.setTargetLinearSpeed(farShooterTarget);
                     })
                 );
-        driver2.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER).whenPressed(  //turn off shooter
+        driver2.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER).whenActive(  //turn off shooter
                 new InstantCommand(() -> {
                     shooter.setTargetLinearSpeed(0);
                     gamepad2.rumbleBlips(1);
@@ -367,6 +344,7 @@ public class TeleOpFieldCent extends CommandOpMode {
             cameraReads++;
             if (gamepad1.touchpad_finger_1) {
                 manualControl = true;
+                gamepad1.rumbleBlips(1);
             }
             double x = -driver1.getLeftX();
             double y = driver1.getLeftY();
@@ -419,9 +397,6 @@ public class TeleOpFieldCent extends CommandOpMode {
             shooter.updatePIDVoltage(currentVoltage);
             lastVoltageCheck.reset();
         }
-        if (gamepad1.touchpad_finger_1) { //rumble if reset (workaround for driver1 no method ok)
-            gamepad1.rumbleBlips(1);
-        }
 
 //        telemetry.addData("BALLS", Arrays.toString(spindexer.getBalls()));
 
@@ -431,7 +406,6 @@ public class TeleOpFieldCent extends CommandOpMode {
         telemetry.addData("spindexer output ", spindexer.getOutput());
         telemetry.addData("spindexer setpoint ", spindexer.getPIDSetpoint());
         telemetry.addData("spindexer pos ", spindexer.getCurrentPosition());
-        telemetry.addData("spindexer tick adjustment degrees ", spindexerAdjustmentCount);
         telemetry.addData("is spindexer ready to read color ", spindexer.availableToSenseColor());
 
         telemetry.addData("------------------","");
