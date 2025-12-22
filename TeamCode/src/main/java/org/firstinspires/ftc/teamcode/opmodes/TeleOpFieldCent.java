@@ -9,6 +9,7 @@ import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.geometry.Pose;
+import com.pedropathing.math.Vector;
 import com.pedropathing.paths.PathChain;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
@@ -260,18 +261,18 @@ public class TeleOpFieldCent extends CommandOpMode {
         );
         driver2.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER).whenPressed( //close distance
                 new InstantCommand(() -> {
-                    shooter.setTargetVelocity(closeShooterTarget);
+                    shooter.setTargetLinearSpeed(closeShooterTarget);
                 })
         );
         new Trigger(
                 () -> driver2.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) > 0.5) //far distance
                     .whileActiveContinuous(new InstantCommand(() -> {
-                        shooter.setTargetVelocity(farShooterTarget);
+                        shooter.setTargetLinearSpeed(farShooterTarget);
                     })
                 );
         driver2.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER).whenPressed(  //turn off shooter
                 new InstantCommand(() -> {
-                    shooter.setTargetVelocity(0);
+                    shooter.setTargetLinearSpeed(0);
                     gamepad2.rumbleBlips(1);
                 })
         );
@@ -494,5 +495,16 @@ public class TeleOpFieldCent extends CommandOpMode {
         super.run();
 
 
+    }
+    public Vector calculateTargetVector(Follower follower, Pose targetPose, ShooterSubsystem shooter) {
+        Pose robotPose = follower.getPose();
+        Vector v_robot = follower.getVelocity(); //Assume its inches per second. in polar
+        double dx = targetPose.getX() - robotPose.getX();
+        double dy = targetPose.getY() - robotPose.getY();
+        double speed = shooter.findSpeedFromDistance(Math.hypot(dx, dy));
+        double idealHeading = Math.atan2(dy, dx);
+        Vector v_target = new Vector(speed, idealHeading); //is polar
+        Vector v_ball = v_target.minus(v_robot);
+        return v_ball;
     }
 }
