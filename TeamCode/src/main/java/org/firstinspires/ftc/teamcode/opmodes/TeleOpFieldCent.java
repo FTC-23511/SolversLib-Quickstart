@@ -133,7 +133,7 @@ public class TeleOpFieldCent extends CommandOpMode {
         colorSensors = new ColorSensorsSubsystem(hardwareMap);
         led = new LEDSubsystem(hardwareMap);
         gate = new GateSubsystem(hardwareMap);
-        limelight = new LimelightSubsystem();
+        limelight = new LimelightSubsystem(hardwareMap);
         voltageSensor = hardwareMap.get(VoltageSensor.class, "Control Hub");
 
         super.reset();

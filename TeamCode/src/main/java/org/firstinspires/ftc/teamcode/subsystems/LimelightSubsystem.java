@@ -21,13 +21,18 @@ public class LimelightSubsystem extends SubsystemBase {
     private static final List<Integer> GOAL_TAG_IDS = Arrays.asList(20, 24); // Tags we should detect for goal
     public LimelightSubsystem(HardwareMap hardwareMap) {
         limelight = hardwareMap.get(Limelight3A.class, "limelight");
-        limelight.setPollRateHz(100); // This sets how often we ask Limelight for data (100 times per second)
+        limelight.setPollRateHz(90); // This sets how often we ask Limelight for data (90 times per second)
+        //Probably our pipelines will look something like this:
+        //  0: Apriltag/megatag2
+        //  1: Color blob detection
         limelight.pipelineSwitch(0); // Switch to pipeline number 0
         limelight.start(); // This tells Limelight to start looking!
+
+        ;
     }
 
     /**
-     * @return performs hardware call on limelight to return list of detections
+     * @return performs hardware call on limelight to return a detection
      * */
     public LLResult getResult() {
         return limelight.getLatestResult();
@@ -36,7 +41,7 @@ public class LimelightSubsystem extends SubsystemBase {
      * @return pass in list of detections to detect motif id num (21, 22, or 23)
      * */
     public Object detectMotif(LLResult result) {
-        //TODO: Make this method return the biggest motif fiducial! rn it returns the first tag with a motif it can find.
+        //TODO for Claire: Make this method return the biggest motif fiducial! rn it returns the first tag with a motif it can find.
         //fiducial.getTargetArea() might work?? i havent looked into it 
         //https://docs.steelbootrobotics.org/docs/Documents/limelight%20stuff.pdf
         // Obelisk GPP ID = 21
@@ -53,8 +58,12 @@ public class LimelightSubsystem extends SubsystemBase {
         return null;
     }
 
+
+
     /**
-     * @return pass in list of detections to get camera's horizontal distance from each specific tag's center as a double or null if nothing is found
+     * @param result a detection from the limelight
+     * Returns the horizontal distance of the center crosshair to the goal apriltags. Used for camera-only autoaim (not preferrable).
+     * @return camera's horizontal distance from each specific tag's center as a double or null if nothing is found
      * */
     public Object detectGoalXDistance(LLResult result) {
         // Red ID = 24
@@ -80,8 +89,10 @@ public class LimelightSubsystem extends SubsystemBase {
         return null;
     }
 
+    //TODO claire: we might need these in pedro's coordinate system.
     /**
-     * @return pass in list of detections to get robot's position in FTC coordinate system as a set of coordinate points or null if nothing is found
+     * @param result limelight detection
+     * @return robot's position in FTC coordinate system as a set of coordinate points or null if nothing is found
      * */
     public Object detectRobotPosition(LLResult result) {
         if (result != null && result.isValid()) {
@@ -95,6 +106,7 @@ public class LimelightSubsystem extends SubsystemBase {
         return null;
     }
 
+    //also claire remember u can use @param to annotate what you need to pass in
     /**
      * @return pass in list of detections to get the detected goal apriltag id or null if none is found
      * */
@@ -106,6 +118,32 @@ public class LimelightSubsystem extends SubsystemBase {
                     return id;
                 }
             }
+        }
+        return null;
+    }
+    /**
+     * @param result ll result
+     * @return The angle that the closest (?) ball is from the camera, in degrees.
+     */
+    public Object findColorBlobHeading(LLResult result) {
+        if (result != null && result.isValid()) {
+            return result.getTx(); //Apparently, tx is in degrees already.
+        }
+        return null;
+    }
+
+    /**
+     * @param result ll result
+     * @return The distance that the closest (?) ball is from the camera, in inches.
+     */
+    public Object findColorblobDistance(LLResult result) {
+        if (result != null && result.isValid()) {
+            double ty = result.getTy();
+            double mountingHeight = 8.45; //The height of the camera lens from the floor (in)
+            double mountingAngle = 0.0; //The mounting angle of the camera relative to the horizon (deg).
+            double ballHeight = 5.0 / 2.0; //The height of the center of the ball (in)
+            double distance = (ballHeight - mountingHeight) / Math.tan(Math.toRadians(ty + mountingAngle));
+            return distance;
         }
         return null;
     }
