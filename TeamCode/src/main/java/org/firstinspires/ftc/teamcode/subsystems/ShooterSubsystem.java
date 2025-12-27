@@ -60,6 +60,11 @@ public class ShooterSubsystem extends SubsystemBase {
         double targetTicksPerSec = motorRPS * ticksPerRev;
         flywheelController.setSetPoint(targetTicksPerSec);
     }
+
+    /**
+     *
+     * @return Linear speed of flywheel in in/s
+     */
     public double getFlywheelLinearSpeed() {
         double ticksPerRev = 28.0;
         double flywheelDiameter = 2.83465; //72 mm to inches
@@ -70,7 +75,7 @@ public class ShooterSubsystem extends SubsystemBase {
         return lut.get(distance);
     }
     public void updatePIDVoltage(double voltage) {
-        double compensation = 13.5 / voltage;
+        double compensation = 13.5 / voltage; //if voltage < 13.5, compensation > 1
         kP = compensation * kPOriginal;
         kF = compensation * kFOriginal;
     }
