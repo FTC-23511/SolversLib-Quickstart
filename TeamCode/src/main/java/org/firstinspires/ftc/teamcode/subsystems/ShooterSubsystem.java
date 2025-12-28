@@ -48,7 +48,7 @@ public class ShooterSubsystem extends SubsystemBase {
 
         shooter.setRunMode(Motor.RunMode.RawPower);
         shooter.set(0);
-
+        //Note: The distance measured is from the robot center to the spot where the ball lands in the corner, NOT the apriltag.
         lut = new InterpLUT(); //distance (in), linear speed (in/s);
         lut.add(10, 50); //placeholder
         lut.add(10, 50); //placeholder

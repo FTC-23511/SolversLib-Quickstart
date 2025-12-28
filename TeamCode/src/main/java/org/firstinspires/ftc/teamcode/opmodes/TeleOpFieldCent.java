@@ -22,6 +22,7 @@ import com.seattlesolvers.solverslib.command.button.Trigger;
 import com.seattlesolvers.solverslib.controller.PIDFController;
 import com.seattlesolvers.solverslib.gamepad.GamepadEx;
 import com.seattlesolvers.solverslib.gamepad.GamepadKeys;
+import com.seattlesolvers.solverslib.util.MathUtils;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.RobotConstants.Motifs;
@@ -43,6 +44,13 @@ import java.util.function.Supplier;
 @TeleOp (name = "Teleop Field Centric", group = "!")
 public class TeleOpFieldCent extends CommandOpMode {
     public Motifs motifs = PPG;
+    public enum Alliance {
+        RED,
+        BLUE
+    }
+    public Alliance alliance = Alliance.RED;
+    public final Pose GOAL_RED = new Pose(135,141.5);
+    public final Pose GOAL_BLUE = new Pose(9,141.5);
 
     //pedro
     private Follower follower;
@@ -113,9 +121,9 @@ public class TeleOpFieldCent extends CommandOpMode {
 
 
     //point to april tag
-    public static double headingkP = -0.01;
-    public static double headingkD = 0;
-    public static double headingkF = 0;
+    public static double headingkP = -1.0; //Coefficients copied from pedro pathing.
+    public static double headingkD = 0.02;
+    public static double headingkF = 0.01;
     PIDFController headingPID = new PIDFController(headingkP, 0, headingkD, headingkF);
     double lastSeenX;
     double headingVector;
@@ -334,14 +342,11 @@ public class TeleOpFieldCent extends CommandOpMode {
 
             double denominator = Math.max(Math.abs(rotatedX) + Math.abs(rotatedY) + Math.abs(rx), 1.0);
 
+
             // send rotated inputs
             follower.setTeleOpDrive(rotatedY / denominator, rotatedX / denominator, rx / denominator, false);
 
-//            double denominator = Math.max(Math.abs(x) + Math.abs(y) + Math.abs(rx), 1.0);
-//            follower.setTeleOpDrive(y / denominator, x / denominator, rx / denominator, false);
         } else {
-            List<AprilTagDetection> detections = camera.detectAprilTags();
-            cameraReads++;
             if (gamepad1.touchpad_finger_1) {
                 manualControl = true;
                 gamepad1.rumbleBlips(1);
@@ -351,12 +356,11 @@ public class TeleOpFieldCent extends CommandOpMode {
             double rx = 0;
             double rotatedX =  x * Math.cos(fieldOffset) - y * Math.sin(fieldOffset);
             double rotatedY =  x * Math.sin(fieldOffset) + y * Math.cos(fieldOffset);
-            if (camera.detectGoalXDistance(detections) != null) {
-                lastSeenX = (double) camera.detectGoalXDistance(detections);
-                headingVector = -headingPID.calculate(lastSeenX, -8);
-                rx = headingVector;
-            }
-            rx += -driver1.getRightX() * (slowMode?0.3:1);
+            Vector v_ball = calculateTargetVector2(follower, (alliance == Alliance.RED ? GOAL_RED : GOAL_BLUE), shooter);
+            double targetDirection = v_ball.getTheta();
+            double error = getAngleDifference(targetDirection, follower.getHeading());
+            rx = headingPID.calculate(error, 0);
+            shooter.setTargetLinearSpeed(v_ball.getMagnitude());
             double denominator = Math.max(Math.abs(rotatedX) + Math.abs(rotatedY) + Math.abs(rx), 1.0);
             follower.setTeleOpDrive(rotatedY / denominator, rotatedX / denominator, rx / denominator, false);
         }
@@ -470,15 +474,115 @@ public class TeleOpFieldCent extends CommandOpMode {
 
 
     }
+
+    /**
+     * Calculate the target vector for the shooter with velocity compensation.
+     * @param follower Pedro follower object
+     * @param targetPose Target coordinate in Pedro system to shoot at.
+     * @param shooter shooter subsystem
+     * @return A vector representing the trajectory the ball should follow. The magnitude of the vector is the linear speed the ball should have.
+     */
     public Vector calculateTargetVector(Follower follower, Pose targetPose, ShooterSubsystem shooter) {
         Pose robotPose = follower.getPose();
         Vector v_robot = follower.getVelocity(); //Assume its inches per second. in polar
-        double dx = targetPose.getX() - robotPose.getX();
-        double dy = targetPose.getY() - robotPose.getY();
+        Pose robotFuturePose = robotPose.plus(new Pose(v_robot.getXComponent(), v_robot.getYComponent()).times(0.200)); //200 ms latency for shooter
+        double dx = targetPose.getX() - robotFuturePose.getX();
+        double dy = targetPose.getY() - robotFuturePose.getY();
         double speed = shooter.findSpeedFromDistance(Math.hypot(dx, dy));
         double idealHeading = Math.atan2(dy, dx);
         Vector v_target = new Vector(speed, idealHeading); //is polar
         Vector v_ball = v_target.minus(v_robot);
         return v_ball;
+    }
+
+    /**
+     * Calculate the target vector for the ball with velocity and acceleration compensation, as well as latency in the shooter.
+     * @param follower Pedro follower object
+     * @param targetPose Target coordinate in Pedro system to shoot at.
+     * @param shooter shooter subsystem
+     * @return A vector representing the trajectory the ball should follow. The magnitude of the vector is the linear speed the ball should have.
+     */
+    public Vector calculateTargetVector2(Follower follower, Pose targetPose, ShooterSubsystem shooter) {
+        // --- 1. GATHER CURRENT STATE ---
+        double latency = 0.300;
+
+        Pose currentPose = follower.getPose();
+        Vector v_robot = follower.getVelocity();
+        double angularVel = follower.getAngularVelocity();
+        Vector a_robot = follower.getAcceleration();
+
+        double shooterOffsetX = 10.0;
+        double shooterOffsetY = 0.0;
+
+        // --- 2. PREDICT ROBOT POSE ---
+        double futureHeading = currentPose.getHeading() + (angularVel * latency);
+
+        double predX = currentPose.getX()
+                + (v_robot.getXComponent() * latency)
+                + (0.5 * a_robot.getXComponent() * latency * latency);
+
+        double predY = currentPose.getY()
+                + (v_robot.getYComponent() * latency)
+                + (0.5 * a_robot.getYComponent() * latency * latency);
+
+        // --- 3. CALCULATE TRUE VELOCITY AT MUZZLE ---
+
+        // A. Future Linear Velocity
+        double futureVx = v_robot.getXComponent() + (a_robot.getXComponent() * latency);
+        double futureVy = v_robot.getYComponent() + (a_robot.getYComponent() * latency);
+
+        // B. Tangential Velocity (Spinning)
+        double cosH = Math.cos(futureHeading);
+        double sinH = Math.sin(futureHeading);
+
+        // Offset rotated to future heading
+        double fieldOffsetX = (shooterOffsetX * cosH) - (shooterOffsetY * sinH);
+        double fieldOffsetY = (shooterOffsetX * sinH) + (shooterOffsetY * cosH);
+
+        // V_tan = omega * r
+        double v_tangential_x = -angularVel * fieldOffsetY;
+        double v_tangential_y =  angularVel * fieldOffsetX;
+
+        // C. Combine for Total Robot Vector
+        double finalRobotVx = futureVx + v_tangential_x;
+        double finalRobotVy = futureVy + v_tangential_y;
+
+        // CRITICAL FIX: Convert Cartesian (Vx, Vy) to Polar (Mag, Theta) for Pedro Vector
+        double robotVelMag = Math.hypot(finalRobotVx, finalRobotVy);
+        double robotVelAngle = Math.atan2(finalRobotVy, finalRobotVx);
+
+        Vector v_robot_total = new Vector(robotVelMag, robotVelAngle);
+
+        // --- 4. SOLVE FOR SHOOTING VECTOR ---
+        double shooterMsgX = predX + fieldOffsetX;
+        double shooterMsgY = predY + fieldOffsetY;
+
+        double dx = targetPose.getX() - shooterMsgX;
+        double dy = targetPose.getY() - shooterMsgY;
+
+        double dist = Math.hypot(dx, dy);
+        double speed = shooter.findSpeedFromDistance(dist);
+        double idealHeading = Math.atan2(dy, dx);
+
+        Vector v_target = new Vector(speed, idealHeading);
+
+        // --- 5. RESULT ---
+        return v_target.minus(v_robot_total);
+    }
+    /**
+     * Calculates the smallest difference between two angles in radians.
+     * @return a double between -PI and +PI.
+     */
+    public double getAngleDifference(double targetAngle, double currentAngle) {
+        double difference = targetAngle - currentAngle;
+
+        // Normalize the angle to be within -PI to +PI
+        while (difference > Math.PI) {
+            difference -= 2 * Math.PI;
+        }
+        while (difference <= -Math.PI) {
+            difference += 2 * Math.PI;
+        }
+        return difference;
     }
 }
