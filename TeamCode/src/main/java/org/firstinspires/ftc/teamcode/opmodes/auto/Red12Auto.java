@@ -53,7 +53,7 @@ public class Red12Auto extends CommandOpMode {
     private Follower follower;
 
     //update starting pose
-    public static Pose startingPose = new Pose(122.361,121.175,Math.toRadians(49)); //find actual statring pos
+    public static Pose startingPose = new Pose(122.361,121.175,Math.toRadians(49));
     private IntakeSubsystem intake;
     private ShooterSubsystem shooter;
     private SpindexerSubsystem spindexer;
@@ -61,7 +61,6 @@ public class Red12Auto extends CommandOpMode {
     private GateSubsystem gate;
     private LEDSubsystem led;
     private RobotConstants.BallColors[] motif = new RobotConstants.BallColors[]{UNKNOWN,UNKNOWN,UNKNOWN};
-    PathChain shimmy;
     public void buildPaths(Follower follower) {
         follower.setStartingPose(startingPose);
         //shoot first

@@ -1,11 +1,11 @@
-package org.firstinspires.ftc.teamcode.opmodes;
+package org.firstinspires.ftc.teamcode.opmodes.tuning;
 
-import static org.firstinspires.ftc.teamcode.opmodes.Tuning.changes;
-import static org.firstinspires.ftc.teamcode.opmodes.Tuning.drawCurrent;
-import static org.firstinspires.ftc.teamcode.opmodes.Tuning.drawCurrentAndHistory;
-import static org.firstinspires.ftc.teamcode.opmodes.Tuning.follower;
-import static org.firstinspires.ftc.teamcode.opmodes.Tuning.stopRobot;
-import static org.firstinspires.ftc.teamcode.opmodes.Tuning.telemetryM;
+import static org.firstinspires.ftc.teamcode.opmodes.tuning.Tuning.changes;
+import static org.firstinspires.ftc.teamcode.opmodes.tuning.Tuning.drawCurrent;
+import static org.firstinspires.ftc.teamcode.opmodes.tuning.Tuning.drawCurrentAndHistory;
+import static org.firstinspires.ftc.teamcode.opmodes.tuning.Tuning.follower;
+import static org.firstinspires.ftc.teamcode.opmodes.tuning.Tuning.stopRobot;
+import static org.firstinspires.ftc.teamcode.opmodes.tuning.Tuning.telemetryM;
 
 import com.bylazar.configurables.PanelsConfigurables;
 import com.bylazar.configurables.annotations.Configurable;

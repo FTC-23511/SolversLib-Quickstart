@@ -24,6 +24,9 @@ public class ShooterSubsystem extends SubsystemBase {
     public double getActualVelocity() {
         return shooter1.getCorrectedVelocity();
     }
+    public boolean isAtTargetVelocity() {
+        return Math.abs(flywheelController.getSetPoint() - shooter1.getCorrectedVelocity()) < 50;
+    }
     double kPOriginal = -0.008;
     double kFOriginal = -0.00052;
     double kP = kPOriginal;
