@@ -12,7 +12,7 @@ import com.seattlesolvers.solverslib.util.InterpLUT;
 public class ShooterSubsystem extends SubsystemBase {
     //Note: I changed the motor type from 312 rpm to bare (6k i think).
     // We might have to redo PID and find new velocities.
-    //Delete this once done :)
+    // TODO: Delete this once done :)
     private Motor shooter1;
     private Motor shooter2;
     private ServoEx hood;
@@ -23,6 +23,9 @@ public class ShooterSubsystem extends SubsystemBase {
     }
     public double getActualVelocity() {
         return shooter1.getCorrectedVelocity();
+    }
+    public boolean isAtTargetVelocity() {
+        return Math.abs(flywheelController.getSetPoint() - shooter1.getCorrectedVelocity()) < 50;
     }
     double kPOriginal = -0.008;
     double kFOriginal = -0.00052;
@@ -45,7 +48,7 @@ public class ShooterSubsystem extends SubsystemBase {
 
         shooter.setRunMode(Motor.RunMode.RawPower);
         shooter.set(0);
-
+        //Note: The distance measured is from the robot center to the spot where the ball lands in the corner, NOT the apriltag.
         lut = new InterpLUT(); //distance (in), linear speed (in/s);
         lut.add(10, 50); //placeholder
         lut.add(10, 50); //placeholder
@@ -62,7 +65,7 @@ public class ShooterSubsystem extends SubsystemBase {
     }
 
     /**
-     *
+     * hardware call on encoder
      * @return Linear speed of flywheel in in/s
      */
     public double getFlywheelLinearSpeed() {
