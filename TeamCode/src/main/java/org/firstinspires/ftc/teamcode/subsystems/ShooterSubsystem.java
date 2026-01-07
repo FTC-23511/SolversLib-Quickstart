@@ -12,7 +12,7 @@ import com.seattlesolvers.solverslib.util.InterpLUT;
 public class ShooterSubsystem extends SubsystemBase {
     //Note: I changed the motor type from 312 rpm to bare (6k i think).
     // We might have to redo PID and find new velocities.
-    //Delete this once done :)
+    // TODO: Delete this once done :)
     private Motor shooter1;
     private Motor shooter2;
     private ServoEx hood;
@@ -65,7 +65,7 @@ public class ShooterSubsystem extends SubsystemBase {
     }
 
     /**
-     *
+     * hardware call on encoder
      * @return Linear speed of flywheel in in/s
      */
     public double getFlywheelLinearSpeed() {

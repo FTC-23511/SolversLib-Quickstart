@@ -6,13 +6,14 @@ import static org.firstinspires.ftc.teamcode.RobotConstants.Motifs.PGP;
 import static org.firstinspires.ftc.teamcode.RobotConstants.Motifs.PPG;
 import static org.firstinspires.ftc.teamcode.RobotConstants.SHOOTER_ANGLE;
 
+import android.annotation.SuppressLint;
+
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.geometry.Pose;
 import com.pedropathing.math.Vector;
 import com.pedropathing.paths.PathChain;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.seattlesolvers.solverslib.command.Command;
@@ -23,7 +24,6 @@ import com.seattlesolvers.solverslib.command.button.Trigger;
 import com.seattlesolvers.solverslib.controller.PIDFController;
 import com.seattlesolvers.solverslib.gamepad.GamepadEx;
 import com.seattlesolvers.solverslib.gamepad.GamepadKeys;
-import com.seattlesolvers.solverslib.util.MathUtils;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.RobotConstants.Motifs;
@@ -36,14 +36,12 @@ import org.firstinspires.ftc.teamcode.subsystems.LEDSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.ShooterSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.SpindexerSubsystem;
 import org.firstinspires.ftc.vision.VisionPortal;
-import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 
-import java.util.List;
 import java.util.function.Supplier;
 
-@TeleOp (name = "Teleop Field Centric", group = "!")
-public class TeleOpFieldCent extends CommandOpMode {
+@com.qualcomm.robotcore.eventloop.opmode.TeleOp(name = "Teleop Field Centric", group = "!")
+public class TeleOp extends CommandOpMode {
     public Motifs motifs = PPG;
     public enum Alliance {
         RED,
@@ -305,6 +303,7 @@ public class TeleOpFieldCent extends CommandOpMode {
     }
     int cameraReads = 0;
 
+    @SuppressLint("DefaultLocale")
     @Override
     public void run() {
         if (!cameraInitialized) {
@@ -424,6 +423,7 @@ public class TeleOpFieldCent extends CommandOpMode {
         telemetry.addData("shooter far amount ", farShooterTarget);
         telemetry.addData("shooter target velocity ", shooter.getTargetVelocity());
         telemetry.addData("shooter actual velocity ", shooter.getActualVelocity());
+        telemetry.addData("shooter linear speed ", shooter.getFlywheelLinearSpeed());
         telemetry.addData("shooter hood pos ", shooter.getHoodPos());
 
 
