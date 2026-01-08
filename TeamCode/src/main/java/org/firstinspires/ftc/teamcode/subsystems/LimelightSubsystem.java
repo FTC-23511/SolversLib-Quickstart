@@ -19,6 +19,11 @@ public class LimelightSubsystem extends SubsystemBase {
     Limelight3A limelight;
     private static final List<Integer> MOTIF_TAG_IDS = Arrays.asList(21, 22, 23); // Tags we should detect for motif
     private static final List<Integer> GOAL_TAG_IDS = Arrays.asList(20, 24); // Tags we should detect for goal
+    public enum LIMELIGHT_PIPELINES {
+        APRILTAG,
+        ARTIFACT_AND_RAMP,
+        ARTIFACT_ONLY
+    }
     public LimelightSubsystem(HardwareMap hardwareMap) {
         limelight = hardwareMap.get(Limelight3A.class, "limelight");
         limelight.setPollRateHz(90); // This sets how often we ask Limelight for data (90 times per second)
@@ -27,10 +32,25 @@ public class LimelightSubsystem extends SubsystemBase {
         //  1: Color blob detection
         limelight.pipelineSwitch(0); // Switch to pipeline number 0
         limelight.start(); // This tells Limelight to start looking!
-
-        ;
     }
 
+    /**
+     * change the limelight pipeline. May have a short delay ???
+     * @param pipeline what pipeline to switch to.
+     */
+    public void setPipeline(LIMELIGHT_PIPELINES pipeline) {
+        switch (pipeline) {
+            case APRILTAG:
+                limelight.pipelineSwitch(0);
+                break;
+            case ARTIFACT_AND_RAMP:
+                limelight.pipelineSwitch(1);
+                break;
+            case ARTIFACT_ONLY:
+                limelight.pipelineSwitch(2);
+                break;
+        }
+    }
     /**
      * @return performs hardware call on limelight to return a detection
      * */
