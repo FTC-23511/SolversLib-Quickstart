@@ -63,23 +63,26 @@ public class ColorSensorsSubsystem extends SubsystemBase {
     public void updateBack() {
         backResult = backSensor.getNormalizedColors();
     }
-    public boolean colorIsGreenIntake(NormalizedRGBA color) {
+    public static boolean colorIsGreenIntake(NormalizedRGBA color) {
         return colorInRange(rgbToHsv(color), intakeGreenLowerHSV, intakeGreenHigherHSV);
     }
-    public boolean colorIsPurpleIntake(NormalizedRGBA color) {
+    public static boolean colorIsPurpleIntake(NormalizedRGBA color) {
         return colorInRange(rgbToHsv(color), intakePurpleLowerHSV, intakePurpleHigherHSV);
     }
-    public boolean colorIsGreenBack(NormalizedRGBA color) {
+    public static boolean colorIsGreenBack(NormalizedRGBA color) {
         return colorInRange(rgbToHsv(color), backGreenLowerHSV, backGreenHigherHSV);
     }
-    public boolean colorIsPurpleBack(NormalizedRGBA color) {
+    public static boolean colorIsPurpleBack(NormalizedRGBA color) {
         return colorInRange(rgbToHsv(color), backPurpleLowerHSV, backPurpleHigherHSV);
     }
-    public boolean colorIsWhite(NormalizedRGBA color) {
+    public static boolean colorIsWhite(NormalizedRGBA color) {
         return colorInRange(rgbToHsv(color), whiteLowerHSV, whiteHigherHSV);
     }
-    public boolean colorIsBall(NormalizedRGBA color) {
+    public static boolean colorIsBall(NormalizedRGBA color) {
         return colorIsGreenIntake(color) || colorIsPurpleIntake(color) || colorIsGreenBack(color) || colorIsPurpleBack(color) || colorIsWhite(color);
+    }
+    public boolean intakeHasBall() {
+        return colorIsBall(intakeSensor1Result)||colorIsBall(intakeSensor2Result);
     }
 
     // Function to convert RGB to HSV
