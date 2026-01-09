@@ -319,7 +319,7 @@ public class TeleOp extends CommandOpMode {
         //spindexer and array logic
         if ((Math.abs(spindexer.getCurrentPosition() - spindexer.getPIDSetpoint()) < 60)) {
             spindexer.handleUpdateArray(colorSensors.getIntakeSensor1Result(), colorSensors.getIntakeSensor2Result(), colorSensors.getBackResult());
-            if (colorSensors.intakeHasBall() && spindexer.getBalls()[2].equals(RobotConstants.BallColors.NONE)) {
+            if (colorSensors.doesLastResultHaveBall() && spindexer.getBalls()[2].equals(RobotConstants.BallColors.NONE)) {
                 spindexer.moveSpindexerBy(120);
             }
         }

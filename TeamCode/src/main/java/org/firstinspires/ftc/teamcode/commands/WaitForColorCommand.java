@@ -21,7 +21,12 @@ public class WaitForColorCommand extends CommandBase {
         addRequirements(colorSubsystem);
     }
     @Override
+    public void execute() {
+        colorSubsystem.updateSensor1();
+        colorSubsystem.updateSensor2();
+    }
+    @Override
     public boolean isFinished() {
-        return colorSubsystem.checkIfGreen(3) || colorSubsystem.checkIfPurple(3) || colorSubsystem.checkIfWhite(3);
+        return colorSubsystem.doesLastResultHaveBall();
     }
 }
