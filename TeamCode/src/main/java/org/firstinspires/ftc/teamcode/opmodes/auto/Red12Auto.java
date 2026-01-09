@@ -23,7 +23,7 @@ import com.seattlesolvers.solverslib.pedroCommand.FollowPathCommand;
 
 import org.firstinspires.ftc.teamcode.RobotConstants;
 import org.firstinspires.ftc.teamcode.commands.MoveSpindexerCommand;
-import org.firstinspires.ftc.teamcode.commands.ShootBallSequenceCommandSequence;
+import org.firstinspires.ftc.teamcode.commands.ShootSortedBallsCommandSequence;
 import org.firstinspires.ftc.teamcode.commands.WaitForColorCommand;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 import org.firstinspires.ftc.teamcode.subsystems.ColorSensorsSubsystem;
@@ -262,13 +262,12 @@ public class Red12Auto extends CommandOpMode {
                 new SequentialCommandGroup(
                         new InstantCommand(() -> {
                             shooter.setTargetLinearSpeed(1200);
-                            shooter.setHood(0.45); //Placeholder
                             gate.down();
                             follower.setMaxPower(0.8);
                             spindexer.setBalls(new RobotConstants.BallColors[] {PURPLE, PURPLE, PURPLE});
                         }), //start shoot
                         new FollowPathCommand(follower, paths.get(0), true), //drive to shooting pos
-                        new ShootBallSequenceCommandSequence(shooter, spindexer, gate, motif), //shoot motif
+                        new ShootSortedBallsCommandSequence(shooter, spindexer, gate, motif), //shoot motif
                         new InstantCommand(() -> {
                             follower.setMaxPower(1);
                             shooter.setTargetLinearSpeed(1200);}),
@@ -299,7 +298,7 @@ public class Red12Auto extends CommandOpMode {
                             follower.setMaxPower(1);
                         }),
                         new FollowPathCommand(follower, paths.get(3), true), // returning to shooting pos
-                        new ShootBallSequenceCommandSequence(shooter, spindexer, gate, motif), //shoot motif
+                        new ShootSortedBallsCommandSequence(shooter, spindexer, gate, motif), //shoot motif
 
                         //cycle two
                         new ParallelCommandGroup(
@@ -323,7 +322,7 @@ public class Red12Auto extends CommandOpMode {
                         new FollowPathCommand(follower, paths.get(6), true),
 
                         new FollowPathCommand(follower, paths.get(7), true), //return to shooting pos
-                        new ShootBallSequenceCommandSequence(shooter, spindexer, gate, motif), //shoot motif
+                        new ShootSortedBallsCommandSequence(shooter, spindexer, gate, motif), //shoot motif
 
                         //cycle three
                         new ParallelCommandGroup(
@@ -347,7 +346,7 @@ public class Red12Auto extends CommandOpMode {
                         new FollowPathCommand(follower, paths.get(10), true),
 
                         new FollowPathCommand(follower, paths.get(11), true), //return to shooting pos
-                        new ShootBallSequenceCommandSequence(shooter, spindexer, gate, motif), //shoot motif
+                        new ShootSortedBallsCommandSequence(shooter, spindexer, gate, motif), //shoot motif
 
                         //move off shooting line so that you get extra points theoretically
                         new FollowPathCommand(follower, paths.get(12), true),

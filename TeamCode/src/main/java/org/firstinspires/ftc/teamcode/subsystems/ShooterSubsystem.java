@@ -15,9 +15,7 @@ public class ShooterSubsystem extends SubsystemBase {
     // TODO: Delete this once done :)
     private Motor shooter1;
     private Motor shooter2;
-    private ServoEx hood;
     private MotorGroup shooter;
-    private double hoodPos = 0.6;
     public double getTargetVelocity() {
         return flywheelController.getSetPoint();
     }
@@ -36,11 +34,9 @@ public class ShooterSubsystem extends SubsystemBase {
     public ShooterSubsystem(final HardwareMap hMap) {
         shooter1 = new Motor(hMap, "shooter1", Motor.GoBILDA.BARE);
         shooter2 = new Motor(hMap, "shooter2", Motor.GoBILDA.BARE);
-        hood = new ServoEx(hMap, "pivot");
 
         shooter1.setInverted(true); //one has to be backwards
         shooter2.setInverted(false);
-        hood.setInverted(false);
         shooter1.setZeroPowerBehavior(Motor.ZeroPowerBehavior.FLOAT);
         shooter2.setZeroPowerBehavior(Motor.ZeroPowerBehavior.FLOAT);
         
@@ -82,22 +78,10 @@ public class ShooterSubsystem extends SubsystemBase {
         kP = compensation * kPOriginal;
         kF = compensation * kFOriginal;
     }
-    public void setHood(double ticks) {
-        hoodPos = ticks;
-    }
-
-    /**
-     *
-     * @return last commanded hood pos
-     */
-    public double getHoodPos() {
-        return hoodPos;
-    }
     @Override
     public void periodic() {
         flywheelController.setF(kF);
         flywheelController.setP(kP);
-        hood.set(hoodPos);
         shooter.set(flywheelController.calculate(flywheelController.getSetPoint() != 0 ? shooter1.getCorrectedVelocity() : 0));
     }
 

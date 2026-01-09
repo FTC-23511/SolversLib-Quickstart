@@ -1,6 +1,5 @@
 package org.firstinspires.ftc.teamcode.opmodes.auto;
 
-import static org.firstinspires.ftc.teamcode.RobotConstants.BallColors.PURPLE;
 import static org.firstinspires.ftc.teamcode.RobotConstants.BallColors.UNKNOWN;
 
 import android.annotation.SuppressLint;
@@ -32,7 +31,7 @@ import org.firstinspires.ftc.teamcode.subsystems.LEDSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.ShooterSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.SpindexerSubsystem;
 
-public class Red18Auto extends CommandOpMode {
+public class Red18SortOverflowAuto extends CommandOpMode {
     //Generated from december_18.pp file.
     //Note: I consolidaated shootfirstrow1/2 into one pathchain for optimization.
     //also done to shootthirdrow
@@ -41,24 +40,25 @@ public class Red18Auto extends CommandOpMode {
         public PathChain shootPreload;
         public PathChain intakeSecondRow;
         public PathChain shootSecondRow;
-        public PathChain intakeRamp;
-        public PathChain shootRamp;
-        public PathChain intakeRamp2;
-        public PathChain shootRamp2;
-        public PathChain intakeFirstRow;
-        public PathChain shootFirstRow;
         public PathChain intakeThirdRow;
         public PathChain shootThirdRow;
+        public PathChain intakeFirstRow;
+        public PathChain shootFirstRow;
+        public PathChain intakeRamp;
+        public PathChain shootRamp;
 
         public Paths(Follower follower) {
             shootPreload = follower
                     .pathBuilder()
                     .addPath(
-                            new BezierLine(new Pose(122.361, 121.175), new Pose(88.400, 81.800))
+                            new BezierLine(new Pose(88.000, 136.000), new Pose(88.400, 81.800))
+                    )
+                    .setConstantHeadingInterpolation(Math.toRadians(90))
+                    .addPath(
+                            new BezierLine(new Pose(88.400, 81.800), new Pose(88.400, 81.800))
                     )
                     .setConstantHeadingInterpolation(Math.toRadians(49))
                     .build();
-
             intakeSecondRow = follower
                     .pathBuilder()
                     .addPath(
@@ -83,71 +83,6 @@ public class Red18Auto extends CommandOpMode {
                     .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(49))
                     .build();
 
-            intakeRamp = follower
-                    .pathBuilder()
-                    .addPath(
-                            new BezierCurve(
-                                    new Pose(88.400, 81.800),
-                                    new Pose(89.000, 58.000),
-                                    new Pose(133.500, 61.000)
-                            )
-                    )
-                    .setLinearHeadingInterpolation(Math.toRadians(49), Math.toRadians(50))
-                    .build();
-
-            shootRamp = follower
-                    .pathBuilder()
-                    .addPath(
-                            new BezierCurve(
-                                    new Pose(133.500, 61.000),
-                                    new Pose(89.000, 58.000),
-                                    new Pose(88.400, 81.800)
-                            )
-                    )
-                    .setLinearHeadingInterpolation(Math.toRadians(50), Math.toRadians(49))
-                    .build();
-
-            intakeRamp2 = follower
-                    .pathBuilder()
-                    .addPath(
-                            new BezierCurve(
-                                    new Pose(88.400, 81.800),
-                                    new Pose(89.000, 58.000),
-                                    new Pose(133.500, 61.000)
-                            )
-                    )
-                    .setLinearHeadingInterpolation(Math.toRadians(49), Math.toRadians(50))
-                    .build();
-
-            shootRamp2 = follower
-                    .pathBuilder()
-                    .addPath(
-                            new BezierLine(new Pose(133.500, 61.000), new Pose(88.400, 81.800))
-                    )
-                    .setLinearHeadingInterpolation(Math.toRadians(50), Math.toRadians(49))
-                    .build();
-
-            intakeFirstRow = follower
-                    .pathBuilder()
-                    .addPath(
-                            new BezierLine(new Pose(88.400, 81.800), new Pose(125.000, 83.000))
-                    )
-                    .setTangentHeadingInterpolation()
-                    .build();
-
-            shootFirstRow = follower
-                    .pathBuilder()
-                    .addPath(
-                            new BezierLine(new Pose(125.000, 83.000), new Pose(88.400, 81.800))
-                    )
-                    .setTangentHeadingInterpolation()
-                    .setReversed()
-                    .addPath(
-                            new BezierLine(new Pose(88.400, 81.800), new Pose(88.400, 81.8001)) //0.0001 offset to avoid div by 0
-                    )
-                    .setConstantHeadingInterpolation(Math.toRadians(49))
-                    .build();
-
             intakeThirdRow = follower
                     .pathBuilder()
                     .addPath(
@@ -163,15 +98,57 @@ public class Red18Auto extends CommandOpMode {
             shootThirdRow = follower
                     .pathBuilder()
                     .addPath(
-                            new BezierLine(new Pose(127.700, 35.600), new Pose(90.000, 110.000))
+                            new BezierLine(new Pose(127.700, 35.600), new Pose(88.400, 81.800))
                     )
                     .setTangentHeadingInterpolation()
                     .setReversed()
                     .addPath(
-                            new BezierLine(new Pose(90.000, 110.000), new Pose(90.000, 110.0001)) //0.0001 offset to avoid div by 0
+                            new BezierLine(new Pose(88.400, 81.800), new Pose(125.000, 83.000))
                     )
-                    .setConstantHeadingInterpolation(Math.toRadians(35))
+                    .setTangentHeadingInterpolation()
                     .build();
+
+            intakeFirstRow = follower
+                    .pathBuilder()
+
+                    .build();
+
+            shootFirstRow = follower
+                    .pathBuilder()
+                    .addPath(
+                            new BezierLine(new Pose(125.000, 83.000), new Pose(88.400, 81.800))
+                    )
+                    .setTangentHeadingInterpolation()
+                    .setReversed()
+                    .addPath(
+                            new BezierLine(new Pose(88.400, 81.800), new Pose(88.400, 81.800))
+                    )
+                    .setConstantHeadingInterpolation(Math.toRadians(49))
+                    .build();
+            intakeRamp = follower
+                    .pathBuilder()
+                    .addPath(
+                            new BezierCurve(
+                                    new Pose(88.400, 81.800),
+                                    new Pose(89.000, 58.000),
+                                    new Pose(133.500, 51.000)
+                            )
+                    )
+                    .setLinearHeadingInterpolation(Math.toRadians(49), Math.toRadians(50))
+                    .build();
+
+            shootRamp = follower
+                    .pathBuilder()
+                    .addPath(
+                            new BezierCurve(
+                                    new Pose(133.500, 51.000),
+                                    new Pose(89.000, 58.000),
+                                    new Pose(88.400, 81.800)
+                            )
+                    )
+                    .setLinearHeadingInterpolation(Math.toRadians(50), Math.toRadians(49))
+                    .build();
+            
         }
     }
     //This command group is supposed to end once all 3 balls are released. If the WaitUntilCommand does not function right, then replace
@@ -262,18 +239,6 @@ public class Red18Auto extends CommandOpMode {
                 new FollowPathCommand(follower, paths.shootSecondRow, true),
                 shoot(),
 
-                //Ramp cycle
-                new FollowPathCommand(follower, paths.intakeRamp, true),
-                intakeArtifacts().withTimeout(3000),
-                new FollowPathCommand(follower, paths.shootRamp, true),
-                shoot(),
-
-                //Ramp cycle
-                new FollowPathCommand(follower, paths.intakeRamp, true),
-                intakeArtifacts().withTimeout(3000),
-                new FollowPathCommand(follower, paths.shootRamp, true),
-                shoot(),
-
                 //First row
                 new ParallelRaceGroup(
                         new FollowPathCommand(follower, paths.intakeFirstRow).withTimeout(3000),
@@ -282,13 +247,27 @@ public class Red18Auto extends CommandOpMode {
                 new FollowPathCommand(follower, paths.shootFirstRow),
                 shoot(),
 
-                //Third row + park
+                //Third row
                 new ParallelRaceGroup(
                         new FollowPathCommand(follower, paths.intakeThirdRow).withTimeout(3000),
                         intakeArtifacts()
                 ),
                 new FollowPathCommand(follower, paths.shootThirdRow),
+                shoot(),
+
+                //Ramp cycle
+                new FollowPathCommand(follower, paths.intakeRamp, true),
+                intakeArtifacts().withTimeout(3000),
+                new FollowPathCommand(follower, paths.shootRamp, true),
+                shoot(),
+
+                //Ramp cycle
+                new FollowPathCommand(follower, paths.intakeRamp, true),
+                intakeArtifacts().withTimeout(3000),
+                new FollowPathCommand(follower, paths.shootRamp, true),
                 shoot()
+
+                //later: park?
         );
         schedule(
                 new RunCommand(() -> follower.update()),
