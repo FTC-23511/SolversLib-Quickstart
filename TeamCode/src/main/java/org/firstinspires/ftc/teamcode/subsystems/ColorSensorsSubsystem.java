@@ -7,8 +7,6 @@ import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
 import com.qualcomm.robotcore.hardware.NormalizedRGBA;
 import com.seattlesolvers.solverslib.command.SubsystemBase;
 
-import org.firstinspires.ftc.teamcode.RobotConstants;
-
 public class ColorSensorsSubsystem extends SubsystemBase {
     private NormalizedColorSensor intakeSensor1;
     private NormalizedRGBA intakeSensor1Result = null;
@@ -81,7 +79,7 @@ public class ColorSensorsSubsystem extends SubsystemBase {
     public static boolean colorIsBall(NormalizedRGBA color) {
         return colorIsGreenIntake(color) || colorIsPurpleIntake(color) || colorIsGreenBack(color) || colorIsPurpleBack(color) || colorIsWhite(color);
     }
-    public boolean intakeHasBall() {
+    public boolean doesLastResultHaveBall() {
         return colorIsBall(intakeSensor1Result)||colorIsBall(intakeSensor2Result);
     }
 
