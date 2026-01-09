@@ -63,12 +63,39 @@ public class ColorSensorsSubsystem extends SubsystemBase {
     public void updateBack() {
         backResult = backSensor.getNormalizedColors();
     }
+    public boolean colorIsGreenIntake(NormalizedRGBA color) {
+        return colorInRange(rgbToHsv(color), intakeGreenLowerHSV, intakeGreenHigherHSV);
+    }
+    public boolean colorIsPurpleIntake(NormalizedRGBA color) {
+        return colorInRange(rgbToHsv(color), intakePurpleLowerHSV, intakePurpleHigherHSV);
+    }
+    public boolean colorIsGreenBack(NormalizedRGBA color) {
+        return colorInRange(rgbToHsv(color), backGreenLowerHSV, backGreenHigherHSV);
+    }
+    public boolean colorIsPurpleBack(NormalizedRGBA color) {
+        return colorInRange(rgbToHsv(color), backPurpleLowerHSV, backPurpleHigherHSV);
+    }
+    public boolean colorIsWhite(NormalizedRGBA color) {
+        return colorInRange(rgbToHsv(color), whiteLowerHSV, whiteHigherHSV);
+    }
+    public boolean colorIsBall(NormalizedRGBA color) {
+        return colorIsGreenIntake(color) || colorIsPurpleIntake(color) || colorIsGreenBack(color) || colorIsPurpleBack(color) || colorIsWhite(color);
+    }
 
     // Function to convert RGB to HSV
-    public static float[] rgbToHsv(float[] colors) {
-        float r = colors[0];
-        float g = colors[1];
-        float b = colors[2];
+
+
+
+    private static boolean colorInRange(float[] colorHSV, float[] min, float[] max) {
+        return
+                min[0] <= colorHSV[0] && colorHSV[0] <= max[0] && //Red is within min and max range
+                        min[1] <= colorHSV[1] && colorHSV[1] <= max[1] && //Green is within min and max range
+                        min[2] <= colorHSV[2] && colorHSV[2] <= max[2];   //brue is within the range,
+    }
+    public static float[] rgbToHsv(NormalizedRGBA normalizedRGBA) {
+        float r = normalizedRGBA.red;
+        float g = normalizedRGBA.green;
+        float b = normalizedRGBA.blue;
         float max = Math.max(r, Math.max(g, b));
         float min = Math.min(r, Math.min(g, b));
         float delta = max - min;
@@ -92,12 +119,5 @@ public class ColorSensorsSubsystem extends SubsystemBase {
         }
         return new float[] {h, s, v};
     }
-
-
-    private static boolean colorInRange(float[] color, float[] min, float[] max) {
-        return
-                min[0] <= color[0] && color[0] <= max[0] && //Red is within min and max range
-                        min[1] <= color[1] && color[1] <= max[1] && //Green is within min and max range
-                        min[2] <= color[2] && color[2] <= max[2];   //brue is within the range,
-    }
 }
+
