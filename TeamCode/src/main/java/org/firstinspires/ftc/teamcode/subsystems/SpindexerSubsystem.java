@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.hardware.AnalogInput;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.NormalizedRGBA;
 import com.seattlesolvers.solverslib.command.SubsystemBase;
 import com.seattlesolvers.solverslib.controller.PIDController;
 
@@ -133,6 +134,26 @@ public class SpindexerSubsystem extends SubsystemBase {
         BallColors a = balls[0], b = balls[1], c = balls[2];
         if (n == 1) { balls[0] = b; balls[1] = c; balls[2] = a; }
         else if (n == 2) { balls[0] = c; balls[1] = a; balls[2] = b; }
+    }
+
+    /**
+     * @param sensor1 color sensor1 result
+     * @param sensor2 color sensor2 result
+     * @param backSensor back color sensor result
+     * @return spindexer smthg
+     */
+    public void handleUpdateArray(NormalizedRGBA sensor1, NormalizedRGBA sensor2, NormalizedRGBA backSensor) {
+            if (ColorSensorsSubsystem.colorIsGreenIntake(sensor1) || ColorSensorsSubsystem.colorIsGreenIntake(sensor2)) {
+                balls[0] = GREEN;
+            } else if (ColorSensorsSubsystem.colorIsPurpleIntake(sensor1) || ColorSensorsSubsystem.colorIsPurpleIntake(sensor2)) {
+                balls[0] = PURPLE;
+            }
+
+            if (ColorSensorsSubsystem.colorIsGreenBack(backSensor)) {
+                balls[1] = GREEN;
+            } else if (ColorSensorsSubsystem.colorIsPurpleBack(backSensor)) {
+                balls[1] = PURPLE;
+            }
     }
 
     public void setBallAt(int index, BallColors color) {

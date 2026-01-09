@@ -25,7 +25,7 @@ import com.seattlesolvers.solverslib.controller.PIDFController;
 import com.seattlesolvers.solverslib.gamepad.GamepadEx;
 import com.seattlesolvers.solverslib.gamepad.GamepadKeys;
 
-import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.teamcode.RobotConstants;
 import org.firstinspires.ftc.teamcode.RobotConstants.Motifs;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 import org.firstinspires.ftc.teamcode.subsystems.ColorSensorsSubsystem;
@@ -35,8 +35,6 @@ import org.firstinspires.ftc.teamcode.subsystems.LEDSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.LimelightSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.ShooterSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.SpindexerSubsystem;
-import org.firstinspires.ftc.vision.VisionPortal;
-import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 
 import java.util.function.Supplier;
 
@@ -126,6 +124,10 @@ public class TeleOp extends CommandOpMode {
     PIDFController headingPID = new PIDFController(headingkP, 0, headingkD, headingkF);
     double lastSeenX;
     double headingVector;
+
+    //color array and spindexer moving
+    boolean spindexerBusy;
+    boolean ball = false;
 
     @Override
     public void initialize () {
@@ -378,6 +380,14 @@ public class TeleOp extends CommandOpMode {
             spindexer.updatePIDVoltage(currentVoltage);
             shooter.updatePIDVoltage(currentVoltage);
             lastVoltageCheck.reset();
+        }
+
+        //spindexer and array logic
+        if ((Math.abs(spindexer.getCurrentPosition() - spindexer.getPIDSetpoint()) < 60)) {
+            spindexer.handleUpdateArray(colorSensors.getIntakeSensor1Result(), colorSensors.getIntakeSensor2Result(), colorSensors.getBackResult());
+            if (colorSensors.intakeHasBall() && spindexer.getBalls()[2].equals(RobotConstants.BallColors.NONE)) {
+                spindexer.moveSpindexerBy(120);
+            }
         }
 
 //        telemetry.addData("BALLS", Arrays.toString(spindexer.getBalls()));
