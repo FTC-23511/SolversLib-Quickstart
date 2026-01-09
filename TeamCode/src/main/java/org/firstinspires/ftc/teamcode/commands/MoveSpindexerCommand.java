@@ -23,7 +23,7 @@ public class MoveSpindexerCommand extends CommandBase {
 
     @Override
     public void initialize() {
-        if (Math.abs(gateSubsystem.DOWN - gateSubsystem.getPosition()) < 0.1) {
+        if (gateSubsystem.isAtTarget() && gateSubsystem.gateState == GateSubsystem.GateState.DOWN) {
             spindexerSubsystem.setBallAt(2, RobotConstants.BallColors.NONE);
         }
         spindexerSubsystem.moveSpindexerBy(120 * number);

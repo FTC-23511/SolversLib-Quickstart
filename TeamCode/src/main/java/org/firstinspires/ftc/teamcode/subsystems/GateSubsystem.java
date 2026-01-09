@@ -17,17 +17,30 @@ public class GateSubsystem extends SubsystemBase {
         gate = new ServoEx(hMap, "gate");
         gate.setInverted(true);
     }
+    public enum GateState {
+        UP, DOWN;
+    }
+    public GateState gateState;
     public void up() {
         gate.set(UP);
+        gateState = GateState.UP;
     }
     public void down() {
         gate.set(DOWN);
+        gateState = GateState.DOWN;
     }
     public double getEncoderVoltage() {
         return gateEncoder.getVoltage();
     }
-    public boolean isAtTarget(){
-        //86fuyuiyftuvjh
+    public boolean isAtTarget() {
+        //is gate at position
+        //add wait for gate finish command
+        if (Math.abs(gateEncoder.getVoltage() - UP_VOLTAGE) < 0.1 || Math.abs(gateEncoder.getVoltage() - DOWN_VOLTAGE) < 0.1) {
+            return true;
+        }
+        else {
+            return false;
+        }
     }
 
 }
