@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.opmodes;
 
+import static com.seattlesolvers.solverslib.gamepad.GamepadKeys.Button.DPAD_UP;
 import static com.seattlesolvers.solverslib.gamepad.GamepadKeys.Button.LEFT_BUMPER;
 import static com.seattlesolvers.solverslib.util.MathUtils.clamp;
 import static org.firstinspires.ftc.teamcode.RobotConstants.Motifs.GPP;
@@ -28,8 +29,8 @@ import com.seattlesolvers.solverslib.gamepad.GamepadEx;
 import com.seattlesolvers.solverslib.gamepad.GamepadKeys;
 
 import org.firstinspires.ftc.teamcode.RobotConstants;
-import org.firstinspires.ftc.teamcode.RobotConstants.Motifs;
 import org.firstinspires.ftc.teamcode.commands.MoveSpindexerCommand;
+import org.firstinspires.ftc.teamcode.commands.ShootSortedBallsCommandSequence;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 import org.firstinspires.ftc.teamcode.subsystems.ColorSensorsSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.GateSubsystem;
@@ -39,7 +40,9 @@ import org.firstinspires.ftc.teamcode.subsystems.LimelightSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.ShooterSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.SpindexerSubsystem;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.function.Supplier;
 
 @com.qualcomm.robotcore.eventloop.opmode.TeleOp(name = "Teleop Field Centric", group = "!")
@@ -56,10 +59,18 @@ public class TeleOp extends CommandOpMode {
     }
     final Pose GOAL_RED = new Pose(135,141.5);
     final Pose GOAL_BLUE = new Pose(9,141.5);
+    final RobotConstants.BallColors[] PPG = {RobotConstants.BallColors.PURPLE, RobotConstants.BallColors.PURPLE, RobotConstants.BallColors.GREEN};
+    final RobotConstants.BallColors[] GPP = {RobotConstants.BallColors.GREEN, RobotConstants.BallColors.PURPLE, RobotConstants.BallColors.PURPLE};
+    final RobotConstants.BallColors[] PGP = {RobotConstants.BallColors.PURPLE, RobotConstants.BallColors.GREEN, RobotConstants.BallColors.PURPLE};
+    final RobotConstants.BallColors[] XXX = {RobotConstants.BallColors.UNKNOWN, RobotConstants.BallColors.UNKNOWN, RobotConstants.BallColors.UNKNOWN};
+
+    // 2. Create a master list of all cycleable options
+    final RobotConstants.BallColors[][] allMotifs = {PPG, GPP, PGP};
+    int index = 0;
 
     //State variables
     Alliance alliance = Alliance.RED;
-    Motifs currentMotif = PPG;
+    RobotConstants.BallColors[] selectedMotif = new RobotConstants.BallColors[]{RobotConstants.BallColors.PURPLE, RobotConstants.BallColors.PURPLE, RobotConstants.BallColors.GREEN};
     IntakeState intakeState = IntakeState.STOP;
     boolean manualControl = true;
     boolean slowMode = false;
@@ -176,8 +187,7 @@ public class TeleOp extends CommandOpMode {
 
 
         new Trigger(() -> driver1.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) > 0.5)
-                .whileActiveContinuous(new InstantCommand(() -> slowMode = true))
-                .whenInactive(new InstantCommand(() -> slowMode = false));
+                .whenActive(new ShootSortedBallsCommandSequence(shooter, spindexer, gate, selectedMotif));
         new Trigger(
                 () -> driver1.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) > 0.5) //far distance
                 .whileActiveContinuous(new InstantCommand(() -> {
@@ -186,38 +196,31 @@ public class TeleOp extends CommandOpMode {
                 );
 
         //Driver 2
-        //TODO: add ability to switch between shooting in motif order and shooting in any order (motif XXX)
-
+        driver2.getGamepadButton(DPAD_UP).whenPressed(
+                new InstantCommand(() -> {
+                    selectedMotif = XXX;
+                })
+        );
         driver2.getGamepadButton(GamepadKeys.Button.DPAD_RIGHT).whenPressed(
                 new InstantCommand(() -> {
-                    if (currentMotif == PPG) {
-                        currentMotif = GPP;
-                    }
-                    else if (currentMotif == GPP) {
-                        currentMotif = PGP;
-                    }
-                    else if (currentMotif == PGP) {
-                        currentMotif = PPG;
-                    }
+                    index++;
+                    index%=3;
+                    selectedMotif = allMotifs[index];
                 })
         );
         driver2.getGamepadButton(GamepadKeys.Button.DPAD_LEFT).whenPressed(
                 new InstantCommand(() -> {
-                    if (currentMotif == PPG) {
-                        currentMotif = PGP;
-                    }
-                    else if (currentMotif == PGP) {
-                        currentMotif = GPP;
-                    }
-                    else if (currentMotif == GPP) {
-                        currentMotif = PPG;
-                    }
+                    index++;
+                    index+=3;
+                    index%=3;
+                    selectedMotif = allMotifs[index];
                 })
         );
         driver2.getGamepadButton(LEFT_BUMPER).whenActive(  //turn off shooter
                 new InstantCommand(() -> {
                     shooter.setTargetLinearSpeed(0);
                     gamepad2.rumbleBlips(1);
+                    selectedMotif = allMotifs[index];
                 })
         );
         driver2.getGamepadButton(LEFT_BUMPER).whenActive(
@@ -303,7 +306,7 @@ public class TeleOp extends CommandOpMode {
         telemetry.addLine(alliance == Alliance.RED ? "\uD83D\uDD34\uD83D\uDD34\uD83D\uDD34\uD83D\uDD34\uD83D\uDD34" : "\uD83D\uDD35\uD83D\uDD35\uD83D\uDD35\uD83D\uDD35\uD83D\uDD35");
         telemetry.addData("Loop Time", loopTimer.milliseconds());
         telemetry.addData("Mode", manualControl ? "Manual" : "Auto-Aim");
-        telemetry.addData("Selected Motif", currentMotif);
+        telemetry.addData("Selected Motif", Arrays.toString(selectedMotif));
         telemetry.addData("Balls Array", Arrays.toString(spindexer.getBalls()));
         telemetry.addLine("--Spindexer--");
         telemetry.addData("PID output", spindexer.getOutput());
@@ -387,7 +390,7 @@ public class TeleOp extends CommandOpMode {
         // If your hood moves, calculate this based on hood position.
         // For fixed hoods, 45-60 degrees is common.
         double launchAngle = SHOOTER_ANGLE;
-        double latency = 0.300; //TODO: MEasure
+        double latency = 0.300; //TODO: Measure
 
         // --- 1. GATHER CURRENT STATE ---
         Pose currentPose = follower.getPose();

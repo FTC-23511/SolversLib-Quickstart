@@ -117,6 +117,17 @@ public class SpindexerSubsystem extends SubsystemBase {
     public double getOutput() {
         return output;
     }
+    public void setPIDCoefficients(double p, double i, double d, double f) {
+        this.pid.setP(p);
+        this.pid.setI(i);
+        this.pid.setD(d);
+        this.pid.setF(f);
+    }
+
+    // Also useful to expose raw voltage for the calibration step
+    public double getRawVoltage() {
+        return absoluteEncoder.getVoltage();
+    }
 
     /**
      * @return checks how far the spindexer is from target position, returns if it is close enough

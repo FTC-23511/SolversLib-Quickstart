@@ -15,6 +15,7 @@ public class GateSubsystem extends SubsystemBase {
 
     public GateSubsystem(final HardwareMap hMap) {
         gate = new ServoEx(hMap, "gate");
+        gateEncoder = hMap.get(AnalogInput.class, "gateEncoder");
         gate.setInverted(true);
     }
     public enum GateState {

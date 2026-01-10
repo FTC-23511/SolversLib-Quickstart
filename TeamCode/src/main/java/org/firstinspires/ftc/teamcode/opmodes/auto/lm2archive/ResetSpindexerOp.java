@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.opmodes;
+package org.firstinspires.ftc.teamcode.opmodes.auto.lm2archive;
 
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -20,7 +20,7 @@ public class ResetSpindexerOp extends CommandOpMode {
         driver1 = new GamepadEx(gamepad1);
         spindexer = hardwareMap.get(DcMotor.class, "spindexer");
         led = hardwareMap.get(Servo.class, "led");
-        timer = new ElapsedTime(); // ✅ initialize timer before use
+        timer = new ElapsedTime();
         super.reset();
     }
 
@@ -32,7 +32,6 @@ public class ResetSpindexerOp extends CommandOpMode {
             spindexer.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         }
 
-        // 🌈 Smooth rainbow position cycle between 0.3 and 0.722
         double t = timer.seconds();
         double min = 0.3;
         double max = 0.722;
