@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.opmodes.auto;
 
+import static org.firstinspires.ftc.teamcode.RobotConstants.BallColors.GREEN;
+import static org.firstinspires.ftc.teamcode.RobotConstants.BallColors.PURPLE;
 import static org.firstinspires.ftc.teamcode.RobotConstants.BallColors.UNKNOWN;
 
 import android.annotation.SuppressLint;
@@ -12,7 +14,10 @@ import com.pedropathing.paths.PathChain;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.seattlesolvers.solverslib.command.CommandOpMode;
+import com.seattlesolvers.solverslib.command.ConditionalCommand;
 import com.seattlesolvers.solverslib.command.InstantCommand;
+import com.seattlesolvers.solverslib.command.ParallelCommandGroup;
+import com.seattlesolvers.solverslib.command.ParallelDeadlineGroup;
 import com.seattlesolvers.solverslib.command.ParallelRaceGroup;
 import com.seattlesolvers.solverslib.command.RunCommand;
 import com.seattlesolvers.solverslib.command.SequentialCommandGroup;
@@ -22,12 +27,14 @@ import com.seattlesolvers.solverslib.pedroCommand.FollowPathCommand;
 
 import org.firstinspires.ftc.teamcode.RobotConstants;
 import org.firstinspires.ftc.teamcode.commands.MoveSpindexerCommand;
+import org.firstinspires.ftc.teamcode.commands.ShootSortedBallsCommandSequence;
 import org.firstinspires.ftc.teamcode.commands.WaitForColorCommand;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 import org.firstinspires.ftc.teamcode.subsystems.ColorSensorsSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.GateSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.IntakeSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.LEDSubsystem;
+import org.firstinspires.ftc.teamcode.subsystems.LimelightSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.ShooterSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.SpindexerSubsystem;
 
@@ -151,15 +158,7 @@ public class Red18SortOverflowAuto extends CommandOpMode {
             
         }
     }
-    //This command group is supposed to end once all 3 balls are released. If the WaitUntilCommand does not function right, then replace
-    //it with an empircally tuned WaitCommand.
-    public SequentialCommandGroup shoot() {
-        return new SequentialCommandGroup(
-                new MoveSpindexerCommand(spindexer, gate, 3, true),
-                new WaitCommand(100), //wait for spindexer to start moving
-                new WaitUntilCommand(() -> spindexer.isLowVelocity() && spindexer.isNearTargetPosition())
-        );
-    }
+
     //Since intakeartifacts is called at very different times (called when on the gate, called before driving to the row of balls)
     //we might need to split it up.
     private SequentialCommandGroup intakeArtifacts() {
@@ -173,6 +172,7 @@ public class Red18SortOverflowAuto extends CommandOpMode {
         );
     }
     public Pose currentPose;
+    public RobotConstants.BallColors[] motif = new RobotConstants.BallColors[]{PURPLE, PURPLE,PURPLE};
 
     //voltage compensation
     public VoltageSensor voltageSensor;
@@ -190,7 +190,7 @@ public class Red18SortOverflowAuto extends CommandOpMode {
     private ColorSensorsSubsystem colorsensor;
     private GateSubsystem gate;
     private LEDSubsystem led;
-    private RobotConstants.BallColors[] motif = new RobotConstants.BallColors[]{UNKNOWN,UNKNOWN,UNKNOWN};
+    private LimelightSubsystem limelight;
 
     @Override
     public void initialize() {
@@ -199,6 +199,7 @@ public class Red18SortOverflowAuto extends CommandOpMode {
 
         //systems and pedro
         follower = Constants.createFollower(hardwareMap);
+        follower.setPose(startingPose);
         follower.setMaxPower(1.0);
         intake = new IntakeSubsystem(hardwareMap);
         shooter = new ShooterSubsystem(hardwareMap);
@@ -206,7 +207,8 @@ public class Red18SortOverflowAuto extends CommandOpMode {
         colorsensor = new ColorSensorsSubsystem(hardwareMap);
         gate = new GateSubsystem(hardwareMap);
         voltageSensor = hardwareMap.get(VoltageSensor.class, "Control Hub");
-        //todo add limelight to all the autos once branch is merged
+        limelight = new LimelightSubsystem(hardwareMap);
+        limelight.setPipeline(LimelightSubsystem.LIMELIGHT_PIPELINES.APRILTAG);
         lastVoltageCheck.reset();
         led = new LEDSubsystem(hardwareMap);
         Paths paths = new Paths(follower);
@@ -226,9 +228,29 @@ public class Red18SortOverflowAuto extends CommandOpMode {
                     follower.setMaxPower(0.8);
                 }),
                 //Preload
-                new FollowPathCommand(follower, paths.shootPreload, true),
+                new ParallelCommandGroup(
+                        new FollowPathCommand(follower, paths.shootPreload, true),
+                        new InstantCommand(() -> {
+                            if (follower.getPathCompletion() > 0.4) {
+                                Object motifid = limelight.detectMotif(limelight.getResult());
+                                if (motifid != null) {
+                                    switch ((int) motifid) {
+                                        case 21:
+                                            motif = new RobotConstants.BallColors[]{GREEN, PURPLE, PURPLE};
+                                            break;
+                                        case 22:
+                                            motif = new RobotConstants.BallColors[]{PURPLE, GREEN, PURPLE};
+                                            break;
+                                        case 23:
+                                            motif = new RobotConstants.BallColors[]{PURPLE, PURPLE, GREEN};
+                                            break;
+                                    }
+                                }
+                            }
+                        })
+                ),
                 new WaitUntilCommand(() -> shooter.isAtTargetVelocity()),
-                shoot(),
+                new ShootSortedBallsCommandSequence(shooter, spindexer, gate, motif),
 
                 //Second row
                 new ParallelRaceGroup(
@@ -237,7 +259,7 @@ public class Red18SortOverflowAuto extends CommandOpMode {
                         intakeArtifacts()
                 ),
                 new FollowPathCommand(follower, paths.shootSecondRow, true),
-                shoot(),
+                new ShootSortedBallsCommandSequence(shooter, spindexer, gate, motif),
 
                 //First row
                 new ParallelRaceGroup(
@@ -245,7 +267,7 @@ public class Red18SortOverflowAuto extends CommandOpMode {
                         intakeArtifacts()
                 ),
                 new FollowPathCommand(follower, paths.shootFirstRow),
-                shoot(),
+                new ShootSortedBallsCommandSequence(shooter, spindexer, gate, motif),
 
                 //Third row
                 new ParallelRaceGroup(
@@ -253,19 +275,19 @@ public class Red18SortOverflowAuto extends CommandOpMode {
                         intakeArtifacts()
                 ),
                 new FollowPathCommand(follower, paths.shootThirdRow),
-                shoot(),
+                new ShootSortedBallsCommandSequence(shooter, spindexer, gate, motif),
 
                 //Ramp cycle
                 new FollowPathCommand(follower, paths.intakeRamp, true),
                 intakeArtifacts().withTimeout(3000),
                 new FollowPathCommand(follower, paths.shootRamp, true),
-                shoot(),
+                new ShootSortedBallsCommandSequence(shooter, spindexer, gate, motif),
 
                 //Ramp cycle
                 new FollowPathCommand(follower, paths.intakeRamp, true),
                 intakeArtifacts().withTimeout(3000),
                 new FollowPathCommand(follower, paths.shootRamp, true),
-                shoot()
+                new ShootSortedBallsCommandSequence(shooter, spindexer, gate, motif)
 
                 //later: park?
         );
@@ -302,7 +324,6 @@ public class Red18SortOverflowAuto extends CommandOpMode {
         telemetry.addData("spindexer output", spindexer.getOutput());
         telemetry.addData("spindexer setpoint", spindexer.getPIDSetpoint());
         telemetry.addData("spindexer pos", spindexer.getCurrentPosition());
-        telemetry.addData("is spindexer ready to read color ", spindexer.availableToSenseColor());
         telemetry.addData("spindexer's balls", spindexer.getBalls());
 
         telemetry.addData("------------------",null);

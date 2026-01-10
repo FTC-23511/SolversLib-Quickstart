@@ -134,13 +134,6 @@ public class SpindexerSubsystem extends SubsystemBase {
     }
 
     /**
-     * @return if the spindexer is near its target position and not moving quickly
-     */
-    public boolean availableToSenseColor() {
-        return isNearTargetPosition() && isLowVelocity();
-    }
-
-    /**
      * @param balls the ball array
      * @return used to clear the third ball after shooting it out the robot
      */

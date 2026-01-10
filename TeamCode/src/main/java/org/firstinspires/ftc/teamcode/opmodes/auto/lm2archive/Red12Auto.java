@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.opmodes.auto;
+package org.firstinspires.ftc.teamcode.opmodes.auto.lm2archive;
 
 import static org.firstinspires.ftc.teamcode.RobotConstants.BallColors.*;
 
@@ -383,7 +383,6 @@ public class Red12Auto extends CommandOpMode {
         telemetry.addData("spindexer output", spindexer.getOutput());
         telemetry.addData("spindexer setpoint", spindexer.getPIDSetpoint());
         telemetry.addData("spindexer pos", spindexer.getCurrentPosition());
-        telemetry.addData("is spindexer ready to read color ", spindexer.availableToSenseColor());
         telemetry.addData("spindexer's balls", spindexer.getBalls());
 
         telemetry.addData("------------------",null);

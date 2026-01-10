@@ -10,6 +10,7 @@ import com.pedropathing.geometry.BezierCurve;
 import com.pedropathing.geometry.BezierLine;
 import com.pedropathing.geometry.Pose;
 import com.pedropathing.paths.PathChain;
+import com.qualcomm.robotcore.hardware.NormalizedRGBA;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.seattlesolvers.solverslib.command.CommandOpMode;
@@ -24,13 +25,17 @@ import com.seattlesolvers.solverslib.pedroCommand.FollowPathCommand;
 import org.firstinspires.ftc.teamcode.RobotConstants;
 import org.firstinspires.ftc.teamcode.commands.MoveSpindexerCommand;
 import org.firstinspires.ftc.teamcode.commands.WaitForColorCommand;
+import org.firstinspires.ftc.teamcode.opmodes.TeleOp;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 import org.firstinspires.ftc.teamcode.subsystems.ColorSensorsSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.GateSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.IntakeSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.LEDSubsystem;
+import org.firstinspires.ftc.teamcode.subsystems.LimelightSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.ShooterSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.SpindexerSubsystem;
+
+import java.util.Arrays;
 
 public class Red18Auto extends CommandOpMode {
     //Generated from december_18.pp file.
@@ -188,11 +193,11 @@ public class Red18Auto extends CommandOpMode {
     private SequentialCommandGroup intakeArtifacts() {
         return new SequentialCommandGroup(
                 new InstantCommand(() -> intake.set(IntakeSubsystem.IntakeState.INTAKING)),
-                new WaitForColorCommand(colorsensor).withTimeout(1500),
+                new WaitForColorCommand(colorSensors).withTimeout(1500),
                 new MoveSpindexerCommand(spindexer, gate, 1, true),
-                new WaitForColorCommand(colorsensor).withTimeout(1500),
+                new WaitForColorCommand(colorSensors).withTimeout(1500),
                 new MoveSpindexerCommand(spindexer, gate, 1, true),
-                new WaitForColorCommand(colorsensor).withTimeout(1500)
+                new WaitForColorCommand(colorSensors).withTimeout(1500)
         );
     }
     public Pose currentPose;
@@ -203,6 +208,7 @@ public class Red18Auto extends CommandOpMode {
     private boolean slowMode = false;
     public ElapsedTime lastVoltageCheck = new ElapsedTime();
     private ElapsedTime timer;
+    private ElapsedTime loopTimer = new ElapsedTime();
     private Follower follower;
 
     //update starting pose
@@ -210,9 +216,10 @@ public class Red18Auto extends CommandOpMode {
     private IntakeSubsystem intake;
     private ShooterSubsystem shooter;
     private SpindexerSubsystem spindexer;
-    private ColorSensorsSubsystem colorsensor;
+    private ColorSensorsSubsystem colorSensors;
     private GateSubsystem gate;
     private LEDSubsystem led;
+    private LimelightSubsystem limelight;
     private RobotConstants.BallColors[] motif = new RobotConstants.BallColors[]{UNKNOWN,UNKNOWN,UNKNOWN};
 
     @Override
@@ -222,14 +229,15 @@ public class Red18Auto extends CommandOpMode {
 
         //systems and pedro
         follower = Constants.createFollower(hardwareMap);
+        follower.setPose(startingPose);
         follower.setMaxPower(1.0);
         intake = new IntakeSubsystem(hardwareMap);
         shooter = new ShooterSubsystem(hardwareMap);
         spindexer = new SpindexerSubsystem(hardwareMap);
-        colorsensor = new ColorSensorsSubsystem(hardwareMap);
+        colorSensors = new ColorSensorsSubsystem(hardwareMap);
         gate = new GateSubsystem(hardwareMap);
         voltageSensor = hardwareMap.get(VoltageSensor.class, "Control Hub");
-        //todo add limelight to all the autos once branch is merged
+        limelight = new LimelightSubsystem(hardwareMap);
         lastVoltageCheck.reset();
         led = new LEDSubsystem(hardwareMap);
         Paths paths = new Paths(follower);
@@ -240,7 +248,7 @@ public class Red18Auto extends CommandOpMode {
         super.reset();
 
         // Initialize subsystems
-        register(intake, spindexer, shooter, colorsensor, led, gate);
+        register(intake, spindexer, shooter, colorSensors, led, gate);
         spindexer.set(75);
         SequentialCommandGroup autonomous = new SequentialCommandGroup(
                 new InstantCommand(() -> { //setup
@@ -300,47 +308,21 @@ public class Red18Auto extends CommandOpMode {
     @SuppressLint("DefaultLocale")
     @Override
     public void run() {
-        if (shooter.getActualVelocity() - shooter.getTargetVelocity() < -30) {
-            led.setColor(LEDSubsystem.LEDState.RED);
-        }
-        else if (shooter.getActualVelocity() - shooter.getTargetVelocity() > 50) {
-            led.setColor(LEDSubsystem.LEDState.BLUE);
-        }
-        else {
-            led.setColor(LEDSubsystem.LEDState.GREEN);
-        }
-        //Voltage compensation code
-        if (lastVoltageCheck.milliseconds() > 500) { //check every 500ms
-            currentVoltage = voltageSensor.getVoltage();
-            spindexer.updatePIDVoltage(currentVoltage);
-            shooter.updatePIDVoltage(currentVoltage);
-            lastVoltageCheck.reset();
-        }
+        handleLED();
+        handleSpindexer();
 
+        //Update color sensors
+        colorSensors.updateSensor1();
+        colorSensors.updateSensor2();
+        colorSensors.updateBack(); //Update every time.... for now .......
 
-        telemetry.addData("Loop Time", timer.milliseconds());
+        handleTelemetry();
 
-        telemetry.addData("spindexer output", spindexer.getOutput());
-        telemetry.addData("spindexer setpoint", spindexer.getPIDSetpoint());
-        telemetry.addData("spindexer pos", spindexer.getCurrentPosition());
-        telemetry.addData("is spindexer ready to read color ", spindexer.availableToSenseColor());
-        telemetry.addData("spindexer's balls", spindexer.getBalls());
-
-        telemetry.addData("------------------",null);
-
-        telemetry.addData("shooter target velocity", shooter.getTargetVelocity());
-        telemetry.addData("shooter actual velocity", shooter.getActualVelocity());
-
-        telemetry.addData("------------------",null);
-
-        telemetry.addData("current pos", String.format("X: %8.2f, Y: %8.2f", follower.getPose().getX(), follower.getPose().getY()));
-        telemetry.addData("current heading", String.format("Heading: %.4f", follower.getPose().getHeading()));
-        telemetry.addData("t value", follower.getCurrentTValue());
-        telemetry.addData("------------------",null);
-        currentPose = follower.getPose();
-        timer.reset();
+        follower.update();
         telemetry.update();
+        loopTimer.reset();
         super.run();
+
 
     }
 
@@ -348,5 +330,73 @@ public class Red18Auto extends CommandOpMode {
     public void end() {
         blackboard.put("endpose", currentPose);
         super.end();
+    }
+    void handleLED() {
+        if (shooter.getActualVelocity() > 300) { //shooting mode
+            if (shooter.getActualVelocity() - shooter.getTargetVelocity() < -30) {
+                led.setColor(LEDSubsystem.LEDState.RED);
+            } else if (shooter.getActualVelocity() - shooter.getTargetVelocity() > 50) {
+                led.setColor(LEDSubsystem.LEDState.BLUE);
+            } else {
+                led.setColor(LEDSubsystem.LEDState.GREEN);
+            }
+        }
+    }
+    void handleSpindexer() {
+        //spindexer and array logic
+        if ((Math.abs(spindexer.getCurrentPosition() - spindexer.getPIDSetpoint()) < 60)) {
+            spindexer.handleUpdateArray(colorSensors.getIntakeSensor1Result(), colorSensors.getIntakeSensor2Result(), colorSensors.getBackResult());
+        }
+    }
+    void handleTelemetry() {
+        telemetry.addData("Loop Time", loopTimer.milliseconds());
+        telemetry.addData("Balls Array", Arrays.toString(spindexer.getBalls()));
+        telemetry.addLine("--Spindexer--");
+        telemetry.addData("PID output", spindexer.getOutput());
+        telemetry.addData("PID setpoint", spindexer.getPIDSetpoint());
+        telemetry.addData("Unwrapped position", spindexer.getCurrentPosition());
+        telemetry.addLine("--Shooter--");
+        telemetry.addData("Target velocity", shooter.getTargetVelocity());
+        telemetry.addData("Actual velocity ", shooter.getActualVelocity());
+        telemetry.addData("Linear speed ", shooter.getFlywheelLinearSpeed());
+        telemetry.addLine("--Color Sensors--");
+        NormalizedRGBA val1 = colorSensors.getIntakeSensor1Result();
+        NormalizedRGBA val2 = colorSensors.getIntakeSensor2Result();
+        NormalizedRGBA valBack = colorSensors.getBackResult();
+        // -- Sensor 1 (Intake) --
+        String color1 = "None";
+        float[] hsv1 = {0,0,0};
+        if (val1 != null) {
+            hsv1 = ColorSensorsSubsystem.rgbToHsv(val1);
+            if (ColorSensorsSubsystem.colorIsPurpleIntake(val1)) color1 = "Purple";
+            else if (ColorSensorsSubsystem.colorIsGreenIntake(val1)) color1 = "Green";
+            else if (ColorSensorsSubsystem.colorIsWhite(val1)) color1 = "White";
+        }
+        telemetry.addData("Intake 1", "[%s] H:%.0f S:%.2f V:%.2f", color1, hsv1[0], hsv1[1], hsv1[2]);
+        // -- Sensor 2 (Intake) --
+        String color2 = "None";
+        float[] hsv2 = {0,0,0};
+        if (val2 != null) {
+            hsv2 = ColorSensorsSubsystem.rgbToHsv(val2);
+            if (ColorSensorsSubsystem.colorIsPurpleIntake(val2)) color2 = "Purple";
+            else if (ColorSensorsSubsystem.colorIsGreenIntake(val2)) color2 = "Green";
+            else if (ColorSensorsSubsystem.colorIsWhite(val2)) color2 = "White";
+        }
+        telemetry.addData("Intake 2", "[%s] H:%.0f S:%.2f V:%.2f", color2, hsv2[0], hsv2[1], hsv2[2]);
+        // -- Back Sensor (Uses Back-specific logic) --
+        String colorBack = "None";
+        float[] hsvBack = {0,0,0};
+        if (valBack != null) {
+            hsvBack = ColorSensorsSubsystem.rgbToHsv(valBack);
+            if (ColorSensorsSubsystem.colorIsPurpleBack(valBack)) colorBack = "Purple";
+            else if (ColorSensorsSubsystem.colorIsGreenBack(valBack)) colorBack = "Green";
+            else if (ColorSensorsSubsystem.colorIsWhite(valBack)) colorBack = "White";
+        }
+        telemetry.addData("Back", "[%s] H:%.0f S:%.2f V:%.2f", colorBack, hsvBack[0], hsvBack[1], hsvBack[2]);
+        telemetry.addLine("--Pedro--");
+        telemetry.addData("Position ", String.format("X: %8.2f, Y: %8.2f", follower.getPose().getX(), follower.getPose().getY()));
+        telemetry.addData("Heading ", String.format("Heading: %.4f", follower.getPose().getHeading()));
+        telemetry.addData("Slow mode", slowMode);
+
     }
 }
