@@ -12,31 +12,31 @@ public class IntakeSubsystem extends SubsystemBase {
     }
     public IntakeState intakeState = IntakeState.STILL;
     private DcMotor intakeWheels;
-    private CRServoEx sideWheel;
-    private CRServoEx sideWheel2;
+    private CRServo sideWheel;
+    private CRServo sideWheel2;
     public IntakeSubsystem(final HardwareMap hMap) {
         intakeWheels = hMap.get(DcMotor.class, "intake");
         intakeWheels.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        sideWheel = hMap.get(CRServoEx.class, "intakeSide1");
-        sideWheel2 = hMap.get(CRServoEx.class, "intakeSide2");
+        sideWheel = hMap.get(CRServo.class, "intakeSide1");
+        sideWheel2 = hMap.get(CRServo.class, "intakeSide2");
     }
 
     public void set(IntakeState state) {
         switch(state) {
             case STILL:
                 intakeWheels.setPower(0.0);
-                sideWheel.set(0.0);
-                sideWheel2.set(0.0);
+                sideWheel.setPower(0.0);
+                sideWheel2.setPower(0.0);
                 break;
             case INTAKING:
                 intakeWheels.setPower(1.0);
-                sideWheel.set(1.0);
-                sideWheel2.set(-1.0);
+                sideWheel.setPower(1.0);
+                sideWheel2.setPower(-1.0);
                 break;
             case REVERSE:
                 intakeWheels.setPower(-1.0);
-                sideWheel.set(-1.0);
-                sideWheel2.set(1.0);
+                sideWheel.setPower(-1.0);
+                sideWheel2.setPower(1.0);
                 break;
         }
         intakeState = state;
