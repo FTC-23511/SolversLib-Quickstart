@@ -7,7 +7,7 @@ import com.seattlesolvers.solverslib.command.CommandBase;
 import org.firstinspires.ftc.teamcode.RobotConstants;
 import org.firstinspires.ftc.teamcode.subsystems.SpindexerSubsystem;
 
-public class LoadBallCommand extends CommandBase { //Assumes gate is up - pls
+public class LoadBallCommand extends CommandBase { //
     private SpindexerSubsystem spindexerSubsystem;
     private RobotConstants.BallColors targetColor;
     public LoadBallCommand(SpindexerSubsystem spindexerSubsystem, RobotConstants.BallColors targetColor) {

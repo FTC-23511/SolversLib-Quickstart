@@ -178,9 +178,12 @@ public class TeleOp extends CommandOpMode {
         new Trigger(() -> driver1.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) > 0.5)
                 .whileActiveContinuous(new InstantCommand(() -> slowMode = true))
                 .whenInactive(new InstantCommand(() -> slowMode = false));
-        new Trigger(() -> driver1.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) > 0.5)
-                .whileActiveContinuous(new InstantCommand(() -> slowMode = true))
-                .whenInactive(new InstantCommand(() -> slowMode = false));
+        new Trigger(
+                () -> driver1.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) > 0.5) //far distance
+                .whileActiveContinuous(new InstantCommand(() -> {
+                            manualControl = false;
+                        })
+                );
 
         //Driver 2
         //TODO: add ability to switch between shooting in motif order and shooting in any order (motif XXX)
@@ -211,12 +214,6 @@ public class TeleOp extends CommandOpMode {
                     }
                 })
         );
-        new Trigger(
-                () -> driver1.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) > 0.5) //far distance
-                .whileActiveContinuous(new InstantCommand(() -> {
-                            manualControl = false;
-                        })
-                );
         driver2.getGamepadButton(LEFT_BUMPER).whenActive(  //turn off shooter
                 new InstantCommand(() -> {
                     shooter.setTargetLinearSpeed(0);
@@ -232,6 +229,7 @@ public class TeleOp extends CommandOpMode {
     void handleTeleopDrive() {
         //Drivetrain code
         if (manualControl) {
+            shooter.setTargetLinearSpeed(50);
             double x = -driver1.getLeftX();
             double y = driver1.getLeftY();
             double rx = -driver1.getRightX() * (slowMode?0.3:1);
