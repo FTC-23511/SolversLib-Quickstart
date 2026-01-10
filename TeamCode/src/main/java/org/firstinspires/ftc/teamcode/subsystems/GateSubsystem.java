@@ -35,12 +35,7 @@ public class GateSubsystem extends SubsystemBase {
     public boolean isAtTarget() {
         //is gate at position
         //add wait for gate finish command
-        if (Math.abs(gateEncoder.getVoltage() - UP_VOLTAGE) < 0.1 || Math.abs(gateEncoder.getVoltage() - DOWN_VOLTAGE) < 0.1) {
-            return true;
-        }
-        else {
-            return false;
-        }
+        return Math.abs(gateEncoder.getVoltage() - UP_VOLTAGE) < 0.1 || Math.abs(gateEncoder.getVoltage() - DOWN_VOLTAGE) < 0.1;
     }
 
 }
