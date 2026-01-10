@@ -47,8 +47,32 @@ public class ShooterSubsystem extends SubsystemBase {
         //Note: The distance measured is from the robot center to the spot where the ball lands in the corner, NOT the apriltag.
         lut = new InterpLUT(); //distance (in), linear speed (in/s);
         lut.add(10, 50); //placeholder
-        lut.add(10, 50); //placeholder
+        lut.add(12, 55); //placeholder
         lut.createLUT();
+    }
+    public void setPIDF(double p, double i, double d, double f) {
+        this.kPOriginal = p;
+        this.kFOriginal = f;
+        this.flywheelController.setPIDF(p, i, d, f);
+
+        // Temporarily apply directly to current kP/kF in case voltage comp isn't running
+        this.kP = p;
+        this.kF = f;
+    }
+
+    /**
+     * Sets a raw target in Ticks Per Second (bypasses linear math).
+     * Useful for initial feedforward tuning.
+     */
+    public void setTargetTicks(double ticksPerSec) {
+        flywheelController.setSetPoint(ticksPerSec);
+    }
+
+    /**
+     * @return The target velocity in Ticks Per Second
+     */
+    public double getTargetTicks() {
+        return flywheelController.getSetPoint();
     }
     public void setTargetLinearSpeed(double vel) {
         double ticksPerRev = 28.0;
