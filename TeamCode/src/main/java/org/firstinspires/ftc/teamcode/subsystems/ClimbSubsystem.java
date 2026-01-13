@@ -10,22 +10,19 @@ public class ClimbSubsystem extends SubsystemBase {
     private Servo climb1Right;
     private Servo climb2Left;
 
-    private final double UP = 0.0;
-    private final double DOWN = 0.1;
-
     public ClimbSubsystem(final HardwareMap hMap) {
         climb1Right = hMap.get(Servo.class, "climb1");
         climb2Left = hMap.get(Servo.class, "climb2");
     }
 
     public void climbUp() {
-        climb1Right.setPosition(UP);
-        climb2Left.setPosition(UP);
+        climb1Right.setPosition(1.0);
+        climb2Left.setPosition(0.11);
     }
 
     public void climbDown() {
-        climb1Right.setPosition(DOWN);
-        climb2Left.setPosition(DOWN);
+        climb1Right.setPosition(0.52);
+        climb2Left.setPosition(0.5);
     }
 
 

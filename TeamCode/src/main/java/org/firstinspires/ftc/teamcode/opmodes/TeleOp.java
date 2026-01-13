@@ -36,6 +36,7 @@ import org.firstinspires.ftc.teamcode.RobotConstants;
 import org.firstinspires.ftc.teamcode.commands.MoveSpindexerCommand;
 import org.firstinspires.ftc.teamcode.commands.ShootSortedBallsCommandSequence;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
+import org.firstinspires.ftc.teamcode.subsystems.ClimbSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.ColorSensorsSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.GateSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.IntakeSubsystem;
@@ -87,6 +88,7 @@ public class TeleOp extends CommandOpMode {
     private LEDSubsystem led;
     private GateSubsystem gate;
     private LimelightSubsystem limelight;
+    private ClimbSubsystem climb;
     public VoltageSensor voltageSensor;
     public GamepadEx driver1;
     public GamepadEx driver2;
@@ -153,10 +155,12 @@ public class TeleOp extends CommandOpMode {
         led = new LEDSubsystem(hardwareMap);
         gate = new GateSubsystem(hardwareMap);
         limelight = new LimelightSubsystem(hardwareMap);
+        climb = new ClimbSubsystem(hardwareMap);
         voltageSensor = hardwareMap.get(VoltageSensor.class, "Control Hub");
 
         spindexer.set(75);
         gate.down();
+        climb.climbUp();
 
         register(intake, shooter, spindexer, gate, colorSensors, led, limelight);
         super.reset();
@@ -230,6 +234,16 @@ public class TeleOp extends CommandOpMode {
         driver2.getGamepadButton(LEFT_BUMPER).whenActive(
                 new InstantCommand(() -> {
                     follower.setPose(follower.getPose().setHeading(0));
+                })
+        );
+        driver2.getGamepadButton(GamepadKeys.Button.OPTIONS).whenPressed(
+                new InstantCommand(() -> {
+                    climb.climbUp();
+                })
+        );
+        driver2.getGamepadButton(GamepadKeys.Button.SHARE).whenPressed(
+                new InstantCommand(() -> {
+                    climb.climbDown();
                 })
         );
     }
