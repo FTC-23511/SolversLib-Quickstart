@@ -31,6 +31,7 @@ import org.firstinspires.ftc.teamcode.AutoPoseSaver;
 import org.firstinspires.ftc.teamcode.RobotConstants;
 import org.firstinspires.ftc.teamcode.commands.DeferredCommand;
 import org.firstinspires.ftc.teamcode.commands.LoadBallCommand;
+import org.firstinspires.ftc.teamcode.commands.LoadMotifCommand;
 import org.firstinspires.ftc.teamcode.commands.MoveSpindexerAndUpdateArrayCommand;
 import org.firstinspires.ftc.teamcode.commands.ShootSortedBallsCommandSequence;
 import org.firstinspires.ftc.teamcode.commands.WaitForColorCommand;
@@ -296,7 +297,7 @@ public class RedSortedCloseAuto extends CommandOpMode {
                                 new WaitCommand(500),
                                 new InstantCommand(gate::up),
                                 new WaitCommand(200),
-                                new LoadBallCommand(spindexer, motif[0]),
+                                new DeferredCommand(() -> new LoadMotifCommand(spindexer, motif)),
                                 new InstantCommand(gate::down)
                         )),
                 new DeferredCommand(() -> new ShootSortedBallsCommandSequence(shooter, spindexer, gate, intake, motif)),
@@ -315,7 +316,7 @@ public class RedSortedCloseAuto extends CommandOpMode {
                                 new WaitCommand(500),
                                 new InstantCommand(gate::up),
                                 new WaitCommand(200),
-                                new LoadBallCommand(spindexer, motif[0]),
+                                new DeferredCommand(() -> new LoadMotifCommand(spindexer, motif)),
                                 new InstantCommand(gate::down)
                         )),
                 new DeferredCommand(() -> new ShootSortedBallsCommandSequence(shooter, spindexer, gate, intake, motif)),
@@ -339,7 +340,7 @@ public class RedSortedCloseAuto extends CommandOpMode {
                                 new WaitCommand(500),
                                 new InstantCommand(gate::up),
                                 new WaitCommand(200),
-                                new LoadBallCommand(spindexer, motif[0]),
+                                new DeferredCommand(() -> new LoadMotifCommand(spindexer, motif)),
                                 new InstantCommand(gate::down)
                         )),
                 new DeferredCommand(() -> new ShootSortedBallsCommandSequence(shooter, spindexer, gate, intake, motif))
