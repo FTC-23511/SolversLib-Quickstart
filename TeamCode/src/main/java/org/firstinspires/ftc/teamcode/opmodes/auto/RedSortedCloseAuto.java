@@ -297,7 +297,7 @@ public class RedSortedCloseAuto extends CommandOpMode {
                                 new WaitCommand(500),
                                 new InstantCommand(gate::up),
                                 new WaitCommand(200),
-                                new LoadMotifCommand(spindexer, motif),
+                                new DeferredCommand(() -> new LoadMotifCommand(spindexer, motif)),
                                 new InstantCommand(gate::down)
                         )),
                 new DeferredCommand(() -> new ShootSortedBallsCommandSequence(shooter, spindexer, gate, intake, motif)),
@@ -316,7 +316,7 @@ public class RedSortedCloseAuto extends CommandOpMode {
                                 new WaitCommand(500),
                                 new InstantCommand(gate::up),
                                 new WaitCommand(200),
-                                new LoadMotifCommand(spindexer, motif),
+                                new DeferredCommand(() -> new LoadMotifCommand(spindexer, motif)),
                                 new InstantCommand(gate::down)
                         )),
                 new DeferredCommand(() -> new ShootSortedBallsCommandSequence(shooter, spindexer, gate, intake, motif)),
@@ -340,7 +340,7 @@ public class RedSortedCloseAuto extends CommandOpMode {
                                 new WaitCommand(500),
                                 new InstantCommand(gate::up),
                                 new WaitCommand(200),
-                                new LoadMotifCommand(spindexer, motif),
+                                new DeferredCommand(() -> new LoadMotifCommand(spindexer, motif)),
                                 new InstantCommand(gate::down)
                         )),
                 new DeferredCommand(() -> new ShootSortedBallsCommandSequence(shooter, spindexer, gate, intake, motif))
