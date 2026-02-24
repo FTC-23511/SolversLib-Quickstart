@@ -510,16 +510,12 @@ public class RedTeleOp extends CommandOpMode {
 
         switch(driveMode) {
             case MANUAL_CONTROL: {
-                double denominator = Math.max(Math.abs(x) + Math.abs(y) + Math.abs(rx), 1.0);
-                if (!isHoldingPoint) follower.setTeleOpDrive(x_rotated / denominator, y_rotated / denominator, rx / denominator, true);
                 break;
             }
             case ZERO_DEGREES: {
                 headingError = follower.getHeading() - Math.toRadians(0);
                 headingPIDOutput = alignerHeadingPID.calculate(headingError, 0);
                 rx += MathUtils.clamp(headingPIDOutput, -1, 1);
-                double denominator = Math.max(Math.abs(x) + Math.abs(y) + Math.abs(rx), 1.0);
-                if (!isHoldingPoint) follower.setTeleOpDrive(gamepad1.left_stick_y, gamepad1.left_stick_x, rx / denominator, true);
                 break;
             }
             case AUTO_AIM: {
@@ -538,11 +534,11 @@ public class RedTeleOp extends CommandOpMode {
                 }
 
                 rx += MathUtils.clamp(headingPIDOutput, -1, 1);
-                double denominator = Math.max(Math.abs(x) + Math.abs(y) + Math.abs(rx), 1.0);
-                if (!isHoldingPoint) follower.setTeleOpDrive(x_rotated / denominator, y_rotated / denominator, rx / denominator, true);
                 break;
             }
         }
+        double denominator = Math.max(Math.abs(x) + Math.abs(y) + Math.abs(rx), 1.0);
+        if (!isHoldingPoint) follower.setTeleOpDrive(x_rotated / denominator, y_rotated / denominator, rx / denominator, true);
     }
     void handleLED() {
         //LED Code
