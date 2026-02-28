@@ -29,9 +29,6 @@ repositories {
     }
 
     maven {
-        url = 'https://maven.pedropathing.com'
-    }
-    maven {
         url = 'https://mymaven.bylazar.com/releases'
     }
 
@@ -39,11 +36,9 @@ repositories {
         url "https://repo.dairy.foundation/releases"
     }
 
-    // Fpr Snapshot/Beta Versions of SolversLib
     maven {
         url "https://repo.dairy.foundation/snapshots"
     }
-
 }
 
 dependencies {
@@ -51,12 +46,10 @@ dependencies {
     annotationProcessor files('lib/OpModeAnnotationProcessor.jar')
 
     // SolversLib: Latest Stable Version
-    implementation "org.solverslib:core:0.3.3" // core
-    implementation "org.solverslib:pedroPathing:0.3.3" // pedroPathing
 
-    // SolversLib: Latest Beta Version
-//    implementation "org.solverslib:core:SNAPSHOT-5a81a6b" // core
-//    implementation "org.solverslib:pedroPathing:SNAPSHOT-5a81a6b" // pedroPathing
+    implementation "org.solverslib:core:0.3.4" // core
+    implementation "org.solverslib:pedroPathing:0.3.4" // pedroPathing
+    //    implementation "org.solverslib:photon:0.3.4" // photon is optional (see docs for more info)
 
     implementation "com.acmerobotics.dashboard:dashboard:0.5.1" // FTC Dashboard
 
@@ -65,5 +58,5 @@ dependencies {
     implementation 'com.pedropathing:telemetry:1.0.0'
 
     // Panels Dashboard
-    implementation "com.bylazar:fullpanels:1.0.11"
+    implementation "com.bylazar:fullpanels:1.0.12"
 }
