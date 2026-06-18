@@ -21,18 +21,15 @@ public class teleop extends OpMode {
     public DcMotorEx flywheelMotor, flywheelMotor2;
     PIDFController shooterController;
 
-    // === TUNABLE EN DASHBOARD ===
-    public static double targetVel = 750;
+    public static double targetVel = 1100;
 
-    public static double shooterKP = 0.05;
+    public static double shooterKP = 0.00940;
     public static double shooterKI = 0.0;
     public static double shooterKD = 0.0;
-    public static double shooterKF = 0.000525;
+    public static double shooterKF = 0.000422;
 
     public static double shooterTolerance = 50;
 
-    // Opcional: tolerancia de velocidad (puedes tunearla también)
-    public static double shooterVelocityTolerance = 30;
 
     DcMotorEx Transfer;
     ServoEx ServoTope;
@@ -45,7 +42,6 @@ public class teleop extends OpMode {
 
     DcMotorEx frontLeft, frontRight, backLeft, backRight;
 
-    // === TURRET (sin cambios) ===
     public static double turretKP = 0.00940;
     public static double turretKI = 0.0;
     public static double turretKD = 0.000;
@@ -152,7 +148,7 @@ public class teleop extends OpMode {
         // === SERVO ===
         ServoTope.set(gamepad2.left_bumper ? 0.05 : 0.5);
 
-        // === SHOOTER PIDF (AHORA TOTALMENTE TUNEABLE) ===
+
         if (gamepad2.aWasPressed()) shooterRunning = !shooterRunning;
 
         if (shooterRunning) {
@@ -180,11 +176,9 @@ public class teleop extends OpMode {
             shooterController.reset();
         }
 
-        // === TRANSFER ===
         if (gamepad2.yWasPressed()) transferRunning = !transferRunning;
         Transfer.setPower(transferRunning ? 1 : 0);
 
-        // Telemetry general
         telemetry.addData("Robot heading", heading);
         telemetry.addData("Current turret angle", currentTurretAngle);
         telemetry.addData("Target turret angle", targetTurretAngle);
@@ -193,7 +187,6 @@ public class teleop extends OpMode {
         telemetry.update();
     }
 
-    // ==================== MÉTODOS AUXILIARES ====================
 
     public double clamp(double value, double min, double max) {
         return Math.max(min, Math.min(max, value));
