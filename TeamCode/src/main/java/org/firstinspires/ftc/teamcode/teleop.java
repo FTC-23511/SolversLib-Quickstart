@@ -21,18 +21,18 @@ public class teleop extends OpMode {
     public DcMotorEx flywheelMotor, flywheelMotor2;
     PIDFController shooterController;
 
-    public static double targetVel = 1100;
+    public static double targetVel = 1285;
 
-    public static double shooterKP = 0.00940;
+    public static double shooterKP = 0.05920;
     public static double shooterKI = 0.0;
     public static double shooterKD = 0.0;
-    public static double shooterKF = 0.000422;
+    public static double shooterKF = 0.000523;
 
-    public static double shooterTolerance = 50;
+    public static double shooterTolerance = 20;
 
 
     DcMotorEx Transfer;
-    ServoEx ServoTope;
+    ServoEx ServoTope, hood;
     MotorEx TurretMotor;
     PIDFController TurretController;
     imuEx imu;
@@ -42,7 +42,7 @@ public class teleop extends OpMode {
 
     DcMotorEx frontLeft, frontRight, backLeft, backRight;
 
-    public static double turretKP = 0.00940;
+    public static double turretKP = 0.03510;
     public static double turretKI = 0.0;
     public static double turretKD = 0.000;
     public static double motorEncoderTicksPerRev = 28.0;
@@ -71,6 +71,8 @@ public class teleop extends OpMode {
 
         Transfer = hardwareMap.get(DcMotorEx.class, "Transfer");
         ServoTope = new ServoEx(hardwareMap, "ServoTope");
+        hood = new ServoEx(hardwareMap, "hood");
+
 
         // Turret
         TurretMotor = new MotorEx(hardwareMap, "TurretMotor");
@@ -83,7 +85,7 @@ public class teleop extends OpMode {
         imu = new imuEx(hardwareMap, "imu");
         imu.init();
 
-        Transfer.setDirection(DcMotorSimple.Direction.REVERSE);
+        Transfer.setDirection(DcMotorSimple.Direction.FORWARD);
         Transfer.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
         Transfer.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
@@ -95,17 +97,20 @@ public class teleop extends OpMode {
 
         frontLeft.setDirection(DcMotorSimple.Direction.REVERSE);
         backLeft.setDirection(DcMotorSimple.Direction.REVERSE);
-        frontRight.setDirection(DcMotorSimple.Direction.FORWARD);
-        backRight.setDirection(DcMotorSimple.Direction.FORWARD);
+        frontRight.setDirection(DcMotorSimple.Direction.REVERSE);
+        backRight.setDirection(DcMotorSimple.Direction.REVERSE);
 
         frontLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         frontRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         backLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         backRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        hood.setInverted(true);
+        ServoTope.setInverted(true);
     }
 
     @Override
     public void loop() {
+        hood.set(0.58);
         double heading = 0;
 
         // === TURRET ===
@@ -146,7 +151,7 @@ public class teleop extends OpMode {
         backRight.setPower(br / max);
 
         // === SERVO ===
-        ServoTope.set(gamepad2.left_bumper ? 0.05 : 0.5);
+        ServoTope.set(gamepad2.left_bumper ? 0 : 0.7);
 
 
         if (gamepad2.aWasPressed()) shooterRunning = !shooterRunning;
@@ -158,9 +163,8 @@ public class teleop extends OpMode {
             shooterController.setTolerance(shooterTolerance);
 
             double currentVelocity = (flywheelMotor.getVelocity() + flywheelMotor2.getVelocity()) / 2.0;
-            double curretVelocity2 = currentVelocity;
 
-            double power = shooterController.calculate(curretVelocity2);
+            double power = shooterController.calculate(currentVelocity);
 
             flywheelMotor.setPower(power);
             flywheelMotor2.setPower(power);
@@ -177,7 +181,7 @@ public class teleop extends OpMode {
         }
 
         if (gamepad2.yWasPressed()) transferRunning = !transferRunning;
-        Transfer.setPower(transferRunning ? 1 : 0);
+        Transfer.setPower(transferRunning ? 0.15 : 0);
 
         telemetry.addData("Robot heading", heading);
         telemetry.addData("Current turret angle", currentTurretAngle);
