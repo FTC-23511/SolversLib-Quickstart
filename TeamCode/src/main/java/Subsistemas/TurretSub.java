@@ -15,61 +15,143 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.UnnormalizedAngleUnit;
 
-
-
 @Configurable
 public class TurretSub extends SubsystemBase {
 
-    // Hardware
+    // ================= HARDWARE =================
+
     private final MotorEx turretMotor;
     private final GoBildaPinpointDriver pinpoint;
 
-    // Controlador
     private final PIDFController turretController;
 
-    // PID
+    // ================= PID =================
+
     public static double turretKP = 0.015;
     public static double turretKI = 0.0;
     public static double turretKD = 0.0;
 
-    // Relación del encoder y engranajes
+    // ================= ENCODER / GEAR RATIO =================
+
     public static double motorEncoderTicksPerRev = 28.0;
-    public static double motorGearboxRatio = 15.0;
+    public static double motorGearboxRatio = 10.43290;
     public static double turretExternalGearRatio = 4.8;
 
-    // Potencia máxima
-    public static double turretMaxPower = 0.80;
+    // ================= POWER =================
+
+    public static double turretMaxPower = 0.50;
 
     /*
      * Ángulo de la torreta cuando el encoder está en 0.
-     * La torreta comienza mirando al frente a 90 grados.
+     *
+     * En tu robot:
+     * - robot empieza mirando a la izquierda
+     * - torreta empieza mirando a la izquierda
+     * - heading inicial = 0
+     *
+     * Entonces la torreta inicia en 0 grados relativos al robot.
      */
-    public static double turretStartAngle = 90.0;
+    public static double turretStartAngle = 0.0;
 
-    // Tolerancia del PID
-    public static double turretToleranceTicks = 2.0;
+    /*
+     * Tolerancia en ticks.
+     *
+     * Con:
+     * 28 * 15 * 4.8 = 2016 ticks por vuelta
+     *
+     * 1 grado ≈ 5.6 ticks
+     */
+    public static double turretToleranceTicks = 5.0;
 
-    // Límites físicos de la torreta
+    // ================= LIMITS =================
+
     public static double turretMinAngle = -360.0;
     public static double turretMaxAngle = 360.0;
 
+    // ================= FIELD / TARGET CONFIG =================
+
     /*
-     * Cambia a -1 si la torreta corrige hacia
-     * el lado contrario al movimiento del robot.
+     * Sistema del field:
+     *
+     * +X = derecha
+     * -X = izquierda
+     * +Y = arriba
+     * -Y = abajo
+     *
+     * Goal azul:
+     * esquina inferior izquierda.
      */
-    public static double headingDirection = 1.0;
+    public static double goalX = -163.0;
+    public static double goalY = -152.0;
 
-    public static double thetaDirection = 1.0;
-
+    /*
+     * Distancia mínima para calcular ángulo hacia la goal.
+     * Evita inestabilidad cuando el robot está demasiado cerca.
+     */
     public static double minimumGoalDistance = 15.0;
 
-    public static double thetaSmoothing = 0.15;
+    // ================= CORRECTION TOGGLES =================
 
-    // Estado del subsistema
+    /*
+     * Corrección por heading:
+     *
+     * Compensa el giro del robot.
+     *
+     * Si el robot gira a un lado, la torreta gira al lado contrario
+     * para mantener su dirección en el field.
+     */
+    public static boolean useHeadingCorrection = true;
+
+    /*
+     * Corrección por posición:
+     *
+     * Corrige según cuánto cambia el ángulo hacia la goal
+     * desde la posición inicial del robot.
+     *
+     * Esta corrección NO usa heading.
+     */
+    public static boolean usePositionCorrection = true;
+
+    /*
+     * Si la corrección del heading va al revés,
+     * cambia esto a -1.0.
+     */
+    public static double headingCorrectionDirection = -1.0;
+
+    /*
+     * Si la corrección por posición va al revés,
+     * cambia esto a -1.0.
+     */
+    public static double positionCorrectionDirection = -1.0;
+
+    /*
+     * Offset manual para calibrar puntería.
+     *
+     * Si siempre queda un poco a la izquierda o derecha,
+     * ajusta este valor desde dashboard.
+     */
+    public static double manualAimOffsetDegrees = 0.0;
+
+    /*
+     * Si las dos correcciones están apagadas:
+     *
+     * true  = mantiene la posición actual
+     * false = regresa a turretStartAngle
+     */
+    public static boolean holdCurrentAngleWhenCorrectionsDisabled = true;
+
+    /*
+     * Si true, cuando la posición está apagada, se borra la referencia
+     * inicial de la goal para capturar una nueva cuando se vuelva a activar.
+     */
+    public static boolean resetGoalReferenceWhenPositionDisabled = false;
+
+    // ================= STATE =================
+
     private boolean enabled = true;
 
-    // Variables para telemetría
     private double heading = 0.0;
+
     private double currentTicks = 0.0;
     private double currentAngle = turretStartAngle;
 
@@ -80,23 +162,36 @@ public class TurretSub extends SubsystemBase {
     private double errorTicks = 0.0;
     private double turretPower = 0.0;
 
-    private final static double goalX = 150;
-    private final static double goalY = 30;
+    private double robotX = 0.0;
+    private double robotY = 0.0;
 
     private double goalDistance = 0.0;
     private double goalBearing = 0.0;
 
+    /*
+     * Referencia inicial del ángulo hacia la goal.
+     *
+     * Esto permite separar la corrección por posición
+     * de la corrección por heading.
+     */
     private double initialGoalBearing = 0.0;
     private boolean goalReferenceCaptured = false;
 
-    private double rawTheta = 0.0;
-    private double theta = 0.0;
-    private double robotX;
-    private double robotY;
-    DistanceUnit distanceUnit = DistanceUnit.CM;
+    /*
+     * Correcciones separadas.
+     */
+    private double headingCorrectionAngle = 0.0;
+    private double positionCorrectionAngle = 0.0;
 
+    private final DistanceUnit distanceUnit = DistanceUnit.CM;
 
-    public TurretSub(HardwareMap hardwareMap, String turretMotorName, String pinpointName) {
+    // ================= CONSTRUCTOR =================
+
+    public TurretSub(
+            HardwareMap hardwareMap,
+            String turretMotorName,
+            String pinpointName
+    ) {
         turretMotor = new MotorEx(hardwareMap, turretMotorName);
 
         turretMotor.setZeroPowerBehavior(Motor.ZeroPowerBehavior.BRAKE);
@@ -105,98 +200,132 @@ public class TurretSub extends SubsystemBase {
 
         turretMotor.setRunMode(Motor.RunMode.RawPower);
 
-        turretController = new PIDFController(turretKP, turretKI, turretKD, 0);
+        turretController = new PIDFController(
+                turretKP,
+                turretKI,
+                turretKD,
+                0
+        );
 
-        pinpoint = hardwareMap.get(GoBildaPinpointDriver.class, pinpointName);
+        pinpoint = hardwareMap.get(
+                GoBildaPinpointDriver.class,
+                pinpointName
+        );
 
+        pinpoint.setOffsets(
+                27.05,
+                199.02,
+                DistanceUnit.MM
+        );
+
+        pinpoint.setEncoderResolution(
+                GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD
+        );
+
+        /*
+         * OJO:
+         * Esto hace que el Pinpoint tome la posición actual como:
+         *
+         * X = 0
+         * Y = 0
+         * heading = 0
+         *
+         * Solo es correcto si el robot empieza en la posición
+         * que quieres usar como referencia.
+         */
         pinpoint.resetPosAndIMU();
     }
 
+    // ================= PERIODIC =================
 
     @Override
-    public void periodic()  {
+    public void periodic() {
 
-        // Actualizar Pinpoint una vez por ciclo
+        // Actualizar Pinpoint
         pinpoint.update();
 
-        // Leer el encoder incluso si el Pinpoint aún no está listo
+        // Leer encoder de la torreta
         currentTicks = turretMotor.getCurrentPosition();
         currentAngle = turretTicksToDegrees(currentTicks);
 
+        // Si Pinpoint no está listo, no mover la torreta
+        if (pinpoint.getDeviceStatus()
+                != GoBildaPinpointDriver.DeviceStatus.READY) {
 
-
-
-        /*
-         * No mover la torreta mientras el Pinpoint
-         * se está inicializando o tiene algún error.
-         */
-        if (pinpoint.getDeviceStatus() != GoBildaPinpointDriver.DeviceStatus.READY) {
             stopMotor();
             return;
         }
 
-        heading = pinpoint.getHeading(UnnormalizedAngleUnit.DEGREES);
-        robotY = pinpoint.getPosY(distanceUnit);
+        // Leer odometría
+        heading = pinpoint.getHeading(
+                UnnormalizedAngleUnit.DEGREES
+        );
+
         robotX = pinpoint.getPosX(distanceUnit);
+        robotY = pinpoint.getPosY(distanceUnit);
 
-        double theta = findTheta(robotX, robotY);
-
+        // Calcular vector desde el robot hacia la goal
         double deltaX = goalX - robotX;
         double deltaY = goalY - robotY;
 
         goalDistance = Math.hypot(deltaX, deltaY);
 
-        if (goalDistance >= minimumGoalDistance) {
+        /*
+         * Ángulo absoluto hacia la goal en el field.
+         *
+         * Sistema:
+         *
+         * 0°    = derecha
+         * 90°   = arriba
+         * 180°  = izquierda
+         * -90°  = abajo
+         */
 
-            /*
-             * 0 grados apunta hacia el eje +Y.
-             *
-             * Si tus ejes están invertidos, después podemos
-             * cambiar el orden o los signos.
-             */
-            goalBearing = Math.toDegrees(
-                    Math.atan2(deltaX, deltaY)
-            );
 
-            goalBearing = normalizeDegrees(goalBearing);
+        goalBearing = Math.toDegrees(
+                Math.atan2(deltaY, deltaX)
+        );
 
-            /*
-             * En la posición inicial la torreta está en 90°
-             * y ya se encuentra alineada con la referencia.
-             *
-             * Por eso el primer ángulo hacia la goal se guarda
-             * como referencia y theta comienza en cero.
-             */
-            if (!goalReferenceCaptured) {
+        goalBearing = normalizeDegrees(goalBearing);
 
-                initialGoalBearing = goalBearing;
-                goalReferenceCaptured = true;
-
-                rawTheta = 0.0;
-                theta = 0.0;
-            } else {
-
-                rawTheta = normalizeDegrees(
-                        goalBearing - initialGoalBearing
-                );
-
-                /*
-                 * Filtro angular. Se filtra la diferencia
-                 * normalizada para evitar problemas al cruzar
-                 * de 180° a -180°.
-                 */
-                double thetaDifference = normalizeDegrees(
-                        rawTheta - theta
-                );
-
-                theta = normalizeDegrees(
-                        theta
-                                + thetaDifference
-                                * thetaSmoothing
-                );
-            }
+        /*
+         * Capturamos la dirección inicial hacia la goal.
+         *
+         * Esta referencia permite que la corrección de posición
+         * sea independiente del heading.
+         *
+         * positionCorrectionAngle significa:
+         * "cuánto cambió el ángulo hacia la goal desde el inicio".
+         */
+        if (!goalReferenceCaptured) {
+            initialGoalBearing = turretStartAngle;
+            goalReferenceCaptured = true;
         }
 
+        positionCorrectionAngle = normalizeDegrees(
+                goalBearing - initialGoalBearing
+        );
+
+        positionCorrectionAngle = normalizeDegrees(
+                positionCorrectionAngle * positionCorrectionDirection
+        );
+
+
+
+
+        /*
+         * Corrección por heading.
+         *
+         * Como el robot inicia con heading = 0 mirando a la izquierda
+         * y la torreta también inicia a la izquierda:
+         *
+         * headingCorrectionAngle = -heading
+         *
+         * El signo negativo es porque la torreta debe compensar
+         * en sentido contrario al giro del robot.
+         */
+        headingCorrectionAngle = -heading * headingCorrectionDirection;
+        headingCorrectionAngle = normalizeDegrees(headingCorrectionAngle);
 
         if (!enabled) {
             stopMotor();
@@ -204,12 +333,49 @@ public class TurretSub extends SubsystemBase {
         }
 
         /*
-         * La posición deseada cambia con el heading
-         * para mantener la orientación de la torreta.
+         * Construcción del ángulo deseado por partes:
+         *
+         * turretStartAngle
+         * + corrección por heading si está activa
+         * + corrección por posición si está activa
+         * + offset manual
          */
-        desiredAngle = turretStartAngle
-                + heading * headingDirection - theta * thetaDirection;
+        if (!useHeadingCorrection && !usePositionCorrection) {
 
+            if (holdCurrentAngleWhenCorrectionsDisabled) {
+                desiredAngle = currentAngle;
+            } else {
+                desiredAngle = turretStartAngle;
+            }
+
+            if (resetGoalReferenceWhenPositionDisabled) {
+                resetGoalReference();
+            }
+
+        } else {
+
+            desiredAngle = turretStartAngle;
+
+            if (useHeadingCorrection && usePositionCorrection) {
+                desiredAngle += (headingCorrectionAngle + positionCorrectionAngle);
+            }
+
+            if (usePositionCorrection && !useHeadingCorrection) {
+                desiredAngle += positionCorrectionAngle;
+            }
+            if  (!usePositionCorrection && useHeadingCorrection) {
+                desiredAngle += headingCorrectionAngle;
+            }
+        }
+
+        desiredAngle += manualAimOffsetDegrees;
+
+        desiredAngle = normalizeDegrees(desiredAngle);
+
+        /*
+         * Buscar el ángulo equivalente más cercano
+         * dentro de los límites físicos de la torreta.
+         */
         targetAngle = findBestTurretTarget(
                 desiredAngle,
                 currentAngle
@@ -220,6 +386,7 @@ public class TurretSub extends SubsystemBase {
         // Redondear a una décima de tick
         targetTicks = Math.round(targetTicks * 10.0) / 10.0;
 
+        // Actualizar PID por si cambias valores desde dashboard
         turretController.setPIDF(
                 turretKP,
                 turretKI,
@@ -229,9 +396,7 @@ public class TurretSub extends SubsystemBase {
 
         turretController.setSetPoint(targetTicks);
 
-        turretPower = turretController.calculate(
-                currentTicks
-        );
+        turretPower = turretController.calculate(currentTicks);
 
         turretPower = clamp(
                 turretPower,
@@ -241,30 +406,25 @@ public class TurretSub extends SubsystemBase {
 
         errorTicks = targetTicks - currentTicks;
 
-        // Detenerse dentro de la tolerancia
-        if (Math.abs(errorTicks)
-                <= turretToleranceTicks) {
-
+        // Detener dentro de tolerancia
+        if (Math.abs(errorTicks) <= turretToleranceTicks) {
             turretPower = 0.0;
         }
 
         // Límite mínimo de software
-        if (currentAngle <= turretMinAngle
-                && turretPower < 0.0) {
-
+        if (currentAngle <= turretMinAngle && turretPower < 0.0) {
             turretPower = 0.0;
         }
 
         // Límite máximo de software
-        if (currentAngle >= turretMaxAngle
-                && turretPower > 0.0) {
-
+        if (currentAngle >= turretMaxAngle && turretPower > 0.0) {
             turretPower = 0.0;
         }
 
         turretMotor.set(turretPower);
     }
 
+    // ================= MATH HELPERS =================
 
     private double clamp(
             double value,
@@ -277,13 +437,11 @@ public class TurretSub extends SubsystemBase {
         );
     }
 
-
     public double getTicksPerTurretRev() {
         return motorEncoderTicksPerRev
                 * motorGearboxRatio
                 * turretExternalGearRatio;
     }
-
 
     private double degreesToTurretTicks(
             double turretAngle
@@ -292,7 +450,6 @@ public class TurretSub extends SubsystemBase {
                 * getTicksPerTurretRev()
                 / 360.0;
     }
-
 
     private double turretTicksToDegrees(
             double ticks
@@ -303,12 +460,10 @@ public class TurretSub extends SubsystemBase {
                 / getTicksPerTurretRev();
     }
 
-    private double findTheta(double robotX, double robotY) {
-        double deltaX = TurretSub.goalX - robotX;
-        double deltaY = TurretSub.goalY - robotY;
-        return Math.toDegrees(Math.atan2(deltaY, deltaX));
-    }
-    private double findBestTurretTarget(double desiredAngle, double currentAngle) {
+    private double findBestTurretTarget(
+            double desiredAngle,
+            double currentAngle
+    ) {
         double bestAngle = desiredAngle;
         double bestDistance = Double.MAX_VALUE;
 
@@ -316,9 +471,12 @@ public class TurretSub extends SubsystemBase {
 
         /*
          * Busca una representación equivalente del ángulo
-         * que se encuentre dentro de los límites.
+         * dentro de los límites físicos.
+         *
+         * Ejemplo:
+         * -170° y 190° apuntan a la misma dirección.
          */
-        for (int rotation = -64; rotation <= 64; rotation++) {
+        for (int rotation = -8; rotation <= 8; rotation++) {
 
             double candidate =
                     desiredAngle + 360.0 * rotation;
@@ -347,8 +505,8 @@ public class TurretSub extends SubsystemBase {
         }
 
         /*
-         * Si no existe una posición equivalente dentro
-         * de los límites, se usa el límite más cercano.
+         * Si no hay un ángulo equivalente dentro de los límites,
+         * usa el límite más cercano.
          */
         return clamp(
                 desiredAngle,
@@ -357,12 +515,12 @@ public class TurretSub extends SubsystemBase {
         );
     }
 
+    // ================= MAIN ENABLE / DISABLE =================
 
     public void enable() {
         turretController.reset();
         enabled = true;
     }
-
 
     public void disable() {
         enabled = false;
@@ -370,11 +528,9 @@ public class TurretSub extends SubsystemBase {
         stopMotor();
     }
 
-
     public boolean isEnabled() {
         return enabled;
     }
-
 
     public void toggleEnabled() {
         if (enabled) {
@@ -384,10 +540,117 @@ public class TurretSub extends SubsystemBase {
         }
     }
 
+    // ================= CORRECTION CONTROLS =================
+
+    public void enableHeadingCorrection() {
+        useHeadingCorrection = true;
+        turretController.reset();
+    }
+
+    public void disableHeadingCorrection() {
+        useHeadingCorrection = false;
+        turretController.reset();
+    }
+
+    public void toggleHeadingCorrection() {
+        useHeadingCorrection = !useHeadingCorrection;
+        turretController.reset();
+    }
+
+    public boolean isHeadingCorrectionEnabled() {
+        return useHeadingCorrection;
+    }
+
+    public void enablePositionCorrection() {
+        usePositionCorrection = true;
+        turretController.reset();
+    }
+
+    public void disablePositionCorrection() {
+        usePositionCorrection = false;
+
+        if (resetGoalReferenceWhenPositionDisabled) {
+            resetGoalReference();
+        }
+
+        turretController.reset();
+    }
+
+    public void togglePositionCorrection() {
+        usePositionCorrection = !usePositionCorrection;
+
+        if (!usePositionCorrection && resetGoalReferenceWhenPositionDisabled) {
+            resetGoalReference();
+        }
+
+        turretController.reset();
+    }
+
+    public boolean isPositionCorrectionEnabled() {
+        return usePositionCorrection;
+    }
+
+    public void useOnlyHeadingCorrection() {
+        useHeadingCorrection = true;
+        usePositionCorrection = false;
+
+        if (resetGoalReferenceWhenPositionDisabled) {
+            resetGoalReference();
+        }
+
+        turretController.reset();
+    }
+
+    public void useOnlyPositionCorrection() {
+        useHeadingCorrection = false;
+        usePositionCorrection = true;
+        turretController.reset();
+    }
+
+    public void useFullCorrection() {
+        useHeadingCorrection = true;
+        usePositionCorrection = true;
+        turretController.reset();
+    }
+
+    public void disableAllCorrections() {
+        useHeadingCorrection = false;
+        usePositionCorrection = false;
+
+        if (resetGoalReferenceWhenPositionDisabled) {
+            resetGoalReference();
+        }
+
+        turretController.reset();
+    }
+
+    // ================= OFFSET CONTROLS =================
+
+    public void setManualAimOffsetDegrees(
+            double offsetDegrees
+    ) {
+        manualAimOffsetDegrees = offsetDegrees;
+    }
+
+    public void addManualAimOffsetDegrees(
+            double offsetDegrees
+    ) {
+        manualAimOffsetDegrees += offsetDegrees;
+    }
+
+    public void resetManualAimOffset() {
+        manualAimOffsetDegrees = 0.0;
+    }
+
+    // ================= RESET METHODS =================
 
     public void resetHeading() {
         stopMotor();
 
+        /*
+         * Solo llama esto si el robot está físicamente
+         * mirando hacia la izquierda.
+         */
         pinpoint.setHeading(
                 0.0,
                 AngleUnit.DEGREES
@@ -396,17 +659,23 @@ public class TurretSub extends SubsystemBase {
         pinpoint.update();
 
         heading = 0.0;
+        headingCorrectionAngle = 0.0;
+
         desiredAngle = turretStartAngle;
         targetAngle = turretStartAngle;
         targetTicks = 0.0;
+        errorTicks = 0.0;
 
         turretController.reset();
     }
 
-
     public void resetEncoder() {
         stopMotor();
 
+        /*
+         * Solo llama esto si la torreta está físicamente
+         * apuntando hacia la izquierda.
+         */
         turretMotor.stopAndResetEncoder();
 
         turretMotor.setRunMode(
@@ -423,86 +692,74 @@ public class TurretSub extends SubsystemBase {
         turretController.reset();
     }
 
+    public void resetGoalReference() {
+        goalReferenceCaptured = false;
+        initialGoalBearing = 0.0;
+        goalBearing = 0.0;
+        positionCorrectionAngle = 0.0;
+
+        turretController.reset();
+    }
 
     public void resetAll() {
         stopMotor();
 
         resetEncoder();
         resetHeading();
+        resetGoalReference();
+
+        manualAimOffsetDegrees = 0.0;
 
         turretController.reset();
     }
-
 
     public void stopMotor() {
         turretMotor.stopMotor();
         turretPower = 0.0;
     }
 
-    public void resetGoalReference() {
-
-        goalReferenceCaptured = false;
-
-        initialGoalBearing = 0.0;
-        goalBearing = 0.0;
-
-        rawTheta = 0.0;
-        theta = 0.0;
-
-        turretController.reset();
-    }
-
-
-    // Getters para telemetría
+    // ================= TELEMETRY GETTERS =================
 
     public double getHeading() {
         return heading;
     }
 
-
     public double getCurrentTicks() {
         return currentTicks;
     }
-
 
     public double getCurrentAngle() {
         return currentAngle;
     }
 
-
     public double getDesiredAngle() {
         return desiredAngle;
     }
-
 
     public double getTargetTicks() {
         return targetTicks;
     }
 
-
     public double getTargetAngle() {
         return targetAngle;
     }
-
 
     public double getErrorTicks() {
         return errorTicks;
     }
 
-
     public double getAppliedPower() {
         return turretPower;
     }
-
 
     public GoBildaPinpointDriver.DeviceStatus getPinpointStatus() {
         return pinpoint.getDeviceStatus();
     }
 
-
     public double getPinpointFrequency() {
         return pinpoint.getFrequency();
     }
+
     public double getRobotX() {
         return robotX;
     }
@@ -523,12 +780,20 @@ public class TurretSub extends SubsystemBase {
         return initialGoalBearing;
     }
 
-    public double getRawTheta() {
-        return rawTheta;
+    public boolean isGoalReferenceCaptured() {
+        return goalReferenceCaptured;
     }
 
-    public double getTheta() {
-        return theta;
+    public double getHeadingCorrectionAngle() {
+        return headingCorrectionAngle;
+    }
+
+    public double getPositionCorrectionAngle() {
+        return positionCorrectionAngle;
+    }
+
+    public double getManualAimOffsetDegrees() {
+        return manualAimOffsetDegrees;
     }
 
     public double getHeadingVelocity() {

@@ -501,15 +501,6 @@ public class TeleOpODO extends OpMode {
                 turret.getInitialGoalBearing()
         );
 
-        telemetry.addData(
-                "Theta sin filtro",
-                turret.getRawTheta()
-        );
-
-        telemetry.addData(
-                "Theta filtrado",
-                turret.getTheta()
-        );
 
         telemetry.addData(
                 "Heading",
