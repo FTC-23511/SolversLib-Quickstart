@@ -13,6 +13,7 @@ import com.seattlesolvers.solverslib.hardware.motors.MotorEx;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 import org.firstinspires.ftc.robotcore.external.navigation.UnnormalizedAngleUnit;
 
 @Configurable
@@ -55,9 +56,10 @@ public class TurretSub extends SubsystemBase {
     // ================= FIELD / TARGET CONFIG =================
 
 
-    public static double goalX = -163.0;
-    public static double goalY = -152.0;
+    public static double goalX = -152.4;
+    public static double goalY = -152.4;
 
+    public static Pose2D robotPose = new Pose2D(DistanceUnit.CM,0,0,AngleUnit.DEGREES ,180 );
 
 
     // ================= CORRECTION TOGGLES =================
@@ -74,7 +76,7 @@ public class TurretSub extends SubsystemBase {
     public static double positionCorrectionDirection = -1.0;
 
 
-    public static double manualAimOffsetDegrees = 0.0;
+    public static double manualAimOffsetDegrees = 5;
 
 
 
@@ -152,9 +154,11 @@ public class TurretSub extends SubsystemBase {
         pinpoint.setEncoderResolution(
                 GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD
         );
+        pinpoint.setEncoderDirections(GoBildaPinpointDriver.EncoderDirection.FORWARD, GoBildaPinpointDriver.EncoderDirection.REVERSED);
 
 
         pinpoint.resetPosAndIMU();
+        pinpoint.setPosition(robotPose);
     }
 
     // ================= PERIODIC =================
@@ -195,7 +199,7 @@ public class TurretSub extends SubsystemBase {
 
 
         goalBearing = Math.toDegrees(
-                Math.atan2(deltaY, deltaX)
+                Math.atan2(deltaX, deltaY)
         );
 
         goalBearing = normalizeDegrees(goalBearing);
@@ -566,6 +570,10 @@ public class TurretSub extends SubsystemBase {
     public void stopMotor() {
         turretMotor.stopMotor();
         turretPower = 0.0;
+    }
+
+    public void setPose(Pose2D pose){
+        robotPose = pose;
     }
 
     // ================= TELEMETRY GETTERS =================
