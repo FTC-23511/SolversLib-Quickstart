@@ -1,21 +1,37 @@
 package org.firstinspires.ftc.teamcode;
 
-import com.acmerobotics.dashboard.config.Config;
+import com.bylazar.configurables.annotations.Configurable;
+import com.bylazar.gamepad.PanelsGamepad;
+import com.bylazar.telemetry.PanelsTelemetry;
+import com.bylazar.telemetry.TelemetryManager;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.Gamepad;
 import com.seattlesolvers.solverslib.command.CommandScheduler;
 import com.seattlesolvers.solverslib.controller.PIDFController;
 import com.seattlesolvers.solverslib.hardware.servos.ServoEx;
 
 import Subsistemas.TurretSub;
 
-
-@Config
+@Configurable
 @TeleOp(name = "TELEOPTHETA")
 public class TeleOpODO extends OpMode {
+
+    // ================= PANELS =================
+
+    private final TelemetryManager panelsTelemetry =
+            PanelsTelemetry.INSTANCE.getTelemetry();
+
+    /**
+     * Activa la telemetría detallada de los gamepads en Panels.
+     * Puede desactivarse desde Configurables para reducir tráfico.
+     */
+    public static boolean showPanelsGamepadDebug = true;
+
+    // ================= HARDWARE =================
 
     // Shooter
     private DcMotorEx flywheelMotor;
@@ -39,17 +55,22 @@ public class TeleOpODO extends OpMode {
     // PID del shooter
     private PIDFController shooterController;
 
-    // Estados
+    // ================= ESTADOS =================
+
     private boolean shooterRunning = false;
     private boolean transferRunning = false;
 
-    // Shooter
+    // ================= CONFIGURABLES =================
+
     public static double targetVel = 750.0;
 
     public static double kP = 0.05;
     public static double kI = 0.0;
     public static double kD = 0.0;
     public static double kV = 0.000525;
+
+    public static double servoMin = 0.05;
+    public static double servoMax = 0.5;
 
 
     @Override
@@ -75,18 +96,17 @@ public class TeleOpODO extends OpMode {
                 0
         );
 
-        telemetry.addLine("TELEOPBETA inicializado");
+        telemetry.addLine("TELEOPTHETA inicializado");
         telemetry.addLine("Esperando que Pinpoint esté READY");
-        telemetry.update();
+
+        panelsTelemetry.debug("TELEOPTHETA inicializado");
+        panelsTelemetry.debug("Esperando que Pinpoint esté READY");
+        panelsTelemetry.update(telemetry);
     }
 
 
     private void initializeTurret() {
 
-        /*
-         * Los nombres deben ser iguales a los nombres
-         * usados en la configuración del robot.
-         */
         turret = new TurretSub(
                 hardwareMap,
                 "TurretMotor",
@@ -185,11 +205,11 @@ public class TeleOpODO extends OpMode {
         );
 
         frontRight.setDirection(
-                DcMotorSimple.Direction.FORWARD
+                DcMotorSimple.Direction.REVERSE
         );
 
         backRight.setDirection(
-                DcMotorSimple.Direction.FORWARD
+                DcMotorSimple.Direction.REVERSE
         );
 
         frontLeft.setZeroPowerBehavior(
@@ -250,29 +270,51 @@ public class TeleOpODO extends OpMode {
     public void loop() {
 
         /*
+         * Combina el gamepad físico de FTC con el gamepad remoto de Panels.
+         * A partir de aquí se deben usar g1 y g2, no gamepad1 y gamepad2.
+         */
+        Gamepad g1 = PanelsGamepad.INSTANCE
+                .getFirstManager()
+                .asCombinedFTCGamepad(gamepad1);
+
+        Gamepad g2 = PanelsGamepad.INSTANCE
+                .getSecondManager()
+                .asCombinedFTCGamepad(gamepad2);
+
+        /*
          * Ejecuta TurretSub.periodic().
          * Si eliminas esta línea, la torreta no se actualizará.
          */
         CommandScheduler.getInstance().run();
 
-        driveControl();
-        servoControl();
-        shooterControl();
-        transferControl();
-        turretControls();
+        driveControl(g1);
+        servoControl(g2);
+        shooterControl(g2);
+        transferControl(g2);
+        turretControls(g2);
 
         addShooterTelemetry();
         addTurretTelemetry();
+        addPanelsRobotTelemetry();
 
-        telemetry.update();
+        if (showPanelsGamepadDebug) {
+            addPanelsGamepadTelemetry("GAMEPAD 1", g1);
+            addPanelsGamepadTelemetry("GAMEPAD 2", g2);
+        }
+
+        /*
+         * Actualiza tanto Panels como la telemetría normal del Driver Station.
+         * No hace falta llamar telemetry.update() por separado.
+         */
+        panelsTelemetry.update(telemetry);
     }
 
 
-    private void driveControl() {
+    private void driveControl(Gamepad g1) {
 
-        double y = -gamepad1.left_stick_y;
-        double x = gamepad1.left_stick_x;
-        double rotation = gamepad1.right_stick_x;
+        double y = -g1.left_stick_y;
+        double x = g1.left_stick_x * 1.05;
+        double rotation = g1.right_stick_x;
 
         double frontLeftPower =
                 y + x + rotation;
@@ -318,19 +360,19 @@ public class TeleOpODO extends OpMode {
     }
 
 
-    private void servoControl() {
+    private void servoControl(Gamepad g2) {
 
-        if (gamepad2.left_bumper) {
-            servoTope.set(0.05);
+        if (g2.left_bumper) {
+            servoTope.set(servoMin);
         } else {
-            servoTope.set(0.50);
+            servoTope.set(servoMax);
         }
     }
 
 
-    private void shooterControl() {
+    private void shooterControl(Gamepad g2) {
 
-        if (gamepad2.aWasPressed()) {
+        if (g2.aWasPressed()) {
 
             shooterRunning = !shooterRunning;
 
@@ -390,9 +432,9 @@ public class TeleOpODO extends OpMode {
     }
 
 
-    private void transferControl() {
+    private void transferControl(Gamepad g2) {
 
-        if (gamepad2.yWasPressed()) {
+        if (g2.yWasPressed()) {
             transferRunning = !transferRunning;
         }
 
@@ -404,13 +446,13 @@ public class TeleOpODO extends OpMode {
     }
 
 
-    private void turretControls() {
+    private void turretControls(Gamepad g2) {
 
         /*
          * X:
          * activar o desactivar la corrección automática.
          */
-        if (gamepad2.xWasPressed()) {
+        if (g2.xWasPressed()) {
             turret.toggleEnabled();
         }
 
@@ -418,7 +460,7 @@ public class TeleOpODO extends OpMode {
          * B:
          * poner el heading actual del robot en 0.
          */
-        if (gamepad2.bWasPressed()) {
+        if (g2.bWasPressed()) {
             turret.resetHeading();
         }
 
@@ -429,7 +471,7 @@ public class TeleOpODO extends OpMode {
          * Úsalo solamente cuando la torreta esté
          * físicamente en su posición inicial de 90 grados.
          */
-        if (gamepad2.backWasPressed()) {
+        if (g2.backWasPressed()) {
             turret.resetAll();
             turret.enable();
         }
@@ -483,8 +525,17 @@ public class TeleOpODO extends OpMode {
 
     private void addTurretTelemetry() {
 
-        telemetry.addData("Robot X", turret.getRobotX());
-        telemetry.addData("Robot Y", turret.getRobotY());
+        telemetry.addLine("----- TURRET -----");
+
+        telemetry.addData(
+                "Robot X",
+                turret.getRobotX()
+        );
+
+        telemetry.addData(
+                "Robot Y",
+                turret.getRobotY()
+        );
 
         telemetry.addData(
                 "Distancia goal",
@@ -500,19 +551,6 @@ public class TeleOpODO extends OpMode {
                 "Bearing inicial",
                 turret.getInitialGoalBearing()
         );
-
-
-        telemetry.addData(
-                "Heading",
-                turret.getHeading()
-        );
-
-        telemetry.addData(
-                "Ángulo deseado",
-                turret.getDesiredAngle()
-        );
-
-        telemetry.addLine("----- TURRET -----");
 
         telemetry.addData(
                 "Torreta activa",
@@ -581,6 +619,65 @@ public class TeleOpODO extends OpMode {
     }
 
 
+    private void addPanelsRobotTelemetry() {
+
+        panelsTelemetry.debug("==== ROBOT ====");
+        panelsTelemetry.debug("Shooter activo: " + shooterRunning);
+        panelsTelemetry.debug("Transfer activo: " + transferRunning);
+        panelsTelemetry.debug("Torreta activa: " + turret.isEnabled());
+        panelsTelemetry.debug("Robot X: " + turret.getRobotX());
+        panelsTelemetry.debug("Robot Y: " + turret.getRobotY());
+        panelsTelemetry.debug("Heading: " + turret.getHeading());
+        panelsTelemetry.debug("Ángulo actual: " + turret.getCurrentAngle());
+        panelsTelemetry.debug("Ángulo objetivo: " + turret.getTargetAngle());
+        panelsTelemetry.debug("Error ticks: " + turret.getErrorTicks());
+        panelsTelemetry.debug("Potencia torreta: " + turret.getAppliedPower());
+    }
+
+
+    private void addPanelsGamepadTelemetry(
+            String name,
+            Gamepad gamepad
+    ) {
+
+        panelsTelemetry.debug("==== " + name + " ====");
+
+        panelsTelemetry.debug("A: " + gamepad.a);
+        panelsTelemetry.debug("B: " + gamepad.b);
+        panelsTelemetry.debug("X: " + gamepad.x);
+        panelsTelemetry.debug("Y: " + gamepad.y);
+
+        panelsTelemetry.debug("DPad Up: " + gamepad.dpad_up);
+        panelsTelemetry.debug("DPad Down: " + gamepad.dpad_down);
+        panelsTelemetry.debug("DPad Left: " + gamepad.dpad_left);
+        panelsTelemetry.debug("DPad Right: " + gamepad.dpad_right);
+
+        panelsTelemetry.debug("Left Bumper: " + gamepad.left_bumper);
+        panelsTelemetry.debug("Right Bumper: " + gamepad.right_bumper);
+
+        panelsTelemetry.debug("Left Trigger: " + gamepad.left_trigger);
+        panelsTelemetry.debug("Right Trigger: " + gamepad.right_trigger);
+
+        panelsTelemetry.debug("Start / Options: " + gamepad.options);
+        panelsTelemetry.debug("Back / Share: " + gamepad.back);
+        panelsTelemetry.debug("Guide / PS: " + gamepad.guide);
+        panelsTelemetry.debug("Touchpad: " + gamepad.touchpad);
+
+        panelsTelemetry.debug(
+                "Left Stick Button: " + gamepad.left_stick_button
+        );
+
+        panelsTelemetry.debug(
+                "Right Stick Button: " + gamepad.right_stick_button
+        );
+
+        panelsTelemetry.debug("Left Stick X: " + gamepad.left_stick_x);
+        panelsTelemetry.debug("Left Stick Y: " + gamepad.left_stick_y);
+        panelsTelemetry.debug("Right Stick X: " + gamepad.right_stick_x);
+        panelsTelemetry.debug("Right Stick Y: " + gamepad.right_stick_y);
+    }
+
+
     private double clamp(
             double value,
             double minimum,
@@ -634,6 +731,9 @@ public class TeleOpODO extends OpMode {
 
         shooterRunning = false;
         transferRunning = false;
+
+        panelsTelemetry.debug("TELEOPTHETA detenido");
+        panelsTelemetry.update(telemetry);
 
         // Limpiar subsistemas y comandos registrados
         CommandScheduler.getInstance().reset();
