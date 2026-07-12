@@ -1,9 +1,12 @@
 package org.firstinspires.ftc.teamcode;
 
+import static java.lang.Boolean.TRUE;
+
 import com.bylazar.configurables.annotations.Configurable;
 import com.bylazar.gamepad.PanelsGamepad;
 import com.bylazar.telemetry.PanelsTelemetry;
 import com.bylazar.telemetry.TelemetryManager;
+import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -12,7 +15,13 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.seattlesolvers.solverslib.command.CommandScheduler;
 import com.seattlesolvers.solverslib.controller.PIDFController;
+import com.seattlesolvers.solverslib.controller.wpilibcontroller.SimpleMotorFeedforward;
+import com.seattlesolvers.solverslib.hardware.motors.Motor;
+import com.seattlesolvers.solverslib.hardware.motors.MotorEx;
+import com.seattlesolvers.solverslib.hardware.motors.MotorGroup;
 import com.seattlesolvers.solverslib.hardware.servos.ServoEx;
+
+import java.util.List;
 
 import Subsistemas.TurretSub;
 
@@ -28,11 +37,14 @@ public class TeleOpODO extends OpMode {
 
     public static boolean showPanelsGamepadDebug = true;
 
+    // ================== PID/FF ===================;
+    private final PIDFController flyWheelPDIFController = new PIDFController(kP, kI, kD,0);
+    private SimpleMotorFeedforward flyWheelFController = new SimpleMotorFeedforward(Ks, Kv);
     // ================= HARDWARE =================
 
     // Shooter
-    private DcMotorEx flywheelMotor;
-    private DcMotorEx flywheelMotor2;
+    private MotorGroup flywheelMotors;
+    private Motor.Encoder flywheelencoder;
 
     // Transferencia
     private DcMotorEx transferMotor;
@@ -49,30 +61,36 @@ public class TeleOpODO extends OpMode {
     // Subsistema de la torreta
     private TurretSub turret;
 
-    // PID del shooter
-    private PIDFController shooterController;
 
     // ================= ESTADOS =================
 
     private boolean shooterRunning = false;
     private boolean transferRunning = false;
+    double lastKs = Ks;
+    double lastKv = Kv;
 
     // ================= CONFIGURABLES =================
 
-    public static double targetVel = 750.0;
+    public static double targetRPM = 750.0;
 
     public static double kP = 0.05;
     public static double kI = 0.0;
     public static double kD = 0.0;
-    public static double kV = 0.000525;
+    public static double Ks = 0.0;
+    public static double Kv = 0.0;
 
     public static double servoMin = 0.05;
     public static double servoMax = 0.5;
+    private double motorRPM;
+    private double shooterRPM;
 
 
     @Override
     public void init() {
 
+        List<LynxModule> hubs = hardwareMap.getAll(LynxModule.class);
+        hubs.forEach(hub -> hub.setBulkCachingMode(
+                LynxModule.BulkCachingMode.AUTO));
 
         CommandScheduler.getInstance().reset();
         CommandScheduler.getInstance().enable();
@@ -83,12 +101,7 @@ public class TeleOpODO extends OpMode {
         initializeDrive();
         initializeServo();
 
-        shooterController = new PIDFController(
-                kP,
-                kI,
-                kD,
-                0
-        );
+
 
         telemetry.addLine("TELEOPTHETA inicializado");
         telemetry.addLine("Esperando que Pinpoint esté READY");
@@ -111,39 +124,24 @@ public class TeleOpODO extends OpMode {
 
     private void initializeShooter() {
 
-        flywheelMotor = hardwareMap.get(
-                DcMotorEx.class,
-                "shooter"
-        );
+        flywheelMotors = new MotorGroup(
+                new MotorEx(hardwareMap, "shooter")
+                        .setCachingTolerance(0.01)
+                        .setInverted(TRUE),
+                new MotorEx(hardwareMap, "shooter2")
+                        .setCachingTolerance(0.01)
+                );
 
-        flywheelMotor2 = hardwareMap.get(
-                DcMotorEx.class,
-                "shooter2"
-        );
+        flywheelencoder = new Motor(hardwareMap, "shooter").encoder
+                .setDirection(Motor.Direction.FORWARD);
 
-        flywheelMotor.setDirection(
-                DcMotorSimple.Direction.REVERSE
-        );
 
-        flywheelMotor2.setDirection(
-                DcMotorSimple.Direction.FORWARD
-        );
+        //-------Velocity Control Declaration------
 
-        flywheelMotor.setZeroPowerBehavior(
-                DcMotor.ZeroPowerBehavior.FLOAT
-        );
+        flywheelMotors.setRunMode(Motor.RunMode.RawPower);
+        flywheelMotors.setZeroPowerBehavior(Motor.ZeroPowerBehavior.FLOAT);
+        flyWheelPDIFController.setTolerance(20);
 
-        flywheelMotor2.setZeroPowerBehavior(
-                DcMotor.ZeroPowerBehavior.FLOAT
-        );
-
-        flywheelMotor.setMode(
-                DcMotor.RunMode.RUN_WITHOUT_ENCODER
-        );
-
-        flywheelMotor2.setMode(
-                DcMotor.RunMode.RUN_WITHOUT_ENCODER
-        );
     }
 
 
@@ -253,7 +251,7 @@ public class TeleOpODO extends OpMode {
 
         turret.enable();
 
-        shooterController.reset();
+        flyWheelPDIFController.reset();
 
         shooterRunning = false;
         transferRunning = false;
@@ -369,60 +367,38 @@ public class TeleOpODO extends OpMode {
         if (g2.aWasPressed()) {
 
             shooterRunning = !shooterRunning;
-
-            /*
-             * Evita conservar el error integral
-             * de la ejecución anterior.
-             */
-            shooterController.reset();
+            flyWheelPDIFController.reset();
         }
 
         if (!shooterRunning) {
 
-            flywheelMotor.setPower(0.0);
-            flywheelMotor2.setPower(0.0);
-
+            flywheelMotors.set(0.0);
             return;
         }
+        // Calculate RPM
+        motorRPM = flywheelencoder.getCorrectedVelocity() * 60.0/28.0;
+        shooterRPM = motorRPM/1.5;
 
-        double flywheelVelocity1 =
-                flywheelMotor.getVelocity();
+        // calculate velocity correction
+        flyWheelPDIFController.setSetPoint(targetRPM);
+        double flywheelPower = flyWheelFController.calculate(targetRPM);
+        flywheelPower += flyWheelPDIFController.calculate(shooterRPM);
 
-        double flywheelVelocity2 =
-                flywheelMotor2.getVelocity();
+        //apply motor power
+        flywheelMotors.set(clamp(flywheelPower,-1, 1));
 
-        double currentVelocity =
-                (flywheelVelocity1 + flywheelVelocity2)
-                        / 2.0;
+        //uptate PIDF/FF controller
+        flyWheelPDIFController.setPIDF(kP, kI, kD,0);
 
-        shooterController.setPIDF(
-                kP,
-                kI,
-                kD,
-                0
-        );
 
-        shooterController.setSetPoint(targetVel);
+        if (lastKs != Ks || lastKv != Kv) {
+            flyWheelFController = new SimpleMotorFeedforward(Ks, Kv);
+            lastKs = Ks;
+            lastKv = Kv;
+        }
 
-        double pidPower =
-                shooterController.calculate(
-                        currentVelocity
-                );
 
-        double feedforwardPower =
-                kV * targetVel;
 
-        double shooterPower =
-                feedforwardPower + pidPower;
-
-        shooterPower = clamp(
-                shooterPower,
-                -1.0,
-                1.0
-        );
-
-        flywheelMotor.setPower(shooterPower);
-        flywheelMotor2.setPower(shooterPower);
     }
 
 
@@ -474,14 +450,8 @@ public class TeleOpODO extends OpMode {
 
     private void addShooterTelemetry() {
 
-        double velocity1 =
-                flywheelMotor.getVelocity();
 
-        double velocity2 =
-                flywheelMotor2.getVelocity();
 
-        double averageVelocity =
-                (velocity1 + velocity2) / 2.0;
 
         telemetry.addLine("----- SHOOTER -----");
 
@@ -491,23 +461,18 @@ public class TeleOpODO extends OpMode {
         );
 
         telemetry.addData(
-                "Velocidad 1",
-                velocity1
-        );
+                "Velocidad motor",
+                motorRPM
 
-        telemetry.addData(
-                "Velocidad 2",
-                velocity2
         );
-
         telemetry.addData(
-                "Velocidad promedio",
-                averageVelocity
+                "velocidad flyWheel",
+                shooterRPM
         );
 
         telemetry.addData(
                 "Velocidad objetivo",
-                targetVel
+                targetRPM
         );
 
         telemetry.addData(
@@ -626,6 +591,9 @@ public class TeleOpODO extends OpMode {
         panelsTelemetry.debug("Ángulo objetivo: " + turret.getTargetAngle());
         panelsTelemetry.debug("Error ticks: " + turret.getErrorTicks());
         panelsTelemetry.debug("Potencia torreta: " + turret.getAppliedPower());
+        panelsTelemetry.debug("MotorRPM: " + motorRPM);
+        panelsTelemetry.debug("ShooterRPM: " + shooterRPM);
+
     }
 
 
@@ -693,12 +661,8 @@ public class TeleOpODO extends OpMode {
         }
 
         // Detener shooter
-        if (flywheelMotor != null) {
-            flywheelMotor.setPower(0.0);
-        }
-
-        if (flywheelMotor2 != null) {
-            flywheelMotor2.setPower(0.0);
+        if (flywheelMotors != null) {
+            flywheelMotors.set(0.0);
         }
 
         // Detener transferencia
