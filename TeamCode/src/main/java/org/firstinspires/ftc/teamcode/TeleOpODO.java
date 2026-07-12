@@ -25,10 +25,7 @@ public class TeleOpODO extends OpMode {
     private final TelemetryManager panelsTelemetry =
             PanelsTelemetry.INSTANCE.getTelemetry();
 
-    /**
-     * Activa la telemetría detallada de los gamepads en Panels.
-     * Puede desactivarse desde Configurables para reducir tráfico.
-     */
+
     public static boolean showPanelsGamepadDebug = true;
 
     // ================= HARDWARE =================
@@ -76,10 +73,7 @@ public class TeleOpODO extends OpMode {
     @Override
     public void init() {
 
-        /*
-         * Limpiar el scheduler antes de crear subsistemas.
-         * Debe hacerse antes de construir TurretSub.
-         */
+
         CommandScheduler.getInstance().reset();
         CommandScheduler.getInstance().enable();
 
