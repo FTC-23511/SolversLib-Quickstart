@@ -17,7 +17,7 @@ import com.seattlesolvers.solverslib.hardware.servos.ServoEx;
 import com.seattlesolvers.solverslib.util.InterpLUT;
 
 @Configurable
-public class Launcher extends SubsystemBase {
+public class LauncherSub extends SubsystemBase {
 
 
     // ================== PID/FF ===================;
@@ -66,7 +66,7 @@ public class Launcher extends SubsystemBase {
     public static double Kv = 0.0;
 
 
-    public Launcher(HardwareMap Hm,String shooterMotor1,String shooterMotor2,String ServoHood,String ServoTope) {
+    public LauncherSub(HardwareMap Hm, String shooterMotor1, String shooterMotor2, String ServoHood) {
         // flywheel constructor
         motor1 = new MotorEx(Hm, shooterMotor1).setCachingTolerance(0.01);
         motor2 = new MotorEx(Hm, shooterMotor2).setCachingTolerance(0.01);
