@@ -1,7 +1,5 @@
 package org.firstinspires.ftc.teamcode;
 
-import static java.lang.Boolean.TRUE;
-
 import com.bylazar.configurables.annotations.Configurable;
 import com.bylazar.gamepad.PanelsGamepad;
 import com.bylazar.telemetry.PanelsTelemetry;
@@ -14,15 +12,11 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.seattlesolvers.solverslib.command.CommandScheduler;
-import com.seattlesolvers.solverslib.controller.PIDFController;
-import com.seattlesolvers.solverslib.controller.wpilibcontroller.SimpleMotorFeedforward;
-import com.seattlesolvers.solverslib.hardware.motors.Motor;
-import com.seattlesolvers.solverslib.hardware.motors.MotorEx;
-import com.seattlesolvers.solverslib.hardware.motors.MotorGroup;
 import com.seattlesolvers.solverslib.hardware.servos.ServoEx;
 
 import java.util.List;
 
+import Subsistemas.LauncherSub;
 import Subsistemas.TurretSub;
 
 @Configurable
@@ -37,14 +31,6 @@ public class TeleOpODO extends OpMode {
 
     public static boolean showPanelsGamepadDebug = true;
 
-    // ================== PID/FF ===================;
-    private final PIDFController flyWheelPDIFController = new PIDFController(kP, kI, kD,0);
-    private SimpleMotorFeedforward flyWheelFController = new SimpleMotorFeedforward(Ks, Kv);
-    // ================= HARDWARE =================
-
-    // Shooter
-    private MotorGroup flywheelMotors;
-    private Motor.Encoder flywheelencoder;
 
     // Transferencia
     private DcMotorEx transferMotor;
@@ -61,28 +47,19 @@ public class TeleOpODO extends OpMode {
     // Subsistema de la torreta
     private TurretSub turret;
 
+    private LauncherSub launcher;
+    private boolean transferRunning;
+
 
     // ================= ESTADOS =================
 
-    private boolean shooterRunning = false;
-    private boolean transferRunning = false;
-    double lastKs = Ks;
-    double lastKv = Kv;
+    private double servoMin = 0.50;
+    private double servoMax = 0.02;
 
-    // ================= CONFIGURABLES =================
 
-    public static double targetRPM = 750.0;
 
-    public static double kP = 0.05;
-    public static double kI = 0.0;
-    public static double kD = 0.0;
-    public static double Ks = 0.0;
-    public static double Kv = 0.0;
 
-    public static double servoMin = 0.05;
-    public static double servoMax = 0.5;
-    private double motorRPM;
-    private double shooterRPM;
+
 
 
     @Override
@@ -123,24 +100,8 @@ public class TeleOpODO extends OpMode {
 
 
     private void initializeShooter() {
-
-        flywheelMotors = new MotorGroup(
-                new MotorEx(hardwareMap, "shooter")
-                        .setCachingTolerance(0.01)
-                        .setInverted(TRUE),
-                new MotorEx(hardwareMap, "shooter2")
-                        .setCachingTolerance(0.01)
-                );
-
-        flywheelencoder = new Motor(hardwareMap, "shooter").encoder
-                .setDirection(Motor.Direction.FORWARD);
-
-
-        //-------Velocity Control Declaration------
-
-        flywheelMotors.setRunMode(Motor.RunMode.RawPower);
-        flywheelMotors.setZeroPowerBehavior(Motor.ZeroPowerBehavior.FLOAT);
-        flyWheelPDIFController.setTolerance(20);
+        // flywheel constructor
+        launcher = new LauncherSub(hardwareMap, "shooter1","shooter2" ,"hood" );
 
     }
 
@@ -251,10 +212,7 @@ public class TeleOpODO extends OpMode {
 
         turret.enable();
 
-        flyWheelPDIFController.reset();
 
-        shooterRunning = false;
-        transferRunning = false;
     }
 
 
@@ -277,6 +235,8 @@ public class TeleOpODO extends OpMode {
          * Ejecuta TurretSub.periodic().
          * Si eliminas esta línea, la torreta no se actualizará.
          */
+
+        launcher.setGoalDistance(turret.getGoalDistance());
         CommandScheduler.getInstance().run();
 
         driveControl(g1);
@@ -363,42 +323,9 @@ public class TeleOpODO extends OpMode {
 
 
     private void shooterControl(Gamepad g2) {
-
-        if (g2.aWasPressed()) {
-
-            shooterRunning = !shooterRunning;
-            flyWheelPDIFController.reset();
+        if (g2.aWasPressed()){
+            launcher.toggleShooter();
         }
-
-        if (!shooterRunning) {
-
-            flywheelMotors.set(0.0);
-            return;
-        }
-        // Calculate RPM
-        motorRPM = flywheelencoder.getCorrectedVelocity() * 60.0/28.0;
-        shooterRPM = motorRPM/1.5;
-
-        // calculate velocity correction
-        flyWheelPDIFController.setSetPoint(targetRPM);
-        double flywheelPower = flyWheelFController.calculate(targetRPM);
-        flywheelPower += flyWheelPDIFController.calculate(shooterRPM);
-
-        //apply motor power
-        flywheelMotors.set(clamp(flywheelPower,-1, 1));
-
-        //uptate PIDF/FF controller
-        flyWheelPDIFController.setPIDF(kP, kI, kD,0);
-
-
-        if (lastKs != Ks || lastKv != Kv) {
-            flyWheelFController = new SimpleMotorFeedforward(Ks, Kv);
-            lastKs = Ks;
-            lastKv = Kv;
-        }
-
-
-
     }
 
 
@@ -418,67 +345,32 @@ public class TeleOpODO extends OpMode {
 
     private void turretControls(Gamepad g2) {
 
-        /*
-         * X:
-         * activar o desactivar la corrección automática.
-         */
         if (g2.xWasPressed()) {
             turret.toggleEnabled();
         }
 
-        /*
-         * B:
-         * poner el heading actual del robot en 0.
-         */
-        if (g2.bWasPressed()) {
-            turret.resetHeading();
-        }
-
-        /*
-         * BACK:
-         * reiniciar heading y encoder de la torreta.
-         *
-         * Úsalo solamente cuando la torreta esté
-         * físicamente en su posición inicial de 90 grados.
-         */
-        if (g2.backWasPressed()) {
-            turret.resetAll();
-            turret.enable();
-        }
     }
 
 
     private void addShooterTelemetry() {
+        telemetry.addData("Shooter Running", launcher.isShooterRunning());
+
+        telemetry.addData("Motor RPM", launcher.getMotorRPM());
+        telemetry.addData("Shooter RPM", launcher.getShooterRPM());
+        telemetry.addData("Target RPM", launcher.getTargetRPM());
+        telemetry.addData("RPM Error", launcher.getRPMError());
+
+        telemetry.addData("Flywheel Power", launcher.getFlywheelPower());
+
+        telemetry.addData("Hood Angle", launcher.getHoodAngle());
+        telemetry.addData("Hood Servo Pos", launcher.getHoodServoPosition());
 
 
 
 
-        telemetry.addLine("----- SHOOTER -----");
 
-        telemetry.addData(
-                "Shooter activo",
-                shooterRunning
-        );
 
-        telemetry.addData(
-                "Velocidad motor",
-                motorRPM
 
-        );
-        telemetry.addData(
-                "velocidad flyWheel",
-                shooterRPM
-        );
-
-        telemetry.addData(
-                "Velocidad objetivo",
-                targetRPM
-        );
-
-        telemetry.addData(
-                "Transfer activo",
-                transferRunning
-        );
     }
 
 
@@ -581,7 +473,7 @@ public class TeleOpODO extends OpMode {
     private void addPanelsRobotTelemetry() {
 
         panelsTelemetry.debug("==== ROBOT ====");
-        panelsTelemetry.debug("Shooter activo: " + shooterRunning);
+
         panelsTelemetry.debug("Transfer activo: " + transferRunning);
         panelsTelemetry.debug("Torreta activa: " + turret.isEnabled());
         panelsTelemetry.debug("Robot X: " + turret.getRobotX());
@@ -591,8 +483,14 @@ public class TeleOpODO extends OpMode {
         panelsTelemetry.debug("Ángulo objetivo: " + turret.getTargetAngle());
         panelsTelemetry.debug("Error ticks: " + turret.getErrorTicks());
         panelsTelemetry.debug("Potencia torreta: " + turret.getAppliedPower());
-        panelsTelemetry.debug("MotorRPM: " + motorRPM);
-        panelsTelemetry.debug("ShooterRPM: " + shooterRPM);
+        panelsTelemetry.debug("motor RPM " + launcher.getMotorRPM());
+        panelsTelemetry.debug("Shooter RPM " + launcher.getShooterRPM());
+        panelsTelemetry.debug("Target RPM " + launcher.getTargetRPM());
+        panelsTelemetry.debug("Erro RPM" + launcher.getRPMError());
+        panelsTelemetry.debug("shooting Angle" + launcher.getHoodAngle());
+        panelsTelemetry.debug("Servo Angle" + launcher.getHoodServoRawPosition());
+        panelsTelemetry.debug("motor Power" + launcher.getFlywheelPower());
+
 
     }
 
@@ -661,9 +559,6 @@ public class TeleOpODO extends OpMode {
         }
 
         // Detener shooter
-        if (flywheelMotors != null) {
-            flywheelMotors.set(0.0);
-        }
 
         // Detener transferencia
         if (transferMotor != null) {
@@ -687,7 +582,7 @@ public class TeleOpODO extends OpMode {
             backRight.setPower(0.0);
         }
 
-        shooterRunning = false;
+
         transferRunning = false;
 
         panelsTelemetry.debug("TELEOPTHETA detenido");
