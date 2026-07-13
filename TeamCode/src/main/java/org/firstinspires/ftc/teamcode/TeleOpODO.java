@@ -29,7 +29,7 @@ public class TeleOpODO extends OpMode {
             PanelsTelemetry.INSTANCE.getTelemetry();
 
 
-    public static boolean showPanelsGamepadDebug = true;
+    public static boolean showPanelsGamepadDebug = false;
 
 
     // Transferencia
@@ -53,8 +53,8 @@ public class TeleOpODO extends OpMode {
 
     // ================= ESTADOS =================
 
-    private double servoMin = 0.50;
-    private double servoMax = 0.02;
+    public static double servoMin = 0.50;
+    public static double servoMax = 0.02;
 
 
 
@@ -236,8 +236,9 @@ public class TeleOpODO extends OpMode {
          * Si eliminas esta línea, la torreta no se actualizará.
          */
 
-        launcher.setGoalDistance(turret.getGoalDistance());
+
         CommandScheduler.getInstance().run();
+        launcher.setGoalDistance(turret.getGoalDistance());
 
         driveControl(g1);
         servoControl(g2);
@@ -538,17 +539,6 @@ public class TeleOpODO extends OpMode {
     }
 
 
-    private double clamp(
-            double value,
-            double minimum,
-            double maximum
-    ) {
-        return Math.max(
-                minimum,
-                Math.min(maximum, value)
-        );
-    }
-
 
     @Override
     public void stop() {
@@ -563,6 +553,9 @@ public class TeleOpODO extends OpMode {
         // Detener transferencia
         if (transferMotor != null) {
             transferMotor.setPower(0.0);
+        }
+        if (launcher != null){
+            launcher.stopShooter();
         }
 
         // Detener drivetrain
