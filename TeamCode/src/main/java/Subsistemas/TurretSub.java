@@ -43,15 +43,14 @@ public class TurretSub extends SubsystemBase {
     public static double turretMaxPower = 0.50;
 
 
-    public static double turretStartAngle = 0.0;
 
 
-    public static double turretToleranceTicks = 5.0;
+    public static double turretToleranceTicks = 2.0;
 
     // ================= LIMITS =================
 
-    public static double turretMinAngle = -360.0;
-    public static double turretMaxAngle = 360.0;
+    public static double turretMinAngle = -270.0;
+    public static double turretMaxAngle = 270.0;
 
     // ================= FIELD / TARGET CONFIG =================
 
@@ -59,7 +58,7 @@ public class TurretSub extends SubsystemBase {
     public static double goalX = -152.4;
     public static double goalY = -152.4;
 
-    public static Pose2D robotPose = new Pose2D(DistanceUnit.CM,0,0,AngleUnit.DEGREES ,180 );
+    public static Pose2D robotPose;
 
 
     // ================= CORRECTION TOGGLES =================
@@ -70,13 +69,9 @@ public class TurretSub extends SubsystemBase {
     public static boolean usePositionCorrection = true;
 
 
-    public static double headingCorrectionDirection = -1.0;
 
 
-    public static double positionCorrectionDirection = -1.0;
-
-
-    public static double manualAimOffsetDegrees = 5;
+    public static double manualAimOffsetDegrees = 0;
 
 
 
@@ -92,10 +87,10 @@ public class TurretSub extends SubsystemBase {
     private double heading = 0.0;
 
     private double currentTicks = 0.0;
-    private double currentAngle = turretStartAngle;
+    private double currentAngle = 0;
 
-    private double desiredAngle = turretStartAngle;
-    private double targetAngle = turretStartAngle;
+    private double desiredAngle = 0;
+    private double targetAngle = 0;
     private double targetTicks = 0.0;
 
     private double errorTicks = 0.0;
@@ -107,14 +102,18 @@ public class TurretSub extends SubsystemBase {
     private double goalDistance = 0.0;
     private double goalBearing = 0.0;
 
+    private final double turretEncoderZeroFieldAngle = 180;
+    private final double initialRobotHeading;
 
 
-    private double initialGoalBearing = 0.0;
-    private boolean goalReferenceCaptured = false;
+
+
+
+
 
 
     private double headingCorrectionAngle = 0.0;
-    private double positionCorrectionAngle = 0.0;
+
 
     private final DistanceUnit distanceUnit = DistanceUnit.CM;
 
@@ -158,14 +157,17 @@ public class TurretSub extends SubsystemBase {
 
 
         pinpoint.resetPosAndIMU();
+        robotPose = new Pose2D(distanceUnit,0,0,AngleUnit.DEGREES, 180);
         pinpoint.setPosition(robotPose);
+        pinpoint.setHeading(180, AngleUnit.DEGREES);
+        pinpoint.update();
+        initialRobotHeading = pinpoint.getHeading(UnnormalizedAngleUnit.DEGREES);
     }
 
     // ================= PERIODIC =================
 
     @Override
     public void periodic() {
-
         // Actualizar Pinpoint
         pinpoint.update();
 
@@ -173,125 +175,56 @@ public class TurretSub extends SubsystemBase {
         currentTicks = turretMotor.getCurrentPosition();
         currentAngle = turretTicksToDegrees(currentTicks);
 
-        // Si Pinpoint no está listo, no mover la torreta
-        if (pinpoint.getDeviceStatus()
-                != GoBildaPinpointDriver.DeviceStatus.READY) {
-
-            stopMotor();
-            return;
-        }
 
         // Leer odometría
-        heading = pinpoint.getHeading(
-                UnnormalizedAngleUnit.DEGREES
-        );
-
+        heading = pinpoint.getHeading(UnnormalizedAngleUnit.DEGREES);
         robotX = pinpoint.getPosX(distanceUnit);
         robotY = pinpoint.getPosY(distanceUnit);
 
-        // Calcular vector desde el robot hacia la goal
-        double deltaX = goalX - robotX;
-        double deltaY = goalY - robotY;
+        // --- CÁLCULO DE ÁNGULO DESEADO ---
 
-        goalDistance = Math.hypot(deltaX, deltaY);
+        // 1. Determinar el ángulo base (Field-centric)
+        if (usePositionCorrection) {
+            double deltaX = goalX - robotX;
+            double deltaY = goalY - robotY;
 
+            goalDistance = Math.hypot(deltaX, deltaY);
 
+            goalBearing = Math.toDegrees(Math.atan2(deltaX, deltaY));
+            desiredAngle = goalBearing;
+        } else {
 
-
-        goalBearing = Math.toDegrees(
-                Math.atan2(deltaX, deltaY)
-        );
-
-        goalBearing = normalizeDegrees(goalBearing);
-
-
-
-        if (!goalReferenceCaptured) {
-            initialGoalBearing = turretStartAngle;
-            goalReferenceCaptured = true;
+            desiredAngle = heading;
+            // Si no hay corrección de posición, mantenemos el ángulo deseado actual o un valor por defecto
+            // Podrías usar manualAimOffsetDegrees como el ángulo principal aquí.
         }
 
-        positionCorrectionAngle = normalizeDegrees(
-                goalBearing - initialGoalBearing
-        );
+        // 2. Aplicar corrección de heading (Compensación de rotación del robot)
+        double headingComp = useHeadingCorrection ? (initialRobotHeading - heading) : 0;
+        
+        // Calcular el ángulo ideal en el campo considerando todas las correcciones
+        double fieldTargetAngle = normalizeDegrees(desiredAngle + headingComp + manualAimOffsetDegrees);
 
-        positionCorrectionAngle = normalizeDegrees(
-                positionCorrectionAngle * positionCorrectionDirection
-        );
-
-
-
-
-
-        headingCorrectionAngle = -heading * headingCorrectionDirection;
-        headingCorrectionAngle = normalizeDegrees(headingCorrectionAngle);
+        // 3. Encontrar el mejor ángulo (shortest path) dentro de los límites de la torreta
+        targetAngle = findBestTurretTarget(fieldTargetAngle, currentAngle);
+        
+        // Convertir el ángulo absoluto del campo a ticks relativos al cero del encoder
+        targetTicks = degreesToTicks(targetAngle - turretEncoderZeroFieldAngle);
 
         if (!enabled) {
             stopMotor();
             return;
         }
 
-
-        if (!useHeadingCorrection && !usePositionCorrection) {
-
-            if (holdCurrentAngleWhenCorrectionsDisabled) {
-                desiredAngle = currentAngle;
-            } else {
-                desiredAngle = turretStartAngle;
-            }
-
-            if (resetGoalReferenceWhenPositionDisabled) {
-                resetGoalReference();
-            }
-
-        } else {
-
-            desiredAngle = turretStartAngle;
-
-            if (useHeadingCorrection && usePositionCorrection) {
-                desiredAngle += (headingCorrectionAngle + positionCorrectionAngle);
-            }
-
-            if (usePositionCorrection && !useHeadingCorrection) {
-                desiredAngle += positionCorrectionAngle;
-            }
-            if  (!usePositionCorrection && useHeadingCorrection) {
-                desiredAngle += headingCorrectionAngle;
-            }
-        }
-
-        desiredAngle += manualAimOffsetDegrees;
-
-        desiredAngle = normalizeDegrees(desiredAngle);
-
-
-        targetAngle = findBestTurretTarget(
-                desiredAngle,
-                currentAngle
-        );
-
-        targetTicks = degreesToTurretTicks(targetAngle);
-
         // Redondear a una décima de tick
         targetTicks = Math.round(targetTicks * 10.0) / 10.0;
 
-
-        turretController.setPIDF(
-                turretKP,
-                turretKI,
-                turretKD,
-                0
-        );
-
+        // Actualizar parámetros del PID si es necesario
+        turretController.setPIDF(turretKP, turretKI, turretKD, 0);
         turretController.setSetPoint(targetTicks);
 
         turretPower = turretController.calculate(currentTicks);
-
-        turretPower = clamp(
-                turretPower,
-                -turretMaxPower,
-                turretMaxPower
-        );
+        turretPower = clamp(turretPower, -turretMaxPower, turretMaxPower);
 
         errorTicks = targetTicks - currentTicks;
 
@@ -332,10 +265,14 @@ public class TurretSub extends SubsystemBase {
                 * turretExternalGearRatio;
     }
 
-    private double degreesToTurretTicks(
-            double turretAngle
-    ) {
-        return (turretAngle - turretStartAngle)
+    private double degreesToTurretTicks(double fieldAngle){
+
+        double relativeAngle =
+                normalizeDegrees(
+                        fieldAngle - turretEncoderZeroFieldAngle
+                );
+
+        return relativeAngle
                 * getTicksPerTurretRev()
                 / 360.0;
     }
@@ -343,10 +280,17 @@ public class TurretSub extends SubsystemBase {
     private double turretTicksToDegrees(
             double ticks
     ) {
-        return turretStartAngle
+        return turretEncoderZeroFieldAngle
                 + ticks
                 * 360.0
                 / getTicksPerTurretRev();
+    }
+
+    private double degreesToTicks(double degrees){
+
+        return degrees *
+                getTicksPerTurretRev()
+                / 360.0;
     }
 
     private double findBestTurretTarget(
@@ -358,9 +302,8 @@ public class TurretSub extends SubsystemBase {
 
         boolean foundValidTarget = false;
 
-
-
-        for (int rotation = -8; rotation <= 8; rotation++) {
+        // Reducido el rango de búsqueda ya que la torreta solo tiene un rango de 540 grados (-270 a 270)
+        for (int rotation = -2; rotation <= 2; rotation++) {
 
             double candidate =
                     desiredAngle + 360.0 * rotation;
@@ -387,7 +330,6 @@ public class TurretSub extends SubsystemBase {
         if (foundValidTarget) {
             return bestAngle;
         }
-
 
         return clamp(
                 desiredAngle,
@@ -422,87 +364,6 @@ public class TurretSub extends SubsystemBase {
 
 
 
-    public void enableHeadingCorrection() {
-        useHeadingCorrection = true;
-        turretController.reset();
-    }
-
-    public void disableHeadingCorrection() {
-        useHeadingCorrection = false;
-        turretController.reset();
-    }
-
-    public void toggleHeadingCorrection() {
-        useHeadingCorrection = !useHeadingCorrection;
-        turretController.reset();
-    }
-
-    public boolean isHeadingCorrectionEnabled() {
-        return useHeadingCorrection;
-    }
-
-    public void enablePositionCorrection() {
-        usePositionCorrection = true;
-        turretController.reset();
-    }
-
-    public void disablePositionCorrection() {
-        usePositionCorrection = false;
-
-        if (resetGoalReferenceWhenPositionDisabled) {
-            resetGoalReference();
-        }
-
-        turretController.reset();
-    }
-
-    public void togglePositionCorrection() {
-        usePositionCorrection = !usePositionCorrection;
-
-        if (!usePositionCorrection && resetGoalReferenceWhenPositionDisabled) {
-            resetGoalReference();
-        }
-
-        turretController.reset();
-    }
-
-    public boolean isPositionCorrectionEnabled() {
-        return usePositionCorrection;
-    }
-
-    public void useOnlyHeadingCorrection() {
-        useHeadingCorrection = true;
-        usePositionCorrection = false;
-
-        if (resetGoalReferenceWhenPositionDisabled) {
-            resetGoalReference();
-        }
-
-        turretController.reset();
-    }
-
-    public void useOnlyPositionCorrection() {
-        useHeadingCorrection = false;
-        usePositionCorrection = true;
-        turretController.reset();
-    }
-
-    public void useFullCorrection() {
-        useHeadingCorrection = true;
-        usePositionCorrection = true;
-        turretController.reset();
-    }
-
-    public void disableAllCorrections() {
-        useHeadingCorrection = false;
-        usePositionCorrection = false;
-
-        if (resetGoalReferenceWhenPositionDisabled) {
-            resetGoalReference();
-        }
-
-        turretController.reset();
-    }
 
 
     public void resetHeading() {
@@ -519,8 +380,8 @@ public class TurretSub extends SubsystemBase {
         heading = 0.0;
         headingCorrectionAngle = 0.0;
 
-        desiredAngle = turretStartAngle;
-        targetAngle = turretStartAngle;
+        desiredAngle = 0;
+        targetAngle = 0;
         targetTicks = 0.0;
         errorTicks = 0.0;
 
@@ -537,30 +398,23 @@ public class TurretSub extends SubsystemBase {
         );
 
         currentTicks = 0.0;
-        currentAngle = turretStartAngle;
+        currentAngle = 0;
 
         targetTicks = 0.0;
-        targetAngle = turretStartAngle;
+        targetAngle = 0;
         errorTicks = 0.0;
 
         turretController.reset();
     }
 
-    public void resetGoalReference() {
-        goalReferenceCaptured = false;
-        initialGoalBearing = 0.0;
-        goalBearing = 0.0;
-        positionCorrectionAngle = 0.0;
 
-        turretController.reset();
-    }
 
     public void resetAll() {
         stopMotor();
 
         resetEncoder();
         resetHeading();
-        resetGoalReference();
+
 
         manualAimOffsetDegrees = 0.0;
 
@@ -634,21 +488,15 @@ public class TurretSub extends SubsystemBase {
         return goalBearing;
     }
 
-    public double getInitialGoalBearing() {
-        return initialGoalBearing;
-    }
 
-    public boolean isGoalReferenceCaptured() {
-        return goalReferenceCaptured;
-    }
+
+
 
     public double getHeadingCorrectionAngle() {
         return headingCorrectionAngle;
     }
 
-    public double getPositionCorrectionAngle() {
-        return positionCorrectionAngle;
-    }
+
 
     public double getManualAimOffsetDegrees() {
         return manualAimOffsetDegrees;
