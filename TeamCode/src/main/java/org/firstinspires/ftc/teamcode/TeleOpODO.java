@@ -77,6 +77,8 @@ public class TeleOpODO extends OpMode {
         initializeTransfer();
         initializeDrive();
         initializeServo();
+        /*CommandScheduler.getInstance().registerSubsystem(turret);
+        CommandScheduler.getInstance().registerSubsystem(launcher);*/
 
 
 
@@ -235,6 +237,7 @@ public class TeleOpODO extends OpMode {
          * Ejecuta TurretSub.periodic().
          * Si eliminas esta línea, la torreta no se actualizará.
          */
+
 
 
         CommandScheduler.getInstance().run();
@@ -399,10 +402,6 @@ public class TeleOpODO extends OpMode {
                 turret.getGoalBearing()
         );
 
-        telemetry.addData(
-                "Bearing inicial",
-                turret.getInitialGoalBearing()
-        );
 
         telemetry.addData(
                 "Torreta activa",
