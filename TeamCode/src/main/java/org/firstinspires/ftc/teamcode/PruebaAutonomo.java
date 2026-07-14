@@ -115,30 +115,18 @@ public class PruebaAutonomo extends CommandOpMode {
         schedule(
                 // Ciclo 1
                 new FollowPathCommand(follower, ciclo1),
-                new WaitCommand(800),
+                new WaitCommand(1500),
 
                 // Ciclo 2
                 new FollowPathCommand(follower, ciclo2),
                 new WaitCommand(500),
-                new FollowPathCommand(follower, ciclo1), // regreso a scoring position
+                new FollowPathCommand(follower, ciclo3), // regreso a scoring position
                 new WaitCommand(600),
 
                 // Ciclo 3
-                new FollowPathCommand(follower, ciclo3),
-                new WaitCommand(500),
-                new FollowPathCommand(follower, ciclo1),
-                new WaitCommand(600),
-
-                // Ciclo 4
                 new FollowPathCommand(follower, ciclo4),
                 new WaitCommand(500),
-                new FollowPathCommand(follower, ciclo1),
-                new WaitCommand(600),
-
-                // Ciclo 5 (opcional)
-                new FollowPathCommand(follower, ciclo5),
-                new WaitCommand(500),
-                new FollowPathCommand(follower, ciclo1)
+                new FollowPathCommand(follower, ciclo5)
         );
     }
 

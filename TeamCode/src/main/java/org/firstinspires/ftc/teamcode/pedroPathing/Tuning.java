@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.pedroPathing;
 
+import static org.firstinspires.ftc.teamcode.pedroPathing.Drawing.debugLook;
+import static org.firstinspires.ftc.teamcode.pedroPathing.Drawing.drawDebug;
 import static org.firstinspires.ftc.teamcode.pedroPathing.Tuning.changes;
 import static org.firstinspires.ftc.teamcode.pedroPathing.Tuning.drawCurrent;
 import static org.firstinspires.ftc.teamcode.pedroPathing.Tuning.drawCurrentAndHistory;
@@ -1210,6 +1212,7 @@ class Line extends OpMode {
     @Override
     public void loop() {
         follower.update();
+        drawDebug(follower);
         drawCurrentAndHistory();
 
         if (!follower.isBusy()) {
@@ -1285,7 +1288,9 @@ class CentripetalTuner extends OpMode {
     @Override
     public void loop() {
         follower.update();
+        drawDebug(follower);
         drawCurrentAndHistory();
+
         if (!follower.isBusy()) {
             if (forward) {
                 forward = false;
@@ -1324,6 +1329,7 @@ class Triangle extends OpMode {
     @Override
     public void loop() {
         follower.update();
+        drawDebug(follower);
         drawCurrentAndHistory();
 
         if (follower.atParametricEnd()) {
@@ -1415,6 +1421,7 @@ class Circle extends OpMode {
     public void loop() {
         follower.update();
         drawCurrentAndHistory();
+        drawDebug(follower);
 
         if (follower.atParametricEnd()) {
             follower.followPath(circle);
@@ -1655,6 +1662,7 @@ class OffsetsTuner extends OpMode {
 class Drawing {
     public static final double ROBOT_RADIUS = 9; // woah
     private static final FieldManager panelsField = PanelsField.INSTANCE.getField();
+    public static final Style debugLook = new Style("","#3FF1B5",0.0);
 
     private static final Style robotLook = new Style(
             "", "#3F51B5", 0.75
