@@ -40,7 +40,7 @@ public class Flywheel {
     }
 
     public double getTicksPerSec() {
-        return m1.getVelocity();
+        return m2.getVelocity();
     }
     public double getRPM(){
         return ((getTicksPerSec()/encoderCPM) * 60)/ gearRatio;

@@ -12,7 +12,7 @@ public class kVTuner extends OpMode {
     public static double kV = 0.00024;
     public static double Velocity = 400;
     public static double kP = 0.001;
-    public double kS = 0.3;
+    public static double kS = 0.3;
     public  static double goalRPM = 1500;
 
     @Override

@@ -1,8 +1,5 @@
 package org.firstinspires.ftc.teamcode;
-
 import com.bylazar.configurables.annotations.Configurable;
-import com.bylazar.telemetry.PanelsTelemetry;
-import com.bylazar.telemetry.TelemetryManager;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.geometry.BezierLine;
 import com.pedropathing.geometry.Pose;
@@ -117,7 +114,7 @@ public class Autonomo_rojo_lejos extends CommandOpMode {
 
     private SequentialCommandGroup createAutonomousSequence() {
         return new SequentialCommandGroup(
-                // Ciclo 1 (Score Preload)
+                // Ciclo 1 (Score Preload
                 new FollowPathCommand(follower, ciclo1, true, 1),
                 new WaitCommand(500),
                 // Ciclo 2
