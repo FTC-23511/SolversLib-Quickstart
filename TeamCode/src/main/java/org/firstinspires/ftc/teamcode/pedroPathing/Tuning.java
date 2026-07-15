@@ -1,5 +1,8 @@
 package org.firstinspires.ftc.teamcode.pedroPathing;
 
+import static org.firstinspires.ftc.teamcode.pedroPathing.Drawing.debugLook;
+import static org.firstinspires.ftc.teamcode.pedroPathing.Drawing.drawDebug;
+import static org.firstinspires.ftc.teamcode.pedroPathing.Drawing.drawPath;
 import static org.firstinspires.ftc.teamcode.pedroPathing.Tuning.changes;
 import static org.firstinspires.ftc.teamcode.pedroPathing.Tuning.drawCurrent;
 import static org.firstinspires.ftc.teamcode.pedroPathing.Tuning.drawCurrentAndHistory;
@@ -16,9 +19,13 @@ import com.bylazar.field.Style;
 import com.bylazar.telemetry.PanelsTelemetry;
 import com.bylazar.telemetry.TelemetryManager;
 import com.pedropathing.follower.Follower;
-import com.pedropathing.geometry.*;
-import com.pedropathing.math.*;
-import com.pedropathing.paths.*;
+import com.pedropathing.geometry.BezierCurve;
+import com.pedropathing.geometry.BezierLine;
+import com.pedropathing.geometry.Pose;
+import com.pedropathing.math.Vector;
+import com.pedropathing.paths.HeadingInterpolator;
+import com.pedropathing.paths.Path;
+import com.pedropathing.paths.PathChain;
 import com.pedropathing.telemetry.SelectableOpMode;
 import com.pedropathing.util.*;
 import static com.pedropathing.math.MathFunctions.quadraticFit;
@@ -971,6 +978,7 @@ class TranslationalTuner extends OpMode {
         telemetryM.update(telemetry);
         follower.update();
         drawCurrent();
+
     }
 
     @Override
@@ -988,7 +996,10 @@ class TranslationalTuner extends OpMode {
     @Override
     public void loop() {
         follower.update();
-        drawCurrentAndHistory();
+
+        drawDebug(follower);
+        drawPath(forwards,debugLook);
+
 
         if (!follower.isBusy()) {
             if (forward) {
@@ -1655,7 +1666,7 @@ class OffsetsTuner extends OpMode {
 class Drawing {
     public static final double ROBOT_RADIUS = 9; // woah
     private static final FieldManager panelsField = PanelsField.INSTANCE.getField();
-
+    public static final Style debugLook = new Style("","#3FF1B5",0.0);
     private static final Style robotLook = new Style(
             "", "#3F51B5", 0.75
     );

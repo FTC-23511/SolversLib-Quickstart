@@ -6,14 +6,10 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
-
-
 import com.seattlesolvers.solverslib.controller.PIDFController;
-import com.seattlesolvers.solverslib.hardware.motors.Motor;
-import com.seattlesolvers.solverslib.hardware.motors.MotorEx;
 import com.seattlesolvers.solverslib.hardware.servos.ServoEx;
-import utilidades.imuEx;
 
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
 
 @Config
@@ -24,6 +20,7 @@ public class teleopsintorreta extends OpMode {
 
     DcMotorEx flywheelMotor, flywheelMotor2, Transfer;
     PIDFController shooterController;
+    private static GoBildaPinpointDriver pinpon;
 
     ServoEx ServoTope;
     boolean shooterRunning = false;
@@ -37,7 +34,7 @@ public class teleopsintorreta extends OpMode {
     public static double kI = 0.0;
     public static double kD = 0.0;
     public static double kV = 0.000525;
-
+    public static double heading;
 
 
 
@@ -74,8 +71,8 @@ public class teleopsintorreta extends OpMode {
 
         frontLeft.setDirection(DcMotorSimple.Direction.REVERSE);
         backLeft.setDirection(DcMotorSimple.Direction.REVERSE);
-        frontRight.setDirection(DcMotorSimple.Direction.FORWARD);
-        backRight.setDirection(DcMotorSimple.Direction.FORWARD);
+        frontRight.setDirection(DcMotorSimple.Direction.REVERSE);
+        backRight.setDirection(DcMotorSimple.Direction.REVERSE);
 
         frontLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         frontRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -87,6 +84,8 @@ public class teleopsintorreta extends OpMode {
 
     @Override
     public void loop() {
+
+        heading = pinpon.getHeading(AngleUnit.DEGREES);
 
 
 
@@ -137,7 +136,7 @@ public class teleopsintorreta extends OpMode {
 
         if (gamepad2.yWasPressed()) transferRunning = !transferRunning;
         Transfer.setPower(transferRunning ? 1 : 0);
-
+        telemetry.addData("heading ", heading);
         telemetry.update();
     }
 

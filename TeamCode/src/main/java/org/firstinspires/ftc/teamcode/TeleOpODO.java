@@ -103,7 +103,7 @@ public class TeleOpODO extends OpMode {
 
     private void initializeShooter() {
         // flywheel constructor
-        launcher = new LauncherSub(hardwareMap, "shooter1","shooter2" ,"hood" );
+        launcher = new LauncherSub(hardwareMap, "shooter","shooter2" ,"hood" );
 
     }
 
@@ -229,9 +229,7 @@ public class TeleOpODO extends OpMode {
                 .getFirstManager()
                 .asCombinedFTCGamepad(gamepad1);
 
-        Gamepad g2 = PanelsGamepad.INSTANCE
-                .getSecondManager()
-                .asCombinedFTCGamepad(gamepad2);
+        Gamepad g2 = gamepad2;
 
         /*
          * Ejecuta TurretSub.periodic().
@@ -241,6 +239,7 @@ public class TeleOpODO extends OpMode {
 
 
         CommandScheduler.getInstance().run();
+
         launcher.setGoalDistance(turret.getGoalDistance());
 
         driveControl(g1);
@@ -318,7 +317,7 @@ public class TeleOpODO extends OpMode {
 
     private void servoControl(Gamepad g2) {
 
-        if (g2.left_bumper) {
+        if (gamepad2.left_bumper) {
             servoTope.set(servoMin);
         } else {
             servoTope.set(servoMax);
@@ -326,8 +325,8 @@ public class TeleOpODO extends OpMode {
     }
 
 
-    private void shooterControl(Gamepad g2) {
-        if (g2.aWasPressed()){
+    private void shooterControl(Gamepad g1) {
+        if (g1.aWasPressed()){
             launcher.toggleShooter();
         }
     }
@@ -360,7 +359,6 @@ public class TeleOpODO extends OpMode {
         telemetry.addData("Shooter Running", launcher.isShooterRunning());
 
         telemetry.addData("Motor RPM", launcher.getMotorRPM());
-        telemetry.addData("Shooter RPM", launcher.getShooterRPM());
         telemetry.addData("Target RPM", launcher.getTargetRPM());
         telemetry.addData("RPM Error", launcher.getRPMError());
 
@@ -484,9 +482,12 @@ public class TeleOpODO extends OpMode {
         panelsTelemetry.debug("Error ticks: " + turret.getErrorTicks());
         panelsTelemetry.debug("Potencia torreta: " + turret.getAppliedPower());
         panelsTelemetry.debug("motor RPM " + launcher.getMotorRPM());
-        panelsTelemetry.debug("Shooter RPM " + launcher.getShooterRPM());
+
         panelsTelemetry.debug("Target RPM " + launcher.getTargetRPM());
         panelsTelemetry.debug("Erro RPM" + launcher.getRPMError());
+        panelsTelemetry.debug("motor Acceleration" + launcher.getShooterAcl() + "RPM/s2");
+        panelsTelemetry.debug("target acceleration" + launcher.getShooterTargetAcl());
+        panelsTelemetry.debug("Error acceleration" + launcher.getAclError());
         panelsTelemetry.debug("shooting Angle" + launcher.getHoodAngle());
         panelsTelemetry.debug("Servo Angle" + launcher.getHoodServoRawPosition());
         panelsTelemetry.debug("motor Power" + launcher.getFlywheelPower());

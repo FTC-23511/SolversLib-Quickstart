@@ -115,7 +115,7 @@ public class TurretSub extends SubsystemBase {
     private double headingCorrectionAngle = 0.0;
 
 
-    private final DistanceUnit distanceUnit = DistanceUnit.CM;
+    private final DistanceUnit distanceUnit = DistanceUnit.INCH;
 
     // ================= CONSTRUCTOR =================
 

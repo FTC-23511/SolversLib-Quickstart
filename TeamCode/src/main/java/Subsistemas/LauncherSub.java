@@ -42,12 +42,12 @@ public class LauncherSub extends SubsystemBase {
 
     // ================= ESTADOS =================
 
-    private boolean shooterRunning = false;
+    private boolean shooterRunning = true;
 
     private double lastKs = Ks;
     private double lastKv = Kv;
     private double motorRPM;
-    private double shooterRPM;
+    private double motorAcl;
     private double goalDistance;
     private double hoodAngle;
 
@@ -57,19 +57,21 @@ public class LauncherSub extends SubsystemBase {
     private final InterpLUT hoodLUT = new InterpLUT();
     //private final InterpLUT RPMLUT = new InterpLUT();
 
-    public static double targetRPM = 3000;
+    public static double targetRPM = 2000;
+    public static double targeAccerelation = 40;
 
-    public static double kP = 0.05;
+    public static double kP = 0.013;
     public static double kI = 0.0;
     public static double kD = 0.0;
-    public static double Ks = 0.0;
-    public static double Kv = 0.0;
+    public static double Ks = 0.271;
+    public static double Kv = 0.0002;
+    public static double Ka = 0.0;
 
 
     public LauncherSub(HardwareMap Hm, String shooterMotor1, String shooterMotor2, String ServoHood) {
         // flywheel constructor
-        motor1 = new MotorEx(Hm, shooterMotor1).setCachingTolerance(0.01);
-        motor2 = new MotorEx(Hm, shooterMotor2).setCachingTolerance(0.01);
+        motor1 = new MotorEx(Hm, shooterMotor1).setCachingTolerance(0.0001);
+        motor2 = new MotorEx(Hm, shooterMotor2).setCachingTolerance(0.0001);
 
         flywheelMotors = new MotorGroup(
                 motor1.setInverted(TRUE),
@@ -121,7 +123,11 @@ public class LauncherSub extends SubsystemBase {
 
         // Calculate RPM
         motorRPM = motor2.getCorrectedVelocity() * 60.0/28.0;
-        shooterRPM = motorRPM/1.5;
+
+        double motorRawAcl = motor2.getAcceleration();
+        motorAcl = motorRawAcl * 60/28;
+
+
 
 
         if (!shooterRunning) {
@@ -135,7 +141,7 @@ public class LauncherSub extends SubsystemBase {
         flyWheelPDIFController.setPIDF(kP, kI, kD,0);
 
         if (lastKs != Ks || lastKv != Kv) {
-            flyWheelFController = new SimpleMotorFeedforward(Ks, Kv);
+            flyWheelFController = new SimpleMotorFeedforward(Ks, Kv,Ka);
             lastKs = Ks;
             lastKv = Kv;
         }
@@ -143,8 +149,9 @@ public class LauncherSub extends SubsystemBase {
         // calculate velocity correction
         flyWheelPDIFController.setSetPoint(targetRPM);
 
+
         flywheelPower = flyWheelFController.calculate(targetRPM);
-        flywheelPower += flyWheelPDIFController.calculate(shooterRPM);
+        flywheelPower += flyWheelPDIFController.calculate(motorRPM);
 
         flywheelMotors.set(clamp(flywheelPower, -1.0, 1.0));
 
@@ -194,16 +201,18 @@ public class LauncherSub extends SubsystemBase {
         return motorRPM;
     }
 
-    public double getShooterRPM() {
-        return shooterRPM;
-    }
+    public double getShooterAcl(){return motorAcl;}
+    public double getShooterTargetAcl(){return targeAccerelation;}
+    public double getAclError(){return targeAccerelation - motorAcl;}
+
+
 
     public double getTargetRPM() {
         return targetRPM;
     }
 
     public double getRPMError() {
-        return targetRPM - shooterRPM;
+        return targetRPM - motorRPM;
     }
 
     public double getFlywheelPower() {
