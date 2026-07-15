@@ -55,11 +55,7 @@ public class TeleOpODO extends OpMode {
 
     public static double servoMin = 0.50;
     public static double servoMax = 0.02;
-
-
-
-
-
+    public static double intakeVel = 1100;
 
 
     @Override
@@ -339,7 +335,7 @@ public class TeleOpODO extends OpMode {
         }
 
         if (transferRunning) {
-            transferMotor.setPower(1.0);
+            transferMotor.setVelocity(intakeVel);
         } else {
             transferMotor.setPower(0.0);
         }
