@@ -21,7 +21,7 @@ public class PruebaAutonomo extends CommandOpMode {
     private TelemetryData telemetryData = new TelemetryData(telemetry);
 
     // Poses principales
-    private final Pose startPose = new Pose(30.631, 132.441, Math.toRadians(0));
+    private final Pose startPose = new Pose(23.6, 129.3794435857805, Math.toRadians(-36.5));
 
     // PathChains extraídas de tu código
     private PathChain ciclo1, ciclo2, ciclo3, ciclo4, ciclo5;
@@ -36,23 +36,23 @@ public class PruebaAutonomo extends CommandOpMode {
 
         // Usando exactamente las trayectorias que me pasaste
         ciclo1 = follower.pathBuilder()
-                .addPath(new BezierLine(new Pose(30.631, 132.441), new Pose(52.051, 83.325)))
-                .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(180))
+                .addPath(new BezierLine(new Pose(23.6, 129.3794435857805), new Pose(52.051004636785166, 83.32534775888718)))
+                .setLinearHeadingInterpolation(Math.toRadians(-36.5), Math.toRadians(180))
                 .build();
 
         ciclo2 = follower.pathBuilder()
                 .addPath(new BezierCurve(
-                        new Pose(52.051, 83.325),
-                        new Pose(40.567, 48.326),
-                        new Pose(30.508, 59.887),
-                        new Pose(22.353, 61.323),
-                        new Pose(9.714, 54.911)
+                        new Pose(52.051004636785166, 83.32534775888718),
+                        new Pose(49.315068310223644, 45.91992169803802),
+                        new Pose(25.25942688827618, 61.19890160530231),
+                        new Pose(21.259426888276188, 59.13553220808435),
+                        new Pose(19.336473560169058, 58.62886967119199)
                 ))
                 .setConstantHeadingInterpolation(Math.toRadians(180))
                 .addPath(new BezierCurve(
-                        new Pose(9.714, 54.911),
-                        new Pose(49.440, 51.685),
-                        new Pose(52.051, 83.325)
+                        new Pose(19.336473560169058, 58.62886967119199),
+                        new Pose(57.750926115478656, 66.1196898587799),
+                        new Pose(52.051004636785166, 83.32534775888718)
                 ))
                 .setConstantHeadingInterpolation(Math.toRadians(180))
                 .build();
@@ -115,19 +115,9 @@ public class PruebaAutonomo extends CommandOpMode {
         schedule(
                 // Ciclo 1
                 new FollowPathCommand(follower, ciclo1),
-                new WaitCommand(1500),
+                new WaitCommand(3000),
+                new FollowPathCommand(follower,ciclo2));
 
-                // Ciclo 2
-                new FollowPathCommand(follower, ciclo2),
-                new WaitCommand(500),
-                new FollowPathCommand(follower, ciclo3), // regreso a scoring position
-                new WaitCommand(600),
-
-                // Ciclo 3
-                new FollowPathCommand(follower, ciclo4),
-                new WaitCommand(500),
-                new FollowPathCommand(follower, ciclo5)
-        );
     }
 
     @Override

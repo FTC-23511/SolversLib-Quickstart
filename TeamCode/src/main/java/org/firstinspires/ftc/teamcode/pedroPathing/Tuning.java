@@ -570,7 +570,7 @@ class LateralVelocityTuner extends OpMode {
  */
 class ForwardZeroPowerAccelerationTuner extends OpMode {
     private final ArrayList<Double> accelerations = new ArrayList<>();
-    public static double VELOCITY = 30;
+    public static double VELOCITY = 48;
 
     private double previousVelocity;
     private long previousTimeNano;
@@ -676,7 +676,7 @@ class ForwardZeroPowerAccelerationTuner extends OpMode {
  */
 class LateralZeroPowerAccelerationTuner extends OpMode {
     private final ArrayList<Double> accelerations = new ArrayList<>();
-    public static double VELOCITY = 30;
+    public static double VELOCITY = 48;
     private double previousVelocity;
     private long previousTimeNano;
     private boolean stopping;
@@ -1420,7 +1420,6 @@ class Circle extends OpMode {
     @Override
     public void loop() {
         follower.update();
-        drawCurrentAndHistory();
         drawDebug(follower);
 
         if (follower.atParametricEnd()) {
