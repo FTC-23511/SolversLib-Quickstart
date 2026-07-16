@@ -1,11 +1,9 @@
 package org.firstinspires.ftc.teamcode;
-
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.bylazar.configurables.annotations.Configurable;
 import com.bylazar.telemetry.PanelsTelemetry;
 import com.bylazar.telemetry.TelemetryManager;
 import com.pedropathing.follower.Follower;
-import com.pedropathing.geometry.BezierCurve;
 import com.pedropathing.geometry.BezierLine;
 import com.pedropathing.geometry.Pose;
 import com.pedropathing.paths.PathChain;
@@ -15,18 +13,14 @@ import com.seattlesolvers.solverslib.command.ParallelCommandGroup;
 import com.seattlesolvers.solverslib.command.SequentialCommandGroup;
 import com.seattlesolvers.solverslib.command.WaitCommand;
 import com.seattlesolvers.solverslib.pedroCommand.FollowPathCommand;
-
 import org.firstinspires.ftc.teamcode.COMANDOS_AUTONOMOS.SetIntakeVelocityCommand;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
-
 import Subsistemas.IntakeSubsystem_Autonomous;
 import Subsistemas.TurretSubsystem_Autonomous;
 
 @Autonomous(name = "Autonomo azul lejos", group = "Autonomous")
 @Configurable
 public class Autonomo_azul_lejos extends CommandOpMode {
-
-    private TelemetryManager panelsTelemetry;
     private Follower follower;
     private IntakeSubsystem_Autonomous intake;
     private TurretSubsystem_Autonomous turret;
@@ -38,7 +32,6 @@ public class Autonomo_azul_lejos extends CommandOpMode {
 
     @Override
     public void initialize() {
-        panelsTelemetry = PanelsTelemetry.INSTANCE.getTelemetry();
 
         follower = Constants.createFollower(hardwareMap);
         follower.setStartingPose(startPose);
@@ -46,9 +39,6 @@ public class Autonomo_azul_lejos extends CommandOpMode {
         turret = new TurretSubsystem_Autonomous(hardwareMap);
 
         buildPaths();
-
-        panelsTelemetry.debug("Status", "Initialized");
-        panelsTelemetry.update(telemetry);
 
         waitForStart();
 
@@ -159,6 +149,5 @@ public class Autonomo_azul_lejos extends CommandOpMode {
     public void run() {
         follower.update();
         CommandScheduler.getInstance().run();
-        panelsTelemetry.update(telemetry);
     }
 }

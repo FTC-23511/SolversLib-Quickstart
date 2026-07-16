@@ -1,5 +1,4 @@
 package org.firstinspires.ftc.teamcode;
-
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.bylazar.configurables.annotations.Configurable;
 import com.bylazar.telemetry.PanelsTelemetry;
@@ -14,17 +13,13 @@ import com.seattlesolvers.solverslib.command.CommandScheduler;
 import com.seattlesolvers.solverslib.command.SequentialCommandGroup;
 import com.seattlesolvers.solverslib.command.WaitCommand;
 import com.seattlesolvers.solverslib.pedroCommand.FollowPathCommand;
-
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
-
 import Subsistemas.IntakeSubsystem_Autonomous;
 import Subsistemas.TurretSubsystem_Autonomous;
 
 @Autonomous(name = "Autonomo azul cerca", group = "Autonomous")
 @Configurable
 public class Autonomo_azul_cerca extends CommandOpMode {
-
-    private TelemetryManager panelsTelemetry;
     private Follower follower;
     private IntakeSubsystem_Autonomous intake;
     private TurretSubsystem_Autonomous turret;
@@ -36,18 +31,12 @@ public class Autonomo_azul_cerca extends CommandOpMode {
 
     @Override
     public void initialize() {
-        panelsTelemetry = PanelsTelemetry.INSTANCE.getTelemetry();
-
         follower = Constants.createFollower(hardwareMap);
         follower.setStartingPose(startPose);
         intake = new IntakeSubsystem_Autonomous(hardwareMap);
         turret = new TurretSubsystem_Autonomous(hardwareMap);
 
         buildPaths();
-
-        panelsTelemetry.debug("Status", "Initialized");
-        panelsTelemetry.update(telemetry);
-
         waitForStart();
 
         if (opModeIsActive()) {
@@ -135,6 +124,5 @@ public class Autonomo_azul_cerca extends CommandOpMode {
     public void run() {
         follower.update();
         CommandScheduler.getInstance().run();
-        panelsTelemetry.update(telemetry);
     }
 }
