@@ -1,9 +1,6 @@
 package Subsistemas;
 
 
-import static java.lang.Boolean.FALSE;
-import static java.lang.Boolean.TRUE;
-
 import com.bylazar.configurables.annotations.Configurable;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.PwmControl;
@@ -18,32 +15,23 @@ import com.seattlesolvers.solverslib.util.InterpLUT;
 
 @Configurable
 public class LauncherSub extends SubsystemBase {
-
-
-    // ================== PID/FF ===================;
-    private final PIDFController flyWheelPDIFController = new PIDFController(kP, kI, kD,0.0);
-
+    // ================== PID/FF ===================
+    private final PIDFController flyWheelPDIFController = new PIDFController(kP, kI, kD, 0.0);
     private SimpleMotorFeedforward flyWheelFController = new SimpleMotorFeedforward(Ks, Kv);
 
     // ================= HARDWARE =================
-
-    // Shooter
     private final MotorGroup flywheelMotors;
     private final MotorEx motor1;
     private final MotorEx motor2;
-    //servo
-    private ServoEx servoHood;
-;
-    private final PwmControl.PwmRange HoodRange = new PwmControl.PwmRange(500,2500);
+    private final ServoEx servoHood;
 
+    private final PwmControl.PwmRange HoodRange = new PwmControl.PwmRange(500, 2500);
     private static final double HOOD_MIN_ANGLE = 22.5;
     private static final double HOOD_MAX_ANGLE = 62.74;
-    private double flywheelPower;
 
     // ================= ESTADOS =================
-
-    private boolean shooterRunning = true;
-
+    private boolean shooterRunning = false;
+    private double flywheelPower = 0.0;
     private double lastKs = Ks;
     private double lastKv = Kv;
     private double motorRPM;
@@ -52,83 +40,51 @@ public class LauncherSub extends SubsystemBase {
     private double hoodAngle;
 
     // ================= CONFIGURABLES =================
-
-    //look up tables
     private final InterpLUT hoodLUT = new InterpLUT();
-    //private final InterpLUT RPMLUT = new InterpLUT();
 
     public static double targetRPM = 2000;
     public static double targeAccerelation = 40;
-
-    public static double kP = 0.013;
+    public static double kP = 0.015;
     public static double kI = 0.0;
     public static double kD = 0.0;
-    public static double Ks = 0.271;
-    public static double Kv = 0.0002;
+    public static double Ks = 0.28;
+    public static double Kv = 0.00028;
     public static double Ka = 0.0;
 
-
     public LauncherSub(HardwareMap Hm, String shooterMotor1, String shooterMotor2, String ServoHood) {
-        // flywheel constructor
-        motor1 = new MotorEx(Hm, shooterMotor1).setCachingTolerance(0.0001);
-        motor2 = new MotorEx(Hm, shooterMotor2).setCachingTolerance(0.0001);
+        motor1 = new MotorEx(Hm, shooterMotor1).setCachingTolerance(0.001);
+        motor2 = new MotorEx(Hm, shooterMotor2).setCachingTolerance(0.001);
 
         flywheelMotors = new MotorGroup(
-                motor1.setInverted(TRUE),
+                motor1.setInverted(true),
                 motor2
-                );
-        // servo constructor
-        servoHood = new ServoEx(Hm,ServoHood,22.5,62.74).setPwm(HoodRange);
+        );
 
-        //servo configs
-        servoHood.setInverted(FALSE);
-
-        //-------Velocity Control Declaration------
+        servoHood = new ServoEx(Hm, ServoHood, 22.5, 62.74).setPwm(HoodRange);
+        servoHood.setInverted(false);
 
         flywheelMotors.setRunMode(Motor.RunMode.RawPower);
         flywheelMotors.setZeroPowerBehavior(Motor.ZeroPowerBehavior.FLOAT);
-        flyWheelPDIFController.setTolerance(20);
+        flyWheelPDIFController.setTolerance(5);
 
-        //---------- Shooter LUTs -----------
-
-        // hood angle LUT
-        hoodLUT.add(30.0,22.5);
-        hoodLUT.add(60.0,30.0);
-        hoodLUT.add(70.0,31.0);
-        hoodLUT.add(80.0,32.0);
-        hoodLUT.add(90.0,33.0);
-        hoodLUT.add(100.0,34.0);
-        hoodLUT.add(110.0,35.0);
+        // Hood LUT
+        hoodLUT.add(30.0, 22.5);
+        hoodLUT.add(60.0, 30.0);
+        hoodLUT.add(70.0, 31.0);
+        hoodLUT.add(80.0, 32.0);
+        hoodLUT.add(90.0, 33.0);
+        hoodLUT.add(100.0, 34.0);
+        hoodLUT.add(110.0, 35.0);
         hoodLUT.createLUT();
-
-        // flywheel RPM LUT
-        //for future use when the shooter is tuned
-        /*RPMLUT.add(30,3000);
-        RPMLUT.add(60,3100);
-        RPMLUT.add(100,3500);
-        RPMLUT.add(150,3800);
-        RPMLUT.createLUT();*/
-
     }
-
-
 
     @Override
     public void periodic() {
-        //hood ajust
         hoodAngle = hoodLUT.get(goalDistance);
         setHoodAngle(hoodAngle);
-        //double CalculatedRPM = RPMLUT.get(goalDistance);
 
-
-        // Calculate RPM
-        motorRPM = motor2.getCorrectedVelocity() * 60.0/28.0;
-
-        double motorRawAcl = motor2.getAcceleration();
-        motorAcl = motorRawAcl * 60/28;
-
-
-
+        motorRPM = motor2.getCorrectedVelocity();
+        motorAcl = motor2.getAcceleration();
 
         if (!shooterRunning) {
             flywheelMotors.stopMotor();
@@ -136,46 +92,31 @@ public class LauncherSub extends SubsystemBase {
             return;
         }
 
-
-        //uptate PIDF and FF controllers
-        flyWheelPDIFController.setPIDF(kP, kI, kD,0);
+        flyWheelPDIFController.setPIDF(kP, kI, kD, 0);
 
         if (lastKs != Ks || lastKv != Kv) {
-            flyWheelFController = new SimpleMotorFeedforward(Ks, Kv,Ka);
+            flyWheelFController = new SimpleMotorFeedforward(Ks, Kv, Ka);
             lastKs = Ks;
             lastKv = Kv;
         }
 
-        // calculate velocity correction
         flyWheelPDIFController.setSetPoint(targetRPM);
-
-
         flywheelPower = flyWheelFController.calculate(targetRPM);
         flywheelPower += flyWheelPDIFController.calculate(motorRPM);
 
         flywheelMotors.set(clamp(flywheelPower, -1.0, 1.0));
+    }
 
+    private double clamp(double value, double min, double max) {
+        return Math.max(min, Math.min(max, value));
     }
-    private double clamp(
-            double value,
-            double minimum,
-            double maximum
-    ) {
-        return Math.max(
-                minimum,
-                Math.min(maximum, value)
-        );
-    }
-    public void setGoalDistance(double distance){
+
+    public void setGoalDistance(double distance) {
         goalDistance = distance;
     }
-    public double getGoalDistance(){
-        return goalDistance;
-    }
+
     public void setHoodAngle(double angle) {
-        servoHood.set(
-                clamp(angle, HOOD_MIN_ANGLE, HOOD_MAX_ANGLE)
-        );
+        servoHood.set(clamp(angle, HOOD_MIN_ANGLE, HOOD_MAX_ANGLE));
     }
 
     public void startShooter() {
@@ -189,17 +130,21 @@ public class LauncherSub extends SubsystemBase {
     }
 
     public void toggleShooter() {
-        if (shooterRunning)
+        if (shooterRunning) {
             stopShooter();
-        else
+        } else {
             startShooter();
+        }
     }
+
 
     // ================= TELEMETRY GETTERS =================
 
     public double getMotorRPM() {
         return motorRPM;
     }
+
+    public double motorpower() {return motor2.getRawPower();}
 
     public double getShooterAcl(){return motorAcl;}
     public double getShooterTargetAcl(){return targeAccerelation;}
