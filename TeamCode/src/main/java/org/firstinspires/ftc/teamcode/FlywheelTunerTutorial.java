@@ -16,12 +16,12 @@ public class FlywheelTunerTutorial extends OpMode {
 
     public static double TARGET_VELOCITY = 1500;
     ServoEx hood;
-    public static double kP = 392.0016;
+    public static double kP = 0;
     public static double kI = 0.0;
     public static double kD = 0.0;
-    public static double kF = 18.2;
+    public static double kF = 0;
 
-    public static double INTAKE_POWER = 0.5;
+    public static double INTAKE_POWER = 1000;
     public DcMotorEx flywheelMotor, flywheelMotor2,intakeMotor;
 
     private boolean flywheelEnabled = false;
@@ -38,7 +38,6 @@ public class FlywheelTunerTutorial extends OpMode {
         // Flywheel
         flywheelMotor = hardwareMap.get(DcMotorEx.class, "shooter");
         flywheelMotor2 = hardwareMap.get(DcMotorEx.class, "shooter2");
-        hood = new ServoEx(hardwareMap, "hood");
 
         flywheelMotor.setDirection(DcMotor.Direction.REVERSE);
         flywheelMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
@@ -50,7 +49,7 @@ public class FlywheelTunerTutorial extends OpMode {
         // Intake
         intakeMotor = hardwareMap.get(DcMotorEx.class, "Transfer");
         intakeMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        intakeMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        intakeMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         updatePIDF();
     }
@@ -63,7 +62,6 @@ public class FlywheelTunerTutorial extends OpMode {
 
     @Override
     public void loop() {
-        hood.set(0.54);
         updatePIDF();
 
         boolean currentA = gamepad1.a;
@@ -87,9 +85,9 @@ public class FlywheelTunerTutorial extends OpMode {
         lastY = currentY;
 
         if (intakeEnabled) {
-            intakeMotor.setPower(INTAKE_POWER);
+            intakeMotor.setVelocity(INTAKE_POWER);
         } else {
-            intakeMotor.setPower(0);
+            intakeMotor.setVelocity(0);
         }
 
         telemetry.addLine("--- FLYWHEEL ---");
