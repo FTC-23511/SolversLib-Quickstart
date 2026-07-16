@@ -9,6 +9,12 @@ public class SetTurretPositionCommand extends CommandBase {
     private final int targetPosition;
     private final boolean waitForTarget;
 
+    /**
+     * Comando para mover la torreta a una posición
+     * @param turret Subsistema de la torreta
+     * @param targetPosition Posición objetivo en ticks (ej: 500, -1000, 0)
+     * @param waitForTarget Si debe esperar a llegar a la posición
+     */
     public SetTurretPositionCommand(TurretSubsystem_Autonomous turret,
                                     int targetPosition,
                                     boolean waitForTarget) {
@@ -17,6 +23,8 @@ public class SetTurretPositionCommand extends CommandBase {
         this.waitForTarget = waitForTarget;
         addRequirements(turret);
     }
+
+    // Constructor simplificado que espera por defecto
     public SetTurretPositionCommand(TurretSubsystem_Autonomous turret, int targetPosition) {
         this(turret, targetPosition, true);
     }
