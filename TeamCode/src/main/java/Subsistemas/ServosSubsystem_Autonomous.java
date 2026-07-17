@@ -22,6 +22,6 @@ public class ServosSubsystem_Autonomous extends SubsystemBase {
     }
 
     public void TopeCerrado() {
-        tope.set(0);
+        tope.set(0.35);
     }
 }
