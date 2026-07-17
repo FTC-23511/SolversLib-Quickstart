@@ -35,7 +35,7 @@ public class Prueba_servos extends OpMode {
     public void loop() {
         ServoTope.setInverted(hola);
        if (gamepad1.aWasPressed()) {
-           ServoTope.set(0);
+           ServoTope.set(0.15);
        } else if (gamepad1.bWasPressed()) {
 
            ServoTope.set(Position);
