@@ -19,25 +19,26 @@ import utilidades.imuEx;
 public class Prueba_servos extends OpMode {
 
 
-
+   public static double Position = 0.5;
+   public static boolean hola = false;
     ServoEx ServoTope;
 
     @Override
     public void init() {
 
         ServoTope = new ServoEx(hardwareMap, "ServoTope");
-        ServoTope.set(0);
-        ServoTope.setInverted(true);
 
 
     }
 
     @Override
     public void loop() {
+        ServoTope.setInverted(hola);
        if (gamepad1.aWasPressed()) {
-           ServoTope.set(0);
+           ServoTope.set(0.15);
        } else if (gamepad1.bWasPressed()) {
-           ServoTope.set(0.5);
+
+           ServoTope.set(Position);
        }
     }
 

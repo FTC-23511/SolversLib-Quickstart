@@ -8,21 +8,30 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
+import com.seattlesolvers.solverslib.controller.PIDFController;
 import com.seattlesolvers.solverslib.hardware.servos.ServoEx;
 
 @Config
 @TeleOp(name = "Prueba_shooter")
 public class FlywheelTunerTutorial extends OpMode {
 
-    public static double TARGET_VELOCITY = 1500;
-    ServoEx hood;
-    public static double kP = 392.0016;
-    public static double kI = 0.0;
-    public static double kD = 0.0;
-    public static double kF = 18.2;
+    public static double TARGET_VELOCITY = 1300;
+// P = 0.0085
+    // PID
+    public static PIDFCoefficients SCoeffs = new PIDFCoefficients(0.0085, 0, 0, 0);
 
-    public static double INTAKE_POWER = 0.5;
-    public DcMotorEx flywheelMotor, flywheelMotor2,intakeMotor;
+    // Feedforward
+    public static double kV = 0.000455;   // Ajusta este valor
+
+    public static double INTAKE_POWER = 1200;
+    public static double Position = 0.15;
+
+    public DcMotorEx flywheelMotor;
+    public DcMotorEx flywheelMotor2;
+    public DcMotorEx intakeMotor;
+    public ServoEx hood;
+
+    private PIDFController shooterPIDF;
 
     private boolean flywheelEnabled = false;
     private boolean intakeEnabled = false;
@@ -32,39 +41,37 @@ public class FlywheelTunerTutorial extends OpMode {
 
     @Override
     public void init() {
-        FtcDashboard dashboard = FtcDashboard.getInstance();
-        telemetry = new MultipleTelemetry(telemetry, dashboard.getTelemetry());
 
-        // Flywheel
+        telemetry = new MultipleTelemetry(
+                telemetry,
+                FtcDashboard.getInstance().getTelemetry()
+        );
+
+
         flywheelMotor = hardwareMap.get(DcMotorEx.class, "shooter");
         flywheelMotor2 = hardwareMap.get(DcMotorEx.class, "shooter2");
         hood = new ServoEx(hardwareMap, "hood");
+        intakeMotor = hardwareMap.get(DcMotorEx.class, "Transfer");
 
         flywheelMotor.setDirection(DcMotor.Direction.REVERSE);
+        hood.setInverted(true);
+
         flywheelMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
         flywheelMotor2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
 
-        flywheelMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        flywheelMotor2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        flywheelMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        flywheelMotor2.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
-        // Intake
-        intakeMotor = hardwareMap.get(DcMotorEx.class, "Transfer");
-        intakeMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        intakeMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        intakeMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-        updatePIDF();
-    }
-
-    private void updatePIDF() {
-        PIDFCoefficients pidf = new PIDFCoefficients(kP, kI, kD, kF);
-        flywheelMotor.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidf);
-        flywheelMotor2.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidf);
+        shooterPIDF = new PIDFController(SCoeffs);
     }
 
     @Override
     public void loop() {
-        hood.set(0.54);
-        updatePIDF();
+        hood.set(Position);
+
+        shooterPIDF.setCoefficients(SCoeffs);
 
         boolean currentA = gamepad1.a;
         if (currentA && !lastA) {
@@ -73,11 +80,25 @@ public class FlywheelTunerTutorial extends OpMode {
         lastA = currentA;
 
         if (flywheelEnabled) {
-            flywheelMotor.setVelocity(TARGET_VELOCITY);
-            flywheelMotor2.setVelocity(TARGET_VELOCITY);
+
+            double currentVelocity = flywheelMotor2.getVelocity();
+
+            shooterPIDF.setSetPoint(TARGET_VELOCITY);
+
+            double power = (kV * TARGET_VELOCITY)
+                    + shooterPIDF.calculate(currentVelocity);
+
+            power = Math.max(-1.0, Math.min(1.0, power));
+
+            flywheelMotor.setPower(power);
+            flywheelMotor2.setPower(power);
+
+            telemetry.addData("Power", power);
+
         } else {
-            flywheelMotor.setVelocity(0);
-            flywheelMotor2.setVelocity(0);
+
+            flywheelMotor.setPower(0);
+            flywheelMotor2.setPower(0);
         }
 
         boolean currentY = gamepad1.y;
@@ -87,23 +108,26 @@ public class FlywheelTunerTutorial extends OpMode {
         lastY = currentY;
 
         if (intakeEnabled) {
-            intakeMotor.setPower(INTAKE_POWER);
+            intakeMotor.setVelocity(INTAKE_POWER);
         } else {
-            intakeMotor.setPower(0);
+            intakeMotor.setVelocity(0);
         }
 
-        telemetry.addLine("--- FLYWHEEL ---");
+        telemetry.addLine("------ SHOOTER ------");
         telemetry.addData("Target Velocity", TARGET_VELOCITY);
-        telemetry.addData("Current Vel 1", "%.1f", flywheelMotor.getVelocity());
-        telemetry.addData("Current Vel 2", "%.1f", flywheelMotor2.getVelocity());
-        telemetry.addData("Shooter Status", flywheelEnabled ? "ON (A)" : "OFF");
+        telemetry.addData("Current Velocity", flywheelMotor2.getVelocity());
+        telemetry.addData("Power", flywheelMotor.getPower());
+        telemetry.addData("Shooter", flywheelEnabled ? "ON" : "OFF");
 
-        telemetry.addLine("--- INTAKE ---");
-        telemetry.addData("Intake Power", INTAKE_POWER);
-        telemetry.addData("Intake Status", intakeEnabled ? "ON (Y)" : "OFF");
+        telemetry.addLine("------ PID ------");
+        telemetry.addData("P", SCoeffs.p);
+        telemetry.addData("I", SCoeffs.i);
+        telemetry.addData("D", SCoeffs.d);
+        telemetry.addData("kV", kV);
 
-        telemetry.addData("kP", kP);
-        telemetry.addData("kF", kF);
+        telemetry.addLine("------ INTAKE ------");
+        telemetry.addData("Intake", intakeEnabled ? "ON" : "OFF");
+
         telemetry.update();
     }
 }

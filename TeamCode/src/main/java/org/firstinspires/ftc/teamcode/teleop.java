@@ -23,10 +23,10 @@ public class teleop extends OpMode {
 
     public static double targetVel = 1285;
 
-    public static double shooterKP = 0.05920;
+    public static double shooterKP = 0.;
     public static double shooterKI = 0.0;
     public static double shooterKD = 0.0;
-    public static double shooterKF = 0.000523;
+    public static double shooterKF = 0.00;
 
     public static double shooterTolerance = 20;
 
@@ -63,8 +63,8 @@ public class teleop extends OpMode {
         flywheelMotor2.setDirection(DcMotorEx.Direction.FORWARD);
         flywheelMotor.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.FLOAT);
         flywheelMotor2.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.FLOAT);
-        flywheelMotor.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
-        flywheelMotor2.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+        flywheelMotor.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
+        flywheelMotor2.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
 
         shooterController = new PIDFController(shooterKP, shooterKI, shooterKD, 0.000422);
         shooterController.setTolerance(shooterTolerance);
