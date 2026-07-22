@@ -1,6 +1,8 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.opModes.teleOps;
 
 import com.bylazar.configurables.annotations.Configurable;
+import com.pedropathing.follower.Follower;
+import com.pedropathing.geometry.Pose;
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -10,6 +12,9 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.seattlesolvers.solverslib.command.CommandScheduler;
 import com.seattlesolvers.solverslib.hardware.servos.ServoEx;
+
+import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
+
 import java.util.List;
 import Subsistemas.LauncherSub;
 import Subsistemas.TurretSub;
@@ -17,6 +22,8 @@ import Subsistemas.TurretSub;
 @Configurable
 @TeleOp(name = "TELEOPTHETA")
 public class TeleOpODO extends OpMode {
+
+    private Follower follower;
     // Transferencia
     private DcMotorEx transferMotor;
     //Drivetrain
@@ -31,9 +38,15 @@ public class TeleOpODO extends OpMode {
     private LauncherSub launcher;
     private boolean transferRunning;
     // ================= ESTADOS =================
-    public static double servoMin = 0.50;
-    public static double servoMax = 0.02;
+    public static double servoMin = 0.0;
+    public static double servoMax = 0.27;
     public static double intakeVel = 1100;
+
+    public static double hoodAngle = 0;
+    public static double initX = 138;
+    public static double initY = 134.628;
+
+    public static Pose startingPose = new Pose(initX,initY,Math.toRadians(-90));
 
     @Override
     public void init() {
@@ -41,6 +54,11 @@ public class TeleOpODO extends OpMode {
         List<LynxModule> hubs = hardwareMap.getAll(LynxModule.class);
         hubs.forEach(hub -> hub.setBulkCachingMode(
                 LynxModule.BulkCachingMode.AUTO));
+
+        follower = Constants.createFollower(hardwareMap);
+        follower.setStartingPose(startingPose == null ? new Pose() : startingPose);
+        follower.update();
+        follower.startTeleopDrive();
 
         CommandScheduler.getInstance().reset();
         CommandScheduler.getInstance().enable();
@@ -67,7 +85,7 @@ public class TeleOpODO extends OpMode {
 
         transferMotor = hardwareMap.get(DcMotorEx.class, "Transfer");
 
-        transferMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+        transferMotor.setDirection(DcMotorSimple.Direction.FORWARD);
 
         transferMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
 
@@ -110,7 +128,7 @@ public class TeleOpODO extends OpMode {
         backRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
     }
     private void initializeServo() {
-        servoTope = new ServoEx(hardwareMap, "ServoTope");
+        servoTope = new ServoEx(hardwareMap, "ServoTope").setInverted(true);
     }
 
 
@@ -125,11 +143,12 @@ public class TeleOpODO extends OpMode {
 
     @Override
     public void loop() {
+        follower.update();
+        turret.setPose(follower.getPose());
 
 
 
         CommandScheduler.getInstance().run();
-        launcher.setGOAL_DISTANCE(turret.getGoalDistance());
 
         driveControl(gamepad1);
         servoControl(gamepad2);
@@ -174,10 +193,11 @@ public class TeleOpODO extends OpMode {
     }
     private void servoControl(Gamepad g2) {
 
-        if (g2.left_bumper) {
-            servoTope.set(servoMin);
-        } else {
+        if (g2.right_bumper) {
             servoTope.set(servoMax);
+            transferRunning = true;
+        } else {
+            servoTope.set(servoMin);
         }
     }
 
@@ -185,11 +205,21 @@ public class TeleOpODO extends OpMode {
         if (g2.aWasPressed()){
             launcher.toggleShooter();
         }
+
+        double v = 0.3;
+        if(gamepad2.bWasPressed()) {
+            hoodAngle = hoodAngle + v;
+            launcher.setHOOD_ANGLE(hoodAngle);
+        }
+        if(gamepad2.xWasPressed()) {
+            hoodAngle = hoodAngle - v;
+            launcher.setHOOD_ANGLE(hoodAngle);
+        }
     }
 
     private void transferControl(Gamepad g2) {
 
-        if (g2.yWasPressed()) {
+        if (g2.left_bumper) {
             transferRunning = !transferRunning;
         }
 
@@ -212,10 +242,11 @@ public class TeleOpODO extends OpMode {
     private void addShooterTelemetry() {
         telemetry.addData("Motor Velocity", launcher.getTicksPerSec());
         telemetry.addData("Motor Velocity Error", launcher.getTicksPerSecError());
+
     }
 
     private void addTurretTelemetry() {
-        telemetry.addData("Goal Distance", turret.getGoalDistance());
+        telemetry.addData("Goal Distance", launcher.getDistance());
         telemetry.addData("Turret Angle", turret.getCurrentAngle());
         telemetry.addData("Target Angle", turret.getTargetAngle());
 

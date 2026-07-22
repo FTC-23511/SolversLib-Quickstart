@@ -1,26 +1,23 @@
 package Subsistemas;
 
 import static org.firstinspires.ftc.robotcore.external.navigation.AngleUnit.normalizeDegrees;
+
 import com.bylazar.configurables.annotations.Configurable;
-import com.pedropathing.follower.Follower;
 import com.pedropathing.geometry.Pose;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.seattlesolvers.solverslib.command.SubsystemBase;
 import com.seattlesolvers.solverslib.controller.PController;
 import com.seattlesolvers.solverslib.hardware.motors.Motor;
 import com.seattlesolvers.solverslib.hardware.motors.MotorEx;
-import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
 @Configurable
 public class TurretSub extends SubsystemBase {
 
+
     // ================= HARDWARE =================
     private final MotorEx turretMotor;
     private final PController turretController;
-    private final Follower follower;
-    public static double initX = 38.285;
-    public static double initY = 134.628;
-    public static Pose startingPose = new Pose(initX,initY,-90);
+
 
     // ================= P Controller =================
     public static double turretKP = 0.015;
@@ -37,7 +34,7 @@ public class TurretSub extends SubsystemBase {
     public static double turretMinAngle = -90;
     public static double turretMaxAngle = 90;
     // ================= FIELD / TARGET CONFIG =================
-    public static double goalX = 10;
+    public static double goalX = 144;
     public static double goalY = 144;
     public static double manualAimOffsetDegrees = -5;
     // ================= STATE =================
@@ -62,10 +59,7 @@ public class TurretSub extends SubsystemBase {
 
         turretMotor.setRunMode(Motor.RunMode.RawPower);
 
-        follower = Constants.createFollower(hardwareMap);
-        follower.setStartingPose(startingPose == null ? new Pose() : startingPose);
-        follower.update();
-        follower.startTeleopDrive();
+
 
         turretController = new PController(turretKP);
     }
@@ -73,13 +67,11 @@ public class TurretSub extends SubsystemBase {
 
     @Override
     public void periodic() {
-       follower.update();
+
         // ================= UPDATE SENSORS =================
         currentTicks = turretMotor.getCurrentPosition();
 
         currentAngle = ticksToDegrees(currentTicks);
-
-        robotPose = follower.getPose();
 
         double robotX = robotPose.getX();
 
@@ -92,8 +84,6 @@ public class TurretSub extends SubsystemBase {
         // ================= CALCULATE FIELD TARGET =================
             double deltaX = goalX - robotX;
             double deltaY = goalY - robotY;
-
-            goalDistance = Math.hypot(deltaX, deltaY);
 
             desiredAngle = Math.toDegrees(Math.atan2(deltaY, deltaX));
 
@@ -144,6 +134,17 @@ public class TurretSub extends SubsystemBase {
         );
     }
     // ================= MATH HELPERS =================
+
+
+    public void setPose(Pose RobotPose){
+        robotPose = RobotPose;
+    }
+    public void setGoalX(double GoalX){
+        goalX = GoalX;
+    }
+    public void setGoalY(double GoalY){
+        goalY = GoalY;
+    }
     private double clamp(
             double value,
             double minimum,
