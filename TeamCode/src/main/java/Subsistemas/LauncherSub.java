@@ -13,7 +13,6 @@ import com.seattlesolvers.solverslib.hardware.motors.MotorEx;
 import com.seattlesolvers.solverslib.hardware.motors.MotorGroup;
 import com.seattlesolvers.solverslib.hardware.servos.ServoEx;
 import com.seattlesolvers.solverslib.util.InterpLUT;
-import com.seattlesolvers.solverslib.util.LUT;
 
 @Configurable
 public class LauncherSub extends SubsystemBase {
@@ -25,8 +24,7 @@ public class LauncherSub extends SubsystemBase {
     // PID + Feedforward
     private static final double KP = 0.0085;
     private static final double KV = 0.000455;
-    private static final double SERVO_TRAVEL_DEG_PER_US = 0.150 ;
-    private static final double SERVO_PWM_RANGE_US = 2000 ;
+
     private final PController flywheelController = new PController(KP);
 
     // Hardware
@@ -39,20 +37,20 @@ public class LauncherSub extends SubsystemBase {
 
     private static final PwmControl.PwmRange HOOD_RANGE = new PwmControl.PwmRange(500, 2500);
     private static final double HOOD_MIN_ANGLE = 0;
-    private static final double HOOD_MAX_ANGLE = 1;
+
 
     // Estados
     private boolean shooterRunning = false;
     private double motorPower = 0.0;
     private double motorTicksPerSec = 0.0;
     private double goalDistanceCm = 0.0;
-    private double hoodAngleDeg = HOOD_MIN_ANGLE;
+
 
     private final InterpLUT angleLut = new InterpLUT();
-    private final LUT velocityLut = new LUT();
+    private final InterpLUT velocityLut = new InterpLUT();
 
-    public static double TARGET_TICKS_PER_SEC = 1300;
-    public static int TARGET_TAG = 24;
+    private double TARGET_TICKS_PER_SEC;
+    public int TARGET_TAG = 24;
     private double HOOD_ANGLE;
 
     public LauncherSub(HardwareMap hm, String shooterMotor1, String shooterMotor2, String servoHoodName) {
@@ -73,18 +71,16 @@ public class LauncherSub extends SubsystemBase {
         limelight.start();
 
         // 📌 Inicialización de la Tabla LUT para el ángulo del Hood (cm -> grados)
-        angleLut.add(81, 0.30);
-        angleLut.add(90.0, 0.33);
-        angleLut.add(100.0, 0.37);
-        angleLut.add(110.0, 0.4);
-        angleLut.add(120,0.42);
+        angleLut.add(81, 0.3);
+        angleLut.add(90.0, 0.32);
+        angleLut.add(104.0, 0.33);
+        angleLut.add(240, 0.5);
         angleLut.createLUT();
 
-        /*velocityLut.add(81, 1000);
-        velocityLut.add(90, 950);
-        velocityLut.add(100,1000);
-        velocityLut.add(110,1050);
-        velocityLut.add(120,1100);*/
+        velocityLut.add(81, 990);
+        velocityLut.add(104, 1010);
+        velocityLut.add(160, 1160);
+        velocityLut.add(240, 1430);
 
     }
 
@@ -94,8 +90,12 @@ public class LauncherSub extends SubsystemBase {
         updateGoalDistanceFromVision();
 
         // 2. Actualizar el ángulo del Hood según la distancia calculada
+        HOOD_ANGLE = angleLut.get(goalDistanceCm);
 
         servoHood.set(HOOD_ANGLE);
+
+        TARGET_TICKS_PER_SEC = velocityLut.get(goalDistanceCm);
+
 
 
         // 3. Control del Shooter
@@ -152,11 +152,6 @@ public class LauncherSub extends SubsystemBase {
         return false;
     }
 
-    public void setHOOD_ANGLE(double angle) {
-
-        HOOD_ANGLE = angle;
-    }
-
     public void setGoalDistance(double distance) {
         this.goalDistanceCm = distance;
     }
@@ -167,6 +162,10 @@ public class LauncherSub extends SubsystemBase {
     public void startShooter() {
         shooterRunning = true;
         flywheelController.reset();
+    }
+    public void setHOOD_ANGLE(double angle) {
+
+        HOOD_ANGLE = angle;
     }
 
     public void stopShooter() {

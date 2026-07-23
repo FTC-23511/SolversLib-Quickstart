@@ -25,6 +25,7 @@ import Subsistemas.TurretSub;
 public class TeleOp_rojoF extends OpMode {
 
     private Follower follower;
+    private double angle = 0;
     // Transferencia
     private DcMotorEx transferMotor;
     //Drivetrain
@@ -39,17 +40,19 @@ public class TeleOp_rojoF extends OpMode {
     private LauncherSub launcher;
     private TurretSub turret;
 
+    private boolean reversetransfer = false;
+
     private boolean transferRunning;
     // ================= ESTADOS =================
     public static double servoMin = 0.0;
-    public static double servoMax = 0.27;
-    public static double intakeVel = 1100;
+    public static double servoMax = 0.3;
+    public static double intakeVel = 1500;
 
     public double hoodAngle = 0;
-    public static double initX = 86;
-    public static double initY = 8;
+    public static double initX = 87.716;
+    public static double initY = 9.405;
 
-    public static Pose startingPose = new Pose(initX,initY,Math.toRadians(90));
+    public static Pose startingPose = new Pose(initX,initY,Math.toRadians(180));
 
     @Override
     public void init() {
@@ -200,10 +203,13 @@ public class TeleOp_rojoF extends OpMode {
         );
     }
     private void servoControl(Gamepad g2) {
-
+        double error;
+        error = Math.abs(launcher.getTicksPerSecError());
         if (g2.right_bumper) {
-            servoTope.set(servoMax);
-            transferRunning = true;
+            if (error <= 30) {
+                servoTope.set(servoMax);
+                transferRunning = true;
+            }
         } else {
             servoTope.set(servoMin);
 
@@ -246,20 +252,29 @@ public class TeleOp_rojoF extends OpMode {
 
     private void transferControl(Gamepad g2) {
 
-        if (g2.left_bumper) {
+        if (g2.yWasPressed()) {
             transferRunning = !transferRunning;
+            reversetransfer = false;
         }
 
         if (transferRunning) {
             transferMotor.setVelocity(intakeVel);
         } else {
-            transferMotor.setPower(0.0);
+            if (reversetransfer){
+                transferMotor.setPower(-0.5);
+            }
+            else {transferMotor.setPower(0);}
+        }
+
+        if (g2.dpadUpWasPressed()){
+            reversetransfer = !reversetransfer;
+            transferRunning = false;
         }
     }
 
 
     private void turretControls(Gamepad gamepad2) {
-        double angle = 0;
+
         double offset = 1;
 
         if (gamepad1.xWasPressed()){

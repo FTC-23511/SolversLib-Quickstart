@@ -29,7 +29,7 @@ public class TurretSub extends SubsystemBase {
 
     // ================= POWER =================
     public static double turretMaxPower = 0.50;
-    public static double turretToleranceTicks = 3.0;
+    public static double turretToleranceTicks = 2.0;
     // ================= LIMITS =================
     public static double turretMinAngle = -141;
     public static double turretMaxAngle = 155;
