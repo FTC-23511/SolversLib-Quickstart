@@ -88,7 +88,7 @@ public class TeleOp_rojoF extends OpMode {
     private void initializeShooter() {
         // flywheel constructor
         launcher = new LauncherSub(hardwareMap, "shooter","shooter2" ,"hood" );
-        launcher.setTargetTag(20);
+        launcher.setTargetTag(24);
     }
 
     private void initializeTransfer() {
