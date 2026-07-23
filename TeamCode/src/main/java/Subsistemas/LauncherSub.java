@@ -81,6 +81,7 @@ public class LauncherSub extends SubsystemBase {
         velocityLut.add(104, 1010);
         velocityLut.add(160, 1160);
         velocityLut.add(240, 1430);
+        velocityLut.createLUT();
 
     }
 
