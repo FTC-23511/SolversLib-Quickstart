@@ -31,12 +31,12 @@ public class TurretSub extends SubsystemBase {
     public static double turretMaxPower = 0.50;
     public static double turretToleranceTicks = 3.0;
     // ================= LIMITS =================
-    public static double turretMinAngle = -90;
-    public static double turretMaxAngle = 90;
+    public static double turretMinAngle = -141;
+    public static double turretMaxAngle = 155;
     // ================= FIELD / TARGET CONFIG =================
     public static double goalX = 144;
     public static double goalY = 144;
-    public static double manualAimOffsetDegrees = -5;
+    public static double manualAimOffsetDegrees = 0;
     // ================= STATE =================
     private boolean enabled = true;
     private double heading = 0.0;
@@ -138,6 +138,10 @@ public class TurretSub extends SubsystemBase {
 
     public void setPose(Pose RobotPose){
         robotPose = RobotPose;
+    }
+    public void setManualAimOffsetDegrees(double offset){
+
+        manualAimOffsetDegrees = offset;
     }
     public void setGoalX(double GoalX){
         goalX = GoalX;

@@ -16,7 +16,7 @@ import com.seattlesolvers.solverslib.util.InterpLUT;
 import com.seattlesolvers.solverslib.util.LUT;
 
 @Configurable
-public class LauncherSub extends SubsystemBase {
+public class LauncherSubA extends SubsystemBase {
 
     private static final double LIMELIGHT_MOUNT_ANGLE_DEGREES = 15.0;
     private static final double LIMELIGHT_LENS_HEIGHT_CM = 28.0;
@@ -25,8 +25,7 @@ public class LauncherSub extends SubsystemBase {
     // PID + Feedforward
     private static final double KP = 0.0085;
     private static final double KV = 0.000455;
-    private static final double SERVO_TRAVEL_DEG_PER_US = 0.150 ;
-    private static final double SERVO_PWM_RANGE_US = 2000 ;
+
     private final PController flywheelController = new PController(KP);
 
     // Hardware
@@ -52,10 +51,10 @@ public class LauncherSub extends SubsystemBase {
     private final LUT velocityLut = new LUT();
 
     public static double TARGET_TICKS_PER_SEC = 1300;
-    public static int TARGET_TAG = 24;
+    public static int TARGET_TAG = 20;
     private double HOOD_ANGLE;
 
-    public LauncherSub(HardwareMap hm, String shooterMotor1, String shooterMotor2, String servoHoodName) {
+    public LauncherSubA(HardwareMap hm, String shooterMotor1, String shooterMotor2, String servoHoodName) {
         motor1 = new MotorEx(hm, shooterMotor1).setCachingTolerance(0.001);
         motor2 = new MotorEx(hm, shooterMotor2).setCachingTolerance(0.001);
 
@@ -73,19 +72,11 @@ public class LauncherSub extends SubsystemBase {
         limelight.start();
 
         // 📌 Inicialización de la Tabla LUT para el ángulo del Hood (cm -> grados)
-        angleLut.add(81, 0.30);
-        angleLut.add(90.0, 0.33);
-        angleLut.add(100.0, 0.37);
-        angleLut.add(110.0, 0.4);
-        angleLut.add(120,0.42);
+        angleLut.add(81, 0.35);
+        angleLut.add(90.0, 33.0);
+        angleLut.add(100.0, 34.0);
+        angleLut.add(110.0, 35.0);
         angleLut.createLUT();
-
-        /*velocityLut.add(81, 1000);
-        velocityLut.add(90, 950);
-        velocityLut.add(100,1000);
-        velocityLut.add(110,1050);
-        velocityLut.add(120,1100);*/
-
     }
 
     @Override
@@ -138,6 +129,10 @@ public class LauncherSub extends SubsystemBase {
         }
     }
 
+    public void setHOOD_ANGLE(double angle) {
+
+        HOOD_ANGLE = angle;
+    }
 
     private boolean hasValidTarget(LLResult result) {
         if (result == null || !result.isValid() || result.getFiducialResults().isEmpty()) {
@@ -150,11 +145,6 @@ public class LauncherSub extends SubsystemBase {
             }
         }
         return false;
-    }
-
-    public void setHOOD_ANGLE(double angle) {
-
-        HOOD_ANGLE = angle;
     }
 
     public void setGoalDistance(double distance) {

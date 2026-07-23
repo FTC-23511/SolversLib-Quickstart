@@ -16,12 +16,12 @@ import com.seattlesolvers.solverslib.hardware.servos.ServoEx;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
 import java.util.List;
-import Subsistemas.LauncherSub;
+
+import Subsistemas.LauncherSubA;
 import Subsistemas.TurretSub;
 
 @Configurable
 @TeleOp(name = "TELEOP_Azul_F")
-
 public class TeleOp_azulF extends OpMode {
 
     private Follower follower;
@@ -35,19 +35,21 @@ public class TeleOp_azulF extends OpMode {
     // Servo
     private ServoEx servoTope;
     // Subsistema de la torreta
+    private ServoEx Light;
+    private LauncherSubA launcher;
     private TurretSub turret;
-    private LauncherSub launcher;
+
     private boolean transferRunning;
     // ================= ESTADOS =================
     public static double servoMin = 0.0;
     public static double servoMax = 0.27;
     public static double intakeVel = 1100;
 
-    public static double hoodAngle = 0.0;
-    public static double initX = 110;
-    public static double initY = 134.628;
+    public double hoodAngle = 0;
+    public static double initX = 86;
+    public static double initY = 8;
 
-    public static Pose startingPose = new Pose(initX,initY,Math.toRadians(-90));
+    public static Pose startingPose = new Pose(initX,initY,Math.toRadians(90));
 
     @Override
     public void init() {
@@ -63,7 +65,6 @@ public class TeleOp_azulF extends OpMode {
 
         CommandScheduler.getInstance().reset();
         CommandScheduler.getInstance().enable();
-        turret.setGoalX(138);
 
 
         initializeTurret();
@@ -71,6 +72,8 @@ public class TeleOp_azulF extends OpMode {
         initializeTransfer();
         initializeDrive();
         initializeServo();
+        turret.setGoalX(144);
+        turret.setManualAimOffsetDegrees(0);
         CommandScheduler.getInstance().registerSubsystem(turret);
         CommandScheduler.getInstance().registerSubsystem(launcher);
     }
@@ -81,9 +84,8 @@ public class TeleOp_azulF extends OpMode {
 
     private void initializeShooter() {
         // flywheel constructor
-        launcher = new LauncherSub(hardwareMap, "shooter","shooter2" ,"hood" );
+        launcher = new LauncherSubA(hardwareMap, "shooter","shooter2" ,"hood" );
         launcher.setTargetTag(20);
-
     }
 
     private void initializeTransfer() {
@@ -108,13 +110,13 @@ public class TeleOp_azulF extends OpMode {
 
         backRight = hardwareMap.get(DcMotorEx.class, "backRight");
 
-        frontLeft.setDirection(DcMotorSimple.Direction.REVERSE);
+        frontLeft.setDirection(DcMotorSimple.Direction.FORWARD);
 
-        backLeft.setDirection(DcMotorSimple.Direction.REVERSE);
+        backLeft.setDirection(DcMotorSimple.Direction.FORWARD);
 
-        frontRight.setDirection(DcMotorSimple.Direction.REVERSE);
+        frontRight.setDirection(DcMotorSimple.Direction.FORWARD);
 
-        backRight.setDirection(DcMotorSimple.Direction.REVERSE);
+        backRight.setDirection(DcMotorSimple.Direction.FORWARD);
 
         frontLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
@@ -134,6 +136,7 @@ public class TeleOp_azulF extends OpMode {
     }
     private void initializeServo() {
         servoTope = new ServoEx(hardwareMap, "ServoTope").setInverted(true);
+        Light = new ServoEx(hardwareMap, "light");
     }
 
 
@@ -203,15 +206,34 @@ public class TeleOp_azulF extends OpMode {
             transferRunning = true;
         } else {
             servoTope.set(servoMin);
+
         }
-    }
+
+        boolean shooterRunning = launcher.isShooterRunning();
+
+        if (!shooterRunning && !transferRunning) {
+            // Nada encendido -> Azul
+            Light.set(0.61);
+
+        } else if (!shooterRunning) {
+            // Solo intake -> Rojo
+            Light.set(0.28);
+
+        } else if (!transferRunning) {
+            // Solo shooter -> Verde (random)
+            Light.set(0.39);
+
+        } else {
+            // Shooter + intake -> Amarillo (random)
+            Light.set(0.50);
+        }    }
 
     private void shooterControl(Gamepad g2) {
         if (g2.aWasPressed()){
             launcher.toggleShooter();
         }
 
-        double v = 0.1;
+        double v = 0.05;
         if(gamepad2.bWasPressed()) {
             hoodAngle = hoodAngle + v;
             launcher.setHOOD_ANGLE(hoodAngle);
@@ -236,12 +258,17 @@ public class TeleOp_azulF extends OpMode {
     }
 
 
-    private void turretControls(Gamepad g2) {
+    private void turretControls(Gamepad gamepad2) {
+        double angle = 0;
+        double offset = 1;
 
-        if (g2.xWasPressed()) {
-            turret.toggleEnabled();
+        if (gamepad1.xWasPressed()){
+            angle =+ offset;
         }
-
+        if (gamepad1.bWasPressed()){
+            angle =- offset;
+        }
+        turret.setManualAimOffsetDegrees(angle);
     }
 
     private void addShooterTelemetry() {
@@ -254,6 +281,7 @@ public class TeleOp_azulF extends OpMode {
         telemetry.addData("Goal Distance", launcher.getDistance());
         telemetry.addData("Turret Angle", turret.getCurrentAngle());
         telemetry.addData("Target Angle", turret.getTargetAngle());
+        telemetry.addData("Hood Angle" , hoodAngle);
 
     }
 

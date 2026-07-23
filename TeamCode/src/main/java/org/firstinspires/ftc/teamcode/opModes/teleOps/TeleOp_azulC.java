@@ -16,7 +16,8 @@ import com.seattlesolvers.solverslib.hardware.servos.ServoEx;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
 import java.util.List;
-import Subsistemas.LauncherSub;
+
+import Subsistemas.LauncherSubA;
 import Subsistemas.TurretSub;
 
 @Configurable
@@ -35,7 +36,7 @@ public class TeleOp_azulC extends OpMode {
     private ServoEx servoTope;
     // Subsistema de la torreta
     private ServoEx Light;
-    private LauncherSub launcher;
+    private LauncherSubA launcher;
     private TurretSub turret;
 
     private boolean transferRunning;
@@ -45,8 +46,8 @@ public class TeleOp_azulC extends OpMode {
     public static double intakeVel = 1100;
 
     public double hoodAngle = 0;
-    public static double initX = 110;
-    public static double initY = 134.628;
+    public static double initX = 118;
+    public static double initY = 138;
 
     public static Pose startingPose = new Pose(initX,initY,Math.toRadians(-90));
 
@@ -71,7 +72,8 @@ public class TeleOp_azulC extends OpMode {
         initializeTransfer();
         initializeDrive();
         initializeServo();
-        turret.setGoalX(138);
+        turret.setGoalX(144);
+        turret.setManualAimOffsetDegrees(0);
         CommandScheduler.getInstance().registerSubsystem(turret);
         CommandScheduler.getInstance().registerSubsystem(launcher);
     }
@@ -82,7 +84,7 @@ public class TeleOp_azulC extends OpMode {
 
     private void initializeShooter() {
         // flywheel constructor
-        launcher = new LauncherSub(hardwareMap, "shooter","shooter2" ,"hood" );
+        launcher = new LauncherSubA(hardwareMap, "shooter","shooter2" ,"hood" );
         launcher.setTargetTag(20);
     }
 
@@ -108,9 +110,9 @@ public class TeleOp_azulC extends OpMode {
 
         backRight = hardwareMap.get(DcMotorEx.class, "backRight");
 
-        frontLeft.setDirection(DcMotorSimple.Direction.REVERSE);
+        frontLeft.setDirection(DcMotorSimple.Direction.FORWARD);
 
-        backLeft.setDirection(DcMotorSimple.Direction.REVERSE);
+        backLeft.setDirection(DcMotorSimple.Direction.FORWARD);
 
         frontRight.setDirection(DcMotorSimple.Direction.FORWARD);
 
@@ -204,7 +206,7 @@ public class TeleOp_azulC extends OpMode {
             transferRunning = true;
         } else {
             servoTope.set(servoMin);
-            transferRunning = false;
+
         }
 
         boolean shooterRunning = launcher.isShooterRunning();
@@ -256,7 +258,17 @@ public class TeleOp_azulC extends OpMode {
     }
 
 
-    private void turretControls(Gamepad g2) {
+    private void turretControls(Gamepad gamepad2) {
+        double angle = 0;
+        double offset = 1;
+
+        if (gamepad1.xWasPressed()){
+            angle =+ offset;
+        }
+        if (gamepad1.bWasPressed()){
+            angle =- offset;
+        }
+        turret.setManualAimOffsetDegrees(angle);
     }
 
     private void addShooterTelemetry() {
