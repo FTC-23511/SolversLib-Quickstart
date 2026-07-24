@@ -1,6 +1,7 @@
 package Subsistemas;
 
 import com.bylazar.configurables.annotations.Configurable;
+import com.pedropathing.math.MathFunctions;
 import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.hardware.limelightvision.LLResultTypes;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
@@ -51,7 +52,6 @@ public class LauncherSub extends SubsystemBase {
 
     private double TARGET_TICKS_PER_SEC;
     public int TARGET_TAG = 24;
-    private double HOOD_ANGLE;
 
     public LauncherSub(HardwareMap hm, String shooterMotor1, String shooterMotor2, String servoHoodName) {
         motor1 = new MotorEx(hm, shooterMotor1).setCachingTolerance(0.001);
@@ -71,17 +71,7 @@ public class LauncherSub extends SubsystemBase {
         limelight.start();
 
         // 📌 Inicialización de la Tabla LUT para el ángulo del Hood (cm -> grados)
-        angleLut.add(81, 0.3);
-        angleLut.add(90.0, 0.32);
-        angleLut.add(104.0, 0.33);
-        angleLut.add(240, 0.5);
-        angleLut.createLUT();
 
-        velocityLut.add(81, 990);
-        velocityLut.add(104, 1010);
-        velocityLut.add(160, 1160);
-        velocityLut.add(240, 1430);
-        velocityLut.createLUT();
 
     }
 
@@ -91,11 +81,11 @@ public class LauncherSub extends SubsystemBase {
         updateGoalDistanceFromVision();
 
         // 2. Actualizar el ángulo del Hood según la distancia calculada
-        HOOD_ANGLE = angleLut.get(goalDistanceCm);
 
-        servoHood.set(HOOD_ANGLE);
 
-        TARGET_TICKS_PER_SEC = velocityLut.get(goalDistanceCm);
+        servoHood.set(hoodAngle(goalDistanceCm) + 0.12);
+
+        TARGET_TICKS_PER_SEC = flywheelSpeed(goalDistanceCm);
 
 
 
@@ -139,6 +129,23 @@ public class LauncherSub extends SubsystemBase {
         }
     }
 
+    private static double flywheelOffset = 0;
+    private static double hoodOffset = 0;
+
+    public static double hoodAngle(double goalDist) {
+        double angle =
+                ((-1.26702e-7 * goalDist + 0.000053276) * goalDist - 0.00527341)
+                        * goalDist + 0.448478 + hoodOffset;
+
+        return MathFunctions.clamp(angle, 0.1, 0.95);
+    }
+
+    public static double flywheelSpeed(double goalDist) {
+        double rpm = ((-0.000111811 * goalDist + 0.0614737) * goalDist - 7.61823) * goalDist + 1278.1689 + flywheelOffset;
+
+        return MathFunctions.clamp(rpm, 300, 1500);
+    }
+
 
     private boolean hasValidTarget(LLResult result) {
         if (result == null || !result.isValid() || result.getFiducialResults().isEmpty()) {
@@ -163,10 +170,6 @@ public class LauncherSub extends SubsystemBase {
     public void startShooter() {
         shooterRunning = true;
         flywheelController.reset();
-    }
-    public void setHOOD_ANGLE(double angle) {
-
-        HOOD_ANGLE = angle;
     }
 
     public void stopShooter() {

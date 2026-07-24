@@ -42,10 +42,12 @@ public class TeleOp_rojoF extends OpMode {
 
     private boolean reversetransfer = false;
 
+    private boolean shooting;
+
     private boolean transferRunning;
     // ================= ESTADOS =================
-    public static double servoMin = 0.0;
-    public static double servoMax = 0.3;
+    public static double servoMin = 0.1;
+    public static double servoMax = 0.41;
     public static double intakeVel = 1500;
 
     public double hoodAngle = 0;
@@ -138,7 +140,7 @@ public class TeleOp_rojoF extends OpMode {
         backRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
     }
     private void initializeServo() {
-        servoTope = new ServoEx(hardwareMap, "ServoTope").setInverted(true);
+        servoTope = new ServoEx(hardwareMap, "ServoTope").setInverted(false);
         Light = new ServoEx(hardwareMap, "light");
     }
 
@@ -208,10 +210,11 @@ public class TeleOp_rojoF extends OpMode {
         if (g2.right_bumper) {
             if (error <= 30) {
                 servoTope.set(servoMax);
-                transferRunning = true;
+                shooting = true;
             }
         } else {
             servoTope.set(servoMin);
+            shooting = false;
 
         }
 
@@ -239,49 +242,44 @@ public class TeleOp_rojoF extends OpMode {
             launcher.toggleShooter();
         }
 
-        double v = 0.05;
-        if(gamepad2.bWasPressed()) {
-            hoodAngle = hoodAngle + v;
-            launcher.setHOOD_ANGLE(hoodAngle);
-        }
-        if(gamepad2.xWasPressed()) {
-            hoodAngle = hoodAngle - v;
-            launcher.setHOOD_ANGLE(hoodAngle);
-        }
+
     }
 
     private void transferControl(Gamepad g2) {
+
+        intakeVel = (launcher.getDistance() >= 220) ? 1100 : 1400;
 
         if (g2.yWasPressed()) {
             transferRunning = !transferRunning;
             reversetransfer = false;
         }
 
-        if (transferRunning) {
-            transferMotor.setVelocity(intakeVel);
-        } else {
-            if (reversetransfer){
-                transferMotor.setPower(-0.5);
-            }
-            else {transferMotor.setPower(0);}
-        }
-
         if (g2.dpadUpWasPressed()){
             reversetransfer = !reversetransfer;
             transferRunning = false;
         }
+
+        if (shooting) {
+            transferMotor.setVelocity(intakeVel);
+        } else if (transferRunning) {
+            transferMotor.setPower(0.8);
+        } else if (reversetransfer) {
+            transferMotor.setPower(-0.5);
+        } else {
+            transferMotor.setPower(0);   // Detener el motor
+        }
+
     }
 
 
     private void turretControls(Gamepad gamepad2) {
-
-        double offset = 1;
+        double offset = 2;
 
         if (gamepad1.xWasPressed()){
-            angle =+ offset;
+            angle = angle + offset;
         }
         if (gamepad1.bWasPressed()){
-            angle =- offset;
+            angle = angle -offset;
         }
         turret.setManualAimOffsetDegrees(angle);
     }
