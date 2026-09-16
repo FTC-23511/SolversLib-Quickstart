@@ -1,3 +1,5 @@
+apply plugin: 'com.android.application'
+
 //
 // build.gradle in TeamCode
 //
@@ -7,7 +9,6 @@
 // the build definitions, you can place those customizations in this file, but
 // please think carefully as to whether such customizations are really necessary
 // before doing so.
-
 
 // Custom definitions may go here
 
@@ -33,11 +34,11 @@ repositories {
     }
 
     maven {
-        url "https://repo.dairy.foundation/releases"
+        url = "https://repo.dairy.foundation/releases"
     }
 
     maven {
-        url "https://repo.dairy.foundation/snapshots"
+        url = "https://repo.dairy.foundation/snapshots"
     }
 }
 
@@ -47,15 +48,15 @@ dependencies {
 
     // SolversLib: Latest Stable Version
 
-    implementation "org.solverslib:core:0.3.4" // core
-    implementation "org.solverslib:pedroPathing:0.3.4" // pedroPathing
-    //    implementation "org.solverslib:photon:0.3.4" // photon is optional (see docs for more info)
+    implementation "org.solverslib:core:0.3.6" // core
+    implementation "org.solverslib:pedroPathing:0.3.6" // pedroPathing
+    implementation "org.solverslib:photon:0.3.6" // photon is optional (see docs for more info)
 
     implementation "com.acmerobotics.dashboard:dashboard:0.5.1" // FTC Dashboard
 
     // Pedro Pathing
-    implementation 'com.pedropathing:ftc:2.0.6'
-    implementation 'com.pedropathing:telemetry:1.0.0'
+    implementation 'com.pedropathing:revhub:3.0.0'
+    implementation 'com.pedropathing:tuning:1.0.0' // AutoTune (see Tuning.java)
 
     // Panels Dashboard
     implementation "com.bylazar:fullpanels:1.0.12"
